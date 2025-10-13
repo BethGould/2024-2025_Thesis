@@ -572,7 +572,7 @@ class deriv_grid:
 
         for i1, ii in enumerate(hand_list):
             print(hand_string[i1])
-            if filename is not None: file.write(hand_string[i1])
+            if filename is not None: file.write(f"{hand_string[i1]}\n")
             for jj in range(self.grid_size):
                 for kk in range(self.grid_size):
 
@@ -603,7 +603,7 @@ class deriv_grid:
                         ind_arr_min_s[-1] += int(leng/nn*(i+0.5))
 
                     print("For array:", jj, kk)
-                    if filename is not None: file.write("For array:", jj, kk)
+                    if filename is not None: file.write(f"For array: {jj}, {kk}\n")
 
 
                     # print absolute maxima and minima
@@ -625,13 +625,13 @@ class deriv_grid:
                     # print extreema
                     #print(arr_t[arr_minmax])
                     print('Max:', np.max(arr[arr_minmax]), "Min:", np.min(arr[arr_minmax]))
-                    if filename is not None: file.write('Max:', np.max(arr[arr_minmax]), "Min:", np.min(arr[arr_minmax]))
+                    if filename is not None: file.write(f"Max: {np.max(arr[arr_minmax])}, Min: {np.min(arr[arr_minmax])}\n")
 
 
                     print('Difference: ')
-                    if filename is not None: file.write('Difference: ')
+                    if filename is not None: file.write('Difference: \n')
                     for i in range(len(arr_t[arr_minmax])-1):
                         print(arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i])
-                        if filename is not None: file.write(arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i])
+                        if filename is not None: file.write(f"{str(arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i])}\n")
         if filename is not None: 
             file.close()

@@ -549,7 +549,8 @@ class deriv_grid:
     # needs to be high enough to minimize the boundary size and ensure that all extreema are found
     # but still small enough to contain many points
     # right now the data is printed on the screen, not saved to file
-    def calc_period(self, nn=40):
+    def calc_period(self, nn=40, filename = None):
+
         hand_list = []
         hand_string = []
         if 'er' in self.to_plot:
@@ -565,8 +566,13 @@ class deriv_grid:
             hand_string.append('0, decreasing')
             hand_list.append(self.s_grid_0d_u)
 
+
+        if filename is not None: 
+            file = open(filename, 'a')
+
         for i1, ii in enumerate(hand_list):
             print(hand_string[i1])
+            if filename is not None: file.write(hand_string[i1])
             for jj in range(self.grid_size):
                 for kk in range(self.grid_size):
 
@@ -597,6 +603,8 @@ class deriv_grid:
                         ind_arr_min_s[-1] += int(leng/nn*(i+0.5))
 
                     print("For array:", jj, kk)
+                    if filename is not None: file.write("For array:", jj, kk)
+
 
                     # print absolute maxima and minima
                     '''
@@ -617,8 +625,13 @@ class deriv_grid:
                     # print extreema
                     #print(arr_t[arr_minmax])
                     print('Max:', np.max(arr[arr_minmax]), "Min:", np.min(arr[arr_minmax]))
+                    if filename is not None: file.write('Max:', np.max(arr[arr_minmax]), "Min:", np.min(arr[arr_minmax]))
 
 
                     print('Difference: ')
+                    if filename is not None: file.write('Difference: ')
                     for i in range(len(arr_t[arr_minmax])-1):
                         print(arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i])
+                        if filename is not None: file.write(arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i])
+        if filename is not None: 
+            file.close()

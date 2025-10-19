@@ -1,11 +1,23 @@
+# This contains functions used by reference by the ODE solver. 
+# They are included outside the class structure and in a unified form
+# so that they can be easily switched out.
+
 #--LIBRARIES--------
 import numpy as np
-#from ee_lib import h_pl, hbar, m_e, e_e, c_l, pi, pppterm, phi0inv
 from eelib.consts import pppterm, phi0inv
 
 #--DERIVITIVE FUNCTIONS FOR ODE SOLVERS--
-# y = [psi, dpsi/dx]
+# x
+# y  = [psi, dpsi/dx]
+# k  -- electron wavenumber
+# B  -- magnetic field strength
+# R  -- radius -- note that here only B * R is relevent, not B and R independently
+# mu -- ee coupling strength
+# mA -- maximum amplitude -- used by events, not derivative solvers, but must be included
 
+# I could combine B and R
+
+# Within a loop, with ee coupling
 def psi_deriv(x, y, k, B, R, mu, mA):
     knl = mu * pppterm
     k0  = complex(np.square(k))
@@ -17,6 +29,7 @@ def psi_deriv(x, y, k, B, R, mu, mA):
     dpdx  = y[1]
     return [dpdx, dpdxx]
 
+# Within a loop, without ee coupling
 def psi_deriv_old(x, y, k, B, R, mu, mA):
     k0 = complex(np.square(k))
     k1 = 2j * complex(B * R * phi0inv)
@@ -26,6 +39,7 @@ def psi_deriv_old(x, y, k, B, R, mu, mA):
     dpdx = y[1]
     return [dpdx, dpdxx]
 
+# For the input to the loop, without magnetic field or coupling
 def psi_deriv_0(x, y, k, B, R, mu, mA):
     k0 = complex(np.square(k))
     

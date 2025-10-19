@@ -1,3 +1,26 @@
+# deriv_grid class 
+# Takes fixed R, B, k, dk, mu, and amp, 
+# and creates a sinusoidal-spaced grid of grid_size real and imaginary values.
+# There are grid_size^2 runs of the loop.
+
+# __init__(self, R, B, dk, mu, k = kFAu, amp=1., grid_size = 9, ang_lim = 0.1)
+# derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, to_plot = ['er','ed','0d', '0r', '0x'])
+# plot_real(self, i, j, k, R, B, mu, no)
+# plot_abs(self, i, j, k, R, B, mu, no)
+# calc_period(self, nn=40, filename = None)
+
+# derivGrid runs the integration, the most intensive part
+# n and trim reduce the number of points on the plots
+# pr is the percentage of the radious to evaluate
+# method, rtol, atol control the integrator
+# to_plot gives the versions of integration to evaluate, with all saved and plotted.
+
+# plot_real, plot_abs plot and save the indicated loop. 
+# i, j are the indicies in the grid of the desired loop.
+# k, R, B, mu are for labeling the plot
+# no is an index used to label the plots, allowing for unique labeling
+
+# Error handling has not been added to this class
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -5,12 +28,11 @@ from eelib.consts import pi, kFAu, rtol, atol
 from eelib.loop import loop
 import time
 
-
 class deriv_grid:
     def __init__(self, R, B, dk, mu, k = kFAu, amp=1., grid_size = 9, ang_lim = 0.1):
-        self.l_calc = loop(R, B, dk, mu, k, amp) # I should probably do this with inheritance
+        self.l_calc = loop(R, B, dk, mu, k, amp)  # loop class for calculations
         self.grid_size = grid_size
-        self.dlim = self.l_calc.psi_prime_0_max()
+        self.dlim = self.l_calc.psi_prime_0_max() # max(abs(psi'(0)))
         
         # form the derivative grid for t = 0
         x = np.linspace(pi-ang_lim, ang_lim, num=self.grid_size, dtype = complex)
@@ -21,11 +43,11 @@ class deriv_grid:
         d0_grid = xx + 1j * yy
         self.d0_grid = d0_grid
 
-    #this just creates a grid of values for various psi'_0 values
-    # n -- 
-    # pr -- 
+    # this just creates a grid of values for various psi'_0 values
+    # n -- number of points to plot, used for untriggered, predefined points
+    # pr -- percent_range
     # method, rtol (relative tolerance), atol (absolute tolerance)
-    # trim -- needs to be even, every x point is used for the plots
+    # trim -- needs to be even, every x point is used for the plots, used for triggered points
     # to_plot -- list of strings with choises for plotting
 
     def derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, to_plot = ['er','ed','0d', '0r', '0x']):
@@ -77,18 +99,20 @@ class deriv_grid:
         if '0x' in to_plot: s_grid_0x_l_tc = []
         if '0x' in to_plot: s_grid_0x_u_tcm = []
         if '0x' in to_plot: s_grid_0x_l_tcm = []
-        if '0x' in to_plot: s_grid_0x_u_ta = []
-        if '0x' in to_plot: s_grid_0x_l_ta = []
-        if '0x' in to_plot: s_grid_0x_u_tr = []
-        if '0x' in to_plot: s_grid_0x_l_tr = []
+        if '0r' in to_plot:
+            if '0x' in to_plot: s_grid_0x_u_ta = []
+            if '0x' in to_plot: s_grid_0x_l_ta = []
+            if '0x' in to_plot: s_grid_0x_u_tr = []
+            if '0x' in to_plot: s_grid_0x_l_tr = []
         if '0x' in to_plot: s_grid_0x_u_yc = []
         if '0x' in to_plot: s_grid_0x_l_yc = []
         if '0x' in to_plot: s_grid_0x_u_ycm = []
         if '0x' in to_plot: s_grid_0x_l_ycm = []
-        if '0x' in to_plot: s_grid_0x_u_ya = []
-        if '0x' in to_plot: s_grid_0x_l_ya = []
-        if '0x' in to_plot: s_grid_0x_u_yr = []
-        if '0x' in to_plot: s_grid_0x_l_yr = []
+        if '0r' in to_plot:
+            if '0x' in to_plot: s_grid_0x_u_ya = []
+            if '0x' in to_plot: s_grid_0x_l_ya = []
+            if '0x' in to_plot: s_grid_0x_u_yr = []
+            if '0x' in to_plot: s_grid_0x_l_yr = []
 
         print('Begin grid build: ', time.time() - start_time)
         print('Plot Code:', to_plot, plot_code)
@@ -119,18 +143,20 @@ class deriv_grid:
                 s_grid_0x_l_tc.append([])
                 s_grid_0x_u_tcm.append([])
                 s_grid_0x_l_tcm.append([])
-                s_grid_0x_u_ta.append([])
-                s_grid_0x_l_ta.append([])
-                s_grid_0x_u_tr.append([])
-                s_grid_0x_l_tr.append([])
+                if '0r' in to_plot:
+                    s_grid_0x_u_ta.append([])
+                    s_grid_0x_l_ta.append([])
+                    s_grid_0x_u_tr.append([])
+                    s_grid_0x_l_tr.append([])
                 s_grid_0x_u_yc.append([])
                 s_grid_0x_l_yc.append([])
                 s_grid_0x_u_ycm.append([])
                 s_grid_0x_l_ycm.append([])
-                s_grid_0x_u_ya.append([])
-                s_grid_0x_l_ya.append([])
-                s_grid_0x_u_yr.append([])
-                s_grid_0x_l_yr.append([])
+                if '0r' in to_plot:
+                    s_grid_0x_u_ya.append([])
+                    s_grid_0x_l_ya.append([])
+                    s_grid_0x_u_yr.append([])
+                    s_grid_0x_l_yr.append([])
             
             print("i = ", i, "of ", self.grid_size-1, "time: ", time.time() - start_time)
 
@@ -177,21 +203,24 @@ class deriv_grid:
                     #s_grid_0x_u_tcd[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stu_ex, T_arr[3]))
                     #s_grid_0x_l_tcd[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stl_ex, T_arr[3]))
 
-                    # triggered times
-                    s_grid_0x_u_ta[i].append(self.l_calc.solu0_r['t_events'][0][0::trim])
-                    s_grid_0x_l_ta[i].append(self.l_calc.solu0_r['t_events'][0][1::trim])
-                    s_grid_0x_u_tr[i].append(self.l_calc.solu0_r['t_events'][1][0::trim])
-                    s_grid_0x_l_tr[i].append(self.l_calc.solu0_r['t_events'][1][1::trim])
+                    if '0r' in to_plot:
+                        # triggered times
+                        s_grid_0x_u_ta[i].append(self.l_calc.solu0_r['t_events'][0][0::trim])
+                        s_grid_0x_l_ta[i].append(self.l_calc.solu0_r['t_events'][0][1::trim])
+                        s_grid_0x_u_tr[i].append(self.l_calc.solu0_r['t_events'][1][0::trim])
+                        s_grid_0x_l_tr[i].append(self.l_calc.solu0_r['t_events'][1][1::trim])
 
                     # y values
                     s_grid_0x_u_yc[i].append(self.l_calc.psij(s_grid_0x_u_tc[i][j]))
                     s_grid_0x_l_yc[i].append(self.l_calc.psij(s_grid_0x_l_tc[i][j]))
                     s_grid_0x_u_ycm[i].append(self.l_calc.psij(s_grid_0x_u_tcm[i][j]))
                     s_grid_0x_l_ycm[i].append(self.l_calc.psij(s_grid_0x_l_tcm[i][j]))
-                    s_grid_0x_u_ya[i].append(self.l_calc.psij(s_grid_0x_u_ta[i][j]))
-                    s_grid_0x_l_ya[i].append(self.l_calc.psij(s_grid_0x_l_ta[i][j]))
-                    s_grid_0x_u_yr[i].append(self.l_calc.psij(s_grid_0x_u_tr[i][j]))
-                    s_grid_0x_l_yr[i].append(self.l_calc.psij(s_grid_0x_l_tr[i][j]))
+                    
+                    if '0r' in to_plot:
+                        s_grid_0x_u_ya[i].append(self.l_calc.psij(s_grid_0x_u_ta[i][j]))
+                        s_grid_0x_l_ya[i].append(self.l_calc.psij(s_grid_0x_l_ta[i][j]))
+                        s_grid_0x_u_yr[i].append(self.l_calc.psij(s_grid_0x_u_tr[i][j]))
+                        s_grid_0x_l_yr[i].append(self.l_calc.psij(s_grid_0x_l_tr[i][j]))
                 
         if 'er' in to_plot: self.s_grid_er_u = s_grid_er_u
         #if 'er' in to_plot: self.s_grid_er_l = s_grid_er_l
@@ -215,18 +244,20 @@ class deriv_grid:
         if '0x' in to_plot: self.s_grid_0x_l_tc = s_grid_0x_l_tc
         if '0x' in to_plot: self.s_grid_0x_u_tcm = s_grid_0x_u_tcm
         if '0x' in to_plot: self.s_grid_0x_l_tcm = s_grid_0x_l_tcm
-        if '0x' in to_plot: self.s_grid_0x_u_ta = s_grid_0x_u_ta
-        if '0x' in to_plot: self.s_grid_0x_l_ta = s_grid_0x_l_ta
-        if '0x' in to_plot: self.s_grid_0x_u_tr = s_grid_0x_u_tr
-        if '0x' in to_plot: self.s_grid_0x_l_tr = s_grid_0x_l_tr
+        if '0r' in to_plot:
+            if '0x' in to_plot: self.s_grid_0x_u_ta = s_grid_0x_u_ta
+            if '0x' in to_plot: self.s_grid_0x_l_ta = s_grid_0x_l_ta
+            if '0x' in to_plot: self.s_grid_0x_u_tr = s_grid_0x_u_tr
+            if '0x' in to_plot: self.s_grid_0x_l_tr = s_grid_0x_l_tr
         if '0x' in to_plot: self.s_grid_0x_u_yc = s_grid_0x_u_yc
         if '0x' in to_plot: self.s_grid_0x_l_yc = s_grid_0x_l_yc
         if '0x' in to_plot: self.s_grid_0x_u_ycm = s_grid_0x_u_ycm
         if '0x' in to_plot: self.s_grid_0x_l_ycm = s_grid_0x_l_ycm
-        if '0x' in to_plot: self.s_grid_0x_u_ya = s_grid_0x_u_ya
-        if '0x' in to_plot: self.s_grid_0x_l_ya = s_grid_0x_l_ya
-        if '0x' in to_plot: self.s_grid_0x_u_yr = s_grid_0x_u_yr
-        if '0x' in to_plot: self.s_grid_0x_l_yr = s_grid_0x_l_yr
+        if '0r' in to_plot:
+            if '0x' in to_plot: self.s_grid_0x_u_ya = s_grid_0x_u_ya
+            if '0x' in to_plot: self.s_grid_0x_l_ya = s_grid_0x_l_ya
+            if '0x' in to_plot: self.s_grid_0x_u_yr = s_grid_0x_u_yr
+            if '0x' in to_plot: self.s_grid_0x_l_yr = s_grid_0x_l_yr
 
         print("Done grid build: ", time.time() - start_time)
 
@@ -292,10 +323,11 @@ class deriv_grid:
             tl0xc = np.real(self.s_grid_0x_l_tc[i][j])
             su0xc = np.real(self.s_grid_0x_u_yc[i][j])
             sl0xc = np.real(self.s_grid_0x_l_yc[i][j])
-            tu0xr = np.real(self.s_grid_0x_u_tr[i][j])
-            tl0xr = np.real(self.s_grid_0x_l_tr[i][j])
-            su0xr = np.real(self.s_grid_0x_u_yr[i][j])
-            sl0xr = np.real(self.s_grid_0x_l_yr[i][j])
+            if '0r' in to_plot:
+                tu0xr = np.real(self.s_grid_0x_u_tr[i][j])
+                tl0xr = np.real(self.s_grid_0x_l_tr[i][j])
+                su0xr = np.real(self.s_grid_0x_u_yr[i][j])
+                sl0xr = np.real(self.s_grid_0x_l_yr[i][j])
             tu0xcm = np.real(self.s_grid_0x_u_tcm[i][j])
             tl0xcm = np.real(self.s_grid_0x_l_tcm[i][j])
             su0xcm = np.real(self.s_grid_0x_u_ycm[i][j])
@@ -401,11 +433,12 @@ class deriv_grid:
             line8, = ax.plot(tl0dr, sl0dr, color = 'blue', label = 'without e-e interaction')
             h_list.append(line7)
         if '0x' in to_plot: 
-            line9, = ax.plot(tu0xr, su0xr, color = 'purple', label = 'exact solution')
-            line10, = ax.plot(tl0xr, sl0xr, color = 'purple', label = 'exact solution')
-            #line11, = ax.plot(tu0xcm, su0xcm, color = 'black', label = 'exact solution')
-            #line12, = ax.plot(tl0xcm, sl0xcm, color = 'gray', label = 'exact solution')
-            h_list.append(line9)
+            if '0r' in to_plot:
+                line9, = ax.plot(tu0xr, su0xr, color = 'purple', label = 'exact solution')
+                line10, = ax.plot(tl0xr, sl0xr, color = 'purple', label = 'exact solution')
+                #line11, = ax.plot(tu0xcm, su0xcm, color = 'black', label = 'exact solution')
+                #line12, = ax.plot(tl0xcm, sl0xcm, color = 'gray', label = 'exact solution')
+                h_list.append(line9)
 
         ax.legend(handles=h_list)
         ax.set_box_aspect(2.0/3.5)

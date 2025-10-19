@@ -1,3 +1,12 @@
+# __ !!! Modified SciPy Code !!! __ 
+
+# Most of this code is from the SciPy library, modified to remove adaptive step sizes
+# and add non-adaptive RK variants.
+
+# Currently the amplitude following variant of integration is not working, and therefore
+# this code is unused, in favor of the SciPy library and amplitude restoration. If I 
+# could get this to work properly, it would be better than the amplitude restoration trick.
+
 import inspect
 import numpy as np
 #from .bdf import BDF

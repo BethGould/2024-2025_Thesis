@@ -1,7 +1,24 @@
+# Like the derivative functions, these are used by the loop class
+# when it calls the ODE solver. They are referred to by handle.
+
 #--LIBRARIES--------
 import numpy as np
 
 #--EVENTS----
+# x
+# y  = [psi, dpsi/dx]
+# k  -- electron wavenumber
+# B  -- magnetic field strength
+# R  -- radius
+# mu -- ee coupling strength
+# mA -- maximum amplitude
+
+# event1 -- used to cut off the solver when the amplitude gets too large (caused by some errors)
+# event2 -- triggers when real(psi) = 0
+# deriv_amp -- triggers when abs(psi)' = 0
+# deriv_phase -- triggers when arg(psi)' = 0
+# deriv_real -- triggers when real(psi)' = 0
+
 #This event returns 0 when the absolute value of the wavefunction crosses a defined value
 #all the input parameters are the same as all the derivative calculations, but 
 #used is mA (the maximum amplitude) and not the other parameters

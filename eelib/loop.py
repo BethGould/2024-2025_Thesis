@@ -1,28 +1,159 @@
+# loop class 
+# 
+
+
+# Error handling has not been added to this class
+# I also need to play around with the state setting variables
+# and clearing solutions on changing parameters
+
+# finish certain commenting (separation)
+
 
 #--LIBRARIES----------------
 import numpy as np
 import scipy
-#import pandas as pd
-#import matplotlib.pyplot as plt
+
 from eelib.consts import pi, kFAu, R_max, B_max, phi0inv, rtol, atol, DK_min
 from eelib.deriv_functions import psi_deriv, psi_deriv_old
 from eelib.events import deriv_amp, deriv_real
-from eelib.ivp_2 import solve_ivp_mod
+#from eelib.ivp_2 import solve_ivp_mod
 
 #--TABLE OF CONTENTS--------
 
 # 1 ----- Defining Constants
-#    __init__(self, R, B, dk, mu, k = kFAu, amp=1.)
-#    update_params(self, R=-1., B=-1., dk=-1., mu=-1., k=-1., amp=-1.)
-#    calcInit(self)
-#    setDeriv(self, p_prime, n = 20)
+#    __init__(R, B, dk, mu, k = kFAu, amp=1.)
+#    update_params(R=-1., B=-1., dk=-1., mu=-1., k=-1., amp=-1.)
+#    calcInit()
+#    setDeriv(p_prime, n = 20)
 
 # 2 ----- Analytic calculations of the case without e-e interaction
-# 3 ----- Slow oscillation IVP
-# 4 ----- Fast oscillation IVP
-# 5 ----- BVP
+#    rem(number)
+#    adjdiv1r()
+#    bjdiv1r()
+#    normToAmp()
+#    aj_calc()
+#    bj_calc()
+#    ajN_calc()
+#    bjN_calc()
+#    psij(x)
+#    psij0(x)
+#    psi_prime_0()
+#    psi_prime_0_max()
 
-# 6 ----- Finding current
+# 3 ----- ODE solver wrappers
+#    solve_ivp(n=20, percent_range = 1.0, method = 'RK45', rtol = rtol, atol = atol, solve = 30)
+#    ivp_solver_steps(t0, tf, y0, yp0, n=00, ee_int=True, m=4, method = 'RK45', rtol = rtol, atol = atol, fullSol = False)
+#    call_ivp_solver(t0, tf, y0, yp0, n=0, fullSol = True, t0_start = False, ee_int= True, method = 'RK45', rtol = rtol, 
+#                           atol=atol, first_step = None, max_step = np.inf, t_eval = None)
+
+# 4 ----- Fast oscillation calculations
+#    find_fast_oscillations(n=20)
+#    find_start_exact()
+#    find_start_fast_oscillations(n, sol)
+#    find_period_fast_oscillations(n, sol)
+#    find_amplitude_fast_oscillations(sol)
+
+# 5 ----- Slow oscillation and coupled calculations
+#    find_period_shift_exact()
+#    find_slow_oscillations_start()
+#    find_real_env_start()
+#    find_t_points(n_points, t_max, t_start, T)
+
+# 6 ----- BVP matching phases
+
+# 7 ----- BVP shooting
+
+# 8 ----- Finding current
+#    current()
+#    current_calc(psi, psi_pr)
+
+
+
+#--VARIABLES-----
+
+#   R (m)
+#   k (hz), k + dk
+#   B (T)
+#   mu 
+#   amp
+
+#   lngt     = 2 * pi * self.R
+#   period_k = 2 * self.R * self.k
+#   T0       = 2. * pi / self.k     
+#   M        = self.B*self.R*phi0inv
+#   denrem   = self.rem(self.R*self.M)
+#   aj
+#   bj
+#   aj0      -- for matched exact solution
+#   bj0      -- for matched exact solution
+
+#   psi0_deriv_0 -- psi' for time 0
+
+#   T_fast
+#   A_max
+#   T_fast0
+#   T_fast_ex
+
+# ---- State indicators ----
+#   deriv_set
+#   ivp_solved
+#   solve   -- int, Indicates which IVPs were solved.
+#   bvp_solved
+
+# ---- Solutions to full IVP ---- 
+#   solu    -- recovered with ee interaction
+#   solu_d  -- decreasing with ee interaction
+#   solu0   -- decreasing without ee
+#   solu0_r -- recovered without ee
+#   solu_f  -- 
+#   solu_m  --  
+
+# ---- Starting Times ----
+# with or without ee interaction, or exact solution
+#   stl
+#   sth
+#   stl0
+#   sth0
+#   stl_ex
+#   stu_ex
+
+
+#--FUNCTIONS TO CALL--------
+
+# 1 ----- Defining Constants
+#    __init__(R, B, dk, mu, k = kFAu, amp=1.)
+#    update_params(R=-1., B=-1., dk=-1., mu=-1., k=-1., amp=-1.)
+#    setDeriv(p_prime, n = 20)
+
+# 2 ----- Analytic calculations of the case without e-e interaction
+#    psij(x)           -- returns exact solution of psi without e-e interaction, for a provided derivative
+#    psij0(x)          -- returns exact solution of psi without e-e interaction, for the matched solution
+#    psi_prime_0_max() -- returns the maximum abs of psi' without e-e interaction, for use in constructing derivative grids
+
+# 3 ----- ODE solver wrappers
+#    solve_ivp(n=20, percent_range = 1.0, method = 'RK45', rtol = rtol, atol = atol, solve = 30)
+#           -- used for running the ivp for the given ...
+
+# 4 ----- Fast oscillation calculations
+# all calculations are automatic when defining parameters
+
+# 5 ----- Slow oscillation and coupled calculations
+# may require ivp_solved = True
+#    find_period_shift_exact()
+#    find_slow_oscillations_start() -- I think this was moved to the below function
+#    find_real_env_start()
+#    find_t_points(n_points, t_max, t_start, T)
+
+# 6 ----- BVP matching phases
+
+# 7 ----- BVP shooting
+
+# 8 ----- Finding current
+# all require ivp_solved = True; needs to be updated
+#    current()
+#    current_calc(psi, psi_pr)
+
+
 
 #--LOOP CLASS---------------
 class loop:
@@ -45,12 +176,14 @@ class loop:
 
         self.deriv_set = False # False = default derivitive, True = chosen derivitive
         self.ivp_solved = False
+        self.solve = 0 # Indicates which ivps were solved
+        self.bvp_solved = False
         
         self.calcInit()
 
     # the default -1 means that nothing is changed here
     # otherwise, the parameter is updated to the given values
-    # all further calculations are the same as 
+    # all further calculations are the same as above
     def update_params(self, R=-1., B=-1., dk=-1., mu=-1., k=-1., amp=-1.):
         if R > 0.:
             self.R = R * R_max
@@ -67,21 +200,19 @@ class loop:
         elif k > 0.:
             self.k = k + DK_min
 
+        #self.clear_sol()
         self.deriv_set = False # False = default derivitive, True = chosen derivitive
         self.ivp_solved = False
+        self.solve = 0 # Indicates which ivps were solved
+        self.bvp_solved = False
 
         self.calcInit()
         
     # Sets a bunch of constants based on the data defining the loop
     def calcInit(self):
         self.lngt     = 2 * pi * self.R
-        #self.interval = self.lngt / self.n
         self.period_k = 2 * self.R * self.k
         self.T0 = 2. * pi / self.k
-        
-        #This prevents aj and bj from having issues. It may not be the best solution.
-        #if rem(self.period_k) == 0:
-        #    self.k += DK_min
         
         self.M      = self.B*self.R*phi0inv
         self.denrem = self.rem(self.R*self.M)
@@ -91,7 +222,6 @@ class loop:
         self.bj0    = self.bj
         
         self.psi0_deriv_0 = self.psi_prime_0()
-        #self.calc_state = 0
         
         self.find_fast_oscillations(20)
         
@@ -108,6 +238,8 @@ class loop:
         #self.clear_sol()
         self.deriv_set = True # False = default derivitive, True = chosen derivitive
         self.ivp_solved = False
+        self.solve = 0 # Indicates which ivps were solved
+        self.bvp_solved = False
 
         
         self.find_fast_oscillations(n)
@@ -125,20 +257,15 @@ class loop:
         numrem = self.rem(self.B*np.square(self.R)*phi0inv-self.R*self.k)
         denom = np.exp(2j*pi*self.denrem) * 2j * np.sin(2*pi*self.k*self.R)
         num = 1 - np.exp(2j*pi*(numrem))
-        #print(self.B*phi0inv*np.square(self.R))
-        #print(['a',numrem,denrem, num/denom])
         return - num / denom
     def bjdiv1r(self):
         numrem = self.rem(self.B*np.square(self.R)*phi0inv+self.R*self.k)
         denom = np.exp(2j*pi*self.denrem) * 2j * np.sin(2*pi*self.k*self.R)
         num = 1 - np.exp(2j*pi*(numrem))
-        #print([numrem,denrem, num/denom])
         return num / denom
     def normToAmp(self):
-        #print([self.amp, self.ajdiv1r()+self.bjdiv1r(), self.ajdiv1r(),self.bjdiv1r()])
         return self.amp / (self.ajdiv1r()+self.bjdiv1r())
     def aj_calc(self):
-        #print([self.ajdiv1r(), self.normToAmp()])
         return self.ajdiv1r()*self.normToAmp()
     def bj_calc(self):
         return self.bjdiv1r()*self.normToAmp()
@@ -213,32 +340,34 @@ class loop:
         # without ee-interaction -- original(3), divided into steps(5)
         if solve > 0:      
             #print('1')
-            self.solu = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
+            self.solu = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
+                                              method = method, rtol = rtol, atol = atol)
             #self.soll = self.ivp_solver_steps(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
         if abs(solve)%2 == 0:
             #print('2')
-            self.solu_d = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
+            self.solu_d = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
+                                               method = method, rtol = rtol, atol = atol)
             #self.soll_d = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
         if abs(solve)%3 == 0:
             #print('3')
-            self.solu0 = self.call_ivp_solver(t0h0, tfh0, y0h0, yp0h0, n, fullSol = False, ee_int = False, method = method, rtol = rtol, atol = atol)
+            self.solu0 = self.call_ivp_solver(t0h0, tfh0, y0h0, yp0h0, n, fullSol = False, ee_int = False, 
+                                              method = method, rtol = rtol, atol = atol)
             #self.soll0 = self.call_ivp_solver(t0l0, tfl0, y0l0, yp0l0, n, fullSol = False, ee_int = False, method = method, rtol = rtol, atol = atol)
         if abs(solve)%5 == 0:
             #print('5')
-            self.solu0_r = self.ivp_solver_steps(t0h0, tfh0, y0h0, yp0h0, n, fullSol = False, ee_int = False, method = method, rtol = rtol, atol = atol)
+            self.solu0_r = self.ivp_solver_steps(t0h0, tfh0, y0h0, yp0h0, n, fullSol = False, ee_int = False, 
+                                                 method = method, rtol = rtol, atol = atol)
             #self.soll0_r = self.ivp_solver_steps(t0l0, tfl0, y0l0, yp0l0, n, fullSol = False, ee_int = False, method = method, rtol = rtol, atol = atol)
         if abs(solve)%7 == 0: 
             #print('7')     
-            self.solu_f = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
+            self.solu_f = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
+                                               method = method, rtol = rtol, atol = atol)
             #self.soll_f = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
         if abs(solve)%11 == 0:      
             #print('11')
-            self.solu_m = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
+            self.solu_m = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
+                                               method = method, rtol = rtol, atol = atol)
             #self.soll_m = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
-
-
-        # save the solutions
-        #self.sol = [sol1,sol2,sol3,sol4]
         
 
     # This is designed to correct for the drop in power over continuous cycles by just adding it back in
@@ -308,49 +437,6 @@ class loop:
                 i += m
                 continue
 
-            '''
-            if np.shape(sol[-1]['y_events'][0])[0] < 2:
-                if np.shape(sol[-1]['y_events'][0])[0] == 0:
-                    # copy so that not empty, but even number (for skipping)
-                    sol[-1]['y_events'][0] = np.array([[sol[-2]['y_events'][0][-1,0],sol[-2]['y_events'][0][-1,1]],
-                                                       [sol[-2]['y_events'][0][-1,0],sol[-2]['y_events'][0][-1,1]]])
-                    sol[-1]['t_events'][0] = np.array([sol[-2]['t_events'][0][-1],sol[-2]['t_events'][0][-1]])
-                    end_high[0].append(end_high[0][-1].copy())
-                    start_high[0].append(start_high[0][-1].copy())
-                    end_high[0].append(end_high[1][-1].copy())
-                    start_high[0].append(start_high[1][-1].copy())
-                else:
-                    if singleton_count == 0:
-                        y_sv = sol[-1]['y_events'][0][0,0]
-                    if singleton_count == 1:
-                        y_sv2 = sol[-1]['y_events'][0][0,0]
-                    singleton_count += 1
-                    # switches sign
-                    end_high[0].append(not end_high[0][-1])
-                    start_high[0].append(not start_high[0][-1])
-                    end_high[0].append(not end_high[1][-1])
-                    start_high[0].append(not start_high[1][-1])
-
-
-                # find final solutions
-                # no power loss considered yet
-                yfs = sol[-1]['y_events'][0][-1,0]
-                ypfs = sol[-1]['y_events'][0][-1,1]
-                tfs = sol[-1]['t_events'][0][-1]
-
-                i += m
-                t0s = tfs
-                y0s = yfs
-                yp0s = ypfs
-
-                break
-            '''
-
-            # growth problem
-            #if sol[-1]['t_events'][0][-1] > tf / 2 and np.mean(sol[-1]['y_events'][0]) > y0s:
-            #    sol.pop()
-            #    break
-
             #find final solutions
             yfs = sol[-1]['y_events'][0][-1,0]
             ypfs = sol[-1]['y_events'][0][-1,1]
@@ -373,14 +459,6 @@ class loop:
                 start_high[0].append(False)
             else:
                 start_high[0].append(True)
-
-            # growing too fast
-            # needs to be scaled properly --- choose error
-            #if rto > 1.1:
-            #    end_high.pop()
-            #    start_high.pop()
-            #    sol.pop()
-            #    break
 
             # choose the same re event side
             y_event_first = np.real(sol[-1]['y_events'][1][0,0])
@@ -476,6 +554,7 @@ class loop:
         }
 
 
+    # wrapper for the library call to the IVP solver
     def call_ivp_solver(self, t0, tf, y0, yp0, n = 0, fullSol = True, t0_start=False, ee_int = True, method = 'RK45', 
                         rtol = rtol, atol = atol, first_step=None, max_step = np.inf, t_eval = None):
         #choose solver
@@ -492,28 +571,6 @@ class loop:
         y_0 = np.array([y0, yp0]) #array_like, shape (n,) 
         arg = (self.k, self.B, self.R, self.mu, 1000.) #tuple
         
-        #evaluation points
-        #sp = self.lngt *percent_range
-
-        # max_step = cal_per, first_step = cal_per, rtol = 10e10, atol = 10e10
-
-        #t_eval = [0, sp / 10.0, sp / 9.0, sp / 8.0, sp / 7.0, sp /6.0, sp / 5.0, sp / 2.0, sp]
-        '''
-        if fullSol == False and ee_int:
-            #rtol = atol = 10
-            t_eval = self.find_t_points(n, t_max = tf, t_start = t0, T = self.T_fast)
-            cal_per = t_eval[1]-t_eval[0]
-            first_step = max_step = cal_per
-        elif fullSol == False:
-            #rtol = atol = 1e30
-            t_eval = self.find_t_points(n,t_max = tf, t_start = t0, T = self.T_fast0)
-            cal_per = t_eval[1]-t_eval[0]
-            first_step = max_step = cal_per
-        else:
-            first_step = None
-            max_step = np.inf
-            t_eval = None'''
-        
         #events
         #if fullSol:
         elist = [deriv_amp, deriv_real]
@@ -522,9 +579,11 @@ class loop:
         
         # call solver
         if fullSol:
-            sol = scipy.integrate.solve_ivp(y_hand, t_range, y_0, method=method,first_step=first_step, max_step=max_step, t_eval=t_eval, args=arg, events=elist, rtol = rtol, atol = atol) 
+            sol = scipy.integrate.solve_ivp(y_hand, t_range, y_0, method=method,first_step=first_step, 
+                                            max_step=max_step, t_eval=t_eval, args=arg, events=elist, rtol = rtol, atol = atol) 
         else:
-            sol = scipy.integrate.solve_ivp(y_hand, t_range, y_0, method=method,first_step=first_step, max_step=max_step, t_eval=t_eval, args=arg, events=elist, rtol = rtol, atol = atol) 
+            sol = scipy.integrate.solve_ivp(y_hand, t_range, y_0, method=method,first_step=first_step, 
+                                            max_step=max_step, t_eval=t_eval, args=arg, events=elist, rtol = rtol, atol = atol) 
         # return the solution
         return sol
 
@@ -565,20 +624,6 @@ class loop:
     # return t_min, t_max
     def find_start_exact(self):
         # find extreema -- maximum, minimum, and two midpoints
-        #print(self.aj*np.conj(self.bj))
-        #x = []
-        #x.append(pi / 2.0 - np.arctan(np.imag(self.aj*np.conj(self.bj))/np.real(self.aj*np.conj(self.bj)))/2.0)
-        #x.append((x[0] + pi / 2.0) / self.k)
-        #x.append((x[0] + pi) / self.k)
-        #x.append((x[0] + 3.0*pi / 4.0) / self.k)
-        #x[0] = x[0] / self.k
-
-        # find values at each of the four quadrents
-        #y = np.array([self.psij(x[0]), self.psij(x[1]), self.psij(x[2]), self.psij(x[3])])
-        #ii = np.argmax(y)
-        #jj = np.argmin(y)
-
-        #return x[jj], x[ii]
 
         x1 = pi - np.angle(self.aj*np.conj(self.bj))/2.0
         x2 = x1 - pi / 2.0
@@ -592,26 +637,6 @@ class loop:
             x2 = x3
 
         return x1, x2
-
-    # returns the midpoints
-    def find_start_mid_exact(self):
-        # find extreema -- maximum, minimum, and two midpoints
-        #print(self.aj*np.conj(self.bj))
-        x = []
-        x.append(pi / 2.0 - np.arctan(np.imag(self.aj*np.conj(self.bj))/np.real(self.aj*np.conj(self.bj)))/2.0)
-        x.append((x[0] + pi / 2.0) / self.k)
-        x.append((x[0] + pi) / self.k)
-        x.append((x[0] + 3.0*pi / 4.0) / self.k)
-        x[0] = x[0] / self.k
-
-        # find values at each of the four quadrents
-        y = np.array([self.psij(x[0]), self.psij(x[1]), self.psij(x[2]), self.psij(x[3])])
-        ii = (np.argmax(y) + 1)%4
-        jj = (np.argmin(y) + 1)%4
-
-        # returns the midpoints
-        return x[jj], x[ii]
-
 
     #The first time period to start at for envelope following 
     #if psi'(0) is as given

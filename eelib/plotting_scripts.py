@@ -1,4 +1,5 @@
-    
+# __ !!! Currently Unused !!! __
+# Old plotting scripts and plotting script template. 
     
 # plotting the grid
 def plot_img(loopObj, i, j, k, R, B, mu):

@@ -20,7 +20,7 @@
 # gridFastOsc does the work of calcuation
 # time is spent here
 
-# Error handling has not been added to this class
+# I should add a Monte Carlo variant.
 
 import numpy as np
 from eelib.consts import pi, kFAu, rtol, atol
@@ -53,7 +53,8 @@ class grid_fast_osc:
 
     # There are many parameters for the integrator, which I tend to just set to the default and ignore.
     # Here they can be set once, and used every time.
-    def setIntegratorParameters(self, n = 20, method = 'RK45', rtol = rtol, atol = atol):
+    def setIntegratorParameters(self, solve_mu_0 = True, n = 20, method = 'RK45', rtol = rtol, atol = atol):
+        self.l_calc.solve_mu_0 = solve_mu_0
         self.n = n
         self.method = method
         self.rtol = rtol
@@ -227,8 +228,9 @@ class grid_fast_osc:
         self.d0_grid = d0_grid
 
     def clear_calcs(self):
-        self.fast_osc_t = None
-        self.fast_osc_a = None
+        self.fast_osc_t   = None
+        self.fast_osc_t_0 = None
+        self.fast_osc_a   = None
 
 
     # ------------ CHOOSE POINTS (MONTE CARLO) -----------------
@@ -236,6 +238,87 @@ class grid_fast_osc:
     # This is the alternative variant for function fitting. It works better for a combined regression task, 
     # but is not so clear when fitting the parameters separately, where I prefer the option of keeping other
     # parameters fixed. I have yet to implement this variant. (MC + stabalized LR or MCMC)
+
+
+    def makeMCPoints(self, mu = (1.0, 1.0), dk = (-1.0, -1.0), B = (-1.0, -1.0), R = (-1.0, -1.0), 
+                       A = (-1.0, -1.0), k0 = (-1.0, -1.0), num = 1000):
+        
+        # Determines with which parameters to build the grid.
+        # For dk, I need something else to indicate that it is not needed, as negative values in theory could be useful
+        # however, I assume dk goes from 0 to 1.
+        # There is a wider range of error-checking which can be performed at this step, limiting our ranges.
+        var_set = [False,False,False,False,False,False]
+        if mu[0] > -0.1: var_set[0] = True
+        if dk[0] > -0.1: var_set[1] = True
+        if B[0]  > -0.1: var_set[2] = True
+        if R[0]  > -0.1: var_set[3] = True
+        if A[0]  > -0.1: var_set[4] = True
+        if k0[0] > -0.1: var_set[5] = True
+
+        self.var_set = var_set # so I can use this later
+
+        # Create a table of values. 
+        self.num = num
+        self.val_table = np.zeros((num, 8))
+
+        rng = np.random.default_rng()
+
+        # non-linear strength / mu
+        if var_set[0]:
+            for ii in range(num):
+                self.val_table[ii,0] = mu[0] + rng.random()*(mu[1]-mu[0])
+        else: 
+            self.val_table[:,0] = self.mu
+
+        # electron wavenumber / k
+        if var_set[1]:
+            for ii in range(num):
+                self.val_table[ii,1] = dk[0] + rng.random()*(dk[1]-dk[0])
+        else: 
+            self.val_table[:,1] = self.dk
+        if var_set[5]:
+            for ii in range(num):
+                self.val_table[ii,5] = k0[0] + rng.random()*(k0[1]-k0[0])
+        else:
+            self.val_table[:,5] = self.k
+
+        # oscillations due to magnetic field, magnetic field strength and ring radius
+        if var_set[2]:
+            for ii in range(num):
+                self.val_table[ii,2] = B[0] + rng.random()*(B[1]-B[0])
+        else:
+            self.val_table[:,2] = self.B
+        if var_set[3]:
+            for ii in range(num):
+                self.val_table[ii,3] = R[0] + rng.random()*(R[1]-R[0])
+        else:
+            self.val_table[:,3] = self.R
+
+        # Initial values for Psi, Psi'
+        if var_set[4]:
+            for ii in range(num):
+                self.val_table[ii,4] = A[0] + rng.random()*(A[1]-A[0])
+        else:
+            self.val_table[:,4] = self.a
+
+        self.dlim = self.l_calc.psi_prime_0_max()
+
+        for ii in range(num):
+            self.val_table[ii,6] = -self.dlim + rng.random()*2*self.dlim
+            self.val_table[ii,7] = -self.dlim + rng.random()*2*self.dlim
+
+
+        # Free up memory after clearing the old data, as it is no longer valid
+        if self.calculated: self.clear_calcs()
+        #if self.is_mc: self.clear_mc_list()
+
+        self.is_grid = False
+        self.is_mc = True
+        self.calculated = False
+
+        gc.collect()
+
+
 
 
     # ------------- FIND VALUES ON GRID ---------------
@@ -248,6 +331,15 @@ class grid_fast_osc:
     # This take time, but no longer requires parameters. It is separate from the parameters due to this.
     # I need to add functionality which uses self.is_grid, ...
     def gridFastOsc(self):
+
+        # Old calculation already exists.
+        if self.calculated:
+            self.clear_calcs()
+            gc.collect()
+
+        # The grid is not set.
+        if not self.is_grid:
+            raise Exception("gridFastOsc requires forming the grid first. Try calling makeGridPoints.") 
 
         # Timing
         start_time = time.time()
@@ -274,6 +366,7 @@ class grid_fast_osc:
 
         fast_oscillation_period = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
         fast_oscillation_amplitude = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
+        fast_oscillation_period_0 = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
 
         ib = 0
         ir = 0
@@ -300,13 +393,71 @@ class grid_fast_osc:
                                 for idr in range(num_d):
                                     for idi in range(num_d):
                                         # calculate derivative from our parameters if it is not as given
-                                        self.l_calc.setDeriv(self.d0_grid[idr,idi])
+                                        self.l_calc.setDeriv(self.d0_grid[idr,idi], n = self.n, method = self.method,
+                                                             rtol = self.rtol, atol = self.atol)
                                         #print(self.l_calc.T_fast * 2, self.l_calc.A_max)
                                         fast_oscillation_period[im,ik,ib,ir,ia,ik0,idr,idi] = self.l_calc.T_fast * 2
-                                        fast_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = self.l_calc.A_max                
+                                        fast_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = self.l_calc.A_max  
+                                        fast_oscillation_period_0[im,ik,ib,ir,ia,ik0,idr,idi] = self.l_calc.T_fast_0_calc * 2
 
         self.fast_osc_t = fast_oscillation_period
         self.fast_osc_a = fast_oscillation_amplitude
+        self.fast_osc_t_0 = fast_oscillation_period_0    # because I want to know the error.
+
+        self.calculated = True
+
+        print("Done grid build: ", time.time() - start_time)
+
+
+    def mcFastOsc(self):
+
+        # Old calculation already exists.
+        if self.calculated:
+            self.clear_calcs()
+            gc.collect()
+
+        # The grid is not set.
+        if not self.is_mc:
+            raise Exception("mcFastOsc requires choosing the points first. Try calling makeMCPoints.") 
+
+        # Timing
+        start_time = time.time()
+        print('Begin grid build: ', time.time() - start_time)
+
+        # Initialize grids
+        num = self.num
+
+        # magnetic_field_strength  = self.mfs
+        # electron_wavenumber      = self.ew
+        # electron_wavenumber_diff = self.ewd
+        # nonlinearity_strength    = self.nls
+        # starting_amplitude       = self.amp
+        # ring_radius              = self.rr
+        # d0_grid[idr,idi]
+        # starting_derivative_real = self.dr
+        # starting_derivative_imag = self.di
+
+        # self.val_table
+
+        fast_oscillation_period = np.zeros((num))
+        fast_oscillation_amplitude = np.zeros((num))
+        fast_oscillation_period_0 = np.zeros((num))
+
+        # solve for each point on the grid
+        print("Number of periods to calculate:", num)
+        for ii in range(num):
+            self.l_calc.update_params(R=self.val_table[ii,3], B=self.val_table[ii,2], dk=self.val_table[ii,1], 
+                                      mu=self.val_table[ii,0], k = self.val_table[ii,5], amp=self.val_table[ii,4])
+            # calculate derivative from our parameters if it is not as given
+            self.l_calc.setDeriv(self.val_table[ii,6]+ 1.j *self.val_table[ii,7], n = self.n, method = self.method,
+                                                                        rtol = self.rtol, atol = self.atol)
+            fast_oscillation_period[ii] = self.l_calc.T_fast * 2
+            fast_oscillation_amplitude[ii] = self.l_calc.A_max  
+            fast_oscillation_period_0[ii] = self.l_calc.T_fast_0_calc * 2
+
+        self.fast_osc_t = fast_oscillation_period
+        self.fast_osc_a = fast_oscillation_amplitude
+        self.fast_osc_t_0 = fast_oscillation_period_0    # because I want to know the error.
 
         self.calculated = True
 

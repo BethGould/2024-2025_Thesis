@@ -178,6 +178,8 @@ class loop:
         self.ivp_solved = False
         self.solve = 0 # Indicates which ivps were solved
         self.bvp_solved = False
+
+        self.solve_mu_0 = True
         
         self.calcInit()
 
@@ -229,7 +231,7 @@ class loop:
     # This function is for setting the initial psi prime value of the loop
     # It is meant to be called numerous times
     
-    def setDeriv(self, p_prime, n = 20):
+    def setDeriv(self, p_prime, n = 20, method = 'RK45', rtol = rtol, atol = atol):
         self.psi0_deriv_0 = p_prime
 
         self.aj = self.ajN_calc()
@@ -242,7 +244,7 @@ class loop:
         self.bvp_solved = False
 
         
-        self.find_fast_oscillations(n)
+        self.find_fast_oscillations(n, method = method, rtol = rtol, atol = atol)
         
         #if aj, bk = nan, ....
         
@@ -590,18 +592,26 @@ class loop:
     # 4 ------ Calculations for the fast oscillations ------
 
     #finding the period and starting point of ...
-    def find_fast_oscillations(self, n=20):
+    # sol2 can be removed to speed up calculations. It is here because T0 doesn't correctly estimate the period. 
+    # I need to compare the known and calculated solutions here at some point to figure out the error. 
+    # The error in period may be more problematic than it seems.
+    # I wonder if rtol and atol can fix them, or choosing a better method ... 
+    def find_fast_oscillations(self, n=20, method = 'RK45', rtol = rtol, atol = atol):
         #choose percent_range
         #n = 20        # how many ocillations we want to calculate 
         maxX = n*self.T0
         per_range = maxX / self.lngt
 
-        sol1 = self.call_ivp_solver(0.0, self.lngt *per_range, self.amp, self.psi0_deriv_0) # find the first n cycles
-        sol2 = self.call_ivp_solver(0.0, self.lngt *per_range, self.amp, self.psi0_deriv_0, ee_int = False) # find the first n cycles
-        
+        sol1 = self.call_ivp_solver(0.0, self.lngt *per_range, self.amp, self.psi0_deriv_0, 
+                                    method = method, rtol = rtol, atol = atol) # find the first n cycles
+        if self.solve_mu_0: 
+            sol2 = self.call_ivp_solver(0.0, self.lngt *per_range, self.amp, self.psi0_deriv_0, ee_int = False,
+                                    method = method, rtol = rtol, atol = atol) # find the first n cycles
+
         #find the period of the events
         self.T_fast = self.find_period_fast_oscillations(n, sol1)
         self.A_max = self.find_amplitude_fast_oscillations(sol1)
+        if self.solve_mu_0: self.T_fast_0_calc = self.find_period_fast_oscillations(n, sol2)
         self.T_fast0 = self.T0
         self.T_fast_ex = self.T0
 
@@ -609,15 +619,17 @@ class loop:
 
         #find the starting point of the events
         start_ee = self.find_start_fast_oscillations(n, sol1)
-        start_0 =  self.find_start_fast_oscillations(n, sol2)
+        if self.solve_mu_0: 
+            start_0 =  self.find_start_fast_oscillations(n, sol2)
         #self.find_target_start_abs_deriv(n)
         #self.sol['t_events']
         #self.sol['y_events']
 
         self.stl = start_ee[0]
         self.sth = start_ee[1]
-        self.stl0 = start_0[0]
-        self.sth0 = start_0[1]
+        if self.solve_mu_0:
+            self.stl0 = start_0[0]
+            self.sth0 = start_0[1]
 
         self.stl_ex, self.stu_ex = self.find_start_exact()
 

@@ -40,12 +40,109 @@ class grid_slow_osc(grid_fast_osc):
 
         self.setIntegratorParameters(solve_mu_0=False)
 
+    # Because we want to know what our object is.
+    def __repr__(self):
+        if self.is_grid:
+            if self.calculated:
+                str = "Grid object to measure slow oscillations:\n"
+            else:
+                str = "Uncalculated grid object to measure slow oscillations:\n"
+
+            # add our parameters for ......
+            if self.num_mu > 1:
+                str = str + f"mu has {self.num_mu} points from {self.nls[0]} to {self.nls[-1]}.\n"
+            else:
+                str = str + f"mu is: {self.mu}\n"
+            if self.num_dk > 1:
+                str = str + f"dk has {self.num_dk} points from {self.ewd[0]} to {self.ewd[-1]}.\n"
+            else:
+                str = str + f"dk is: {self.dk}\n"
+            if self.num_b > 1:
+                str = str + f"B has {self.num_b} points from {self.mfs[0]} to {self.mfs[-1]}.\n"
+            else:
+                str = str + f"B is: {self.B}\n"
+            if self.num_r > 1:
+                str = str + f"R has {self.num_r} points from {self.rr[0]} to {self.rr[-1]}.\n"
+            else:
+                str = str + f"R is: {self.R}\n"
+            if self.num_a > 1:
+                str = str + f"A has {self.num_a} points from {self.amp[0]} to {self.amp[-1]}.\n"
+            else:
+                str = str + f"A is: {self.amp}\n"
+            if self.num_k0 > 1:
+                str = str + f"k0 has {self.num_k0} points from {self.ew[0]} to {self.ew[-1]}.\n"
+            else:
+                str = str + f"k0 is: {self.k}\n"
+            str = str + f"Grid size: {self.grid_size}\n"
+            str = str + f"Total number of parameters: {self.num_mu*self.num_dk*self.num_k0*self.num_b*self.num_a*self.num_r*self.grid_size*self.grid_size}"
+            return str
+        elif self.is_mc:
+            if self.calculated:
+                str = "Monte carlo object to measure slow oscillations"
+            else:
+                str = "Uncalculated monte carlo object to measure slow oscillations"
+            return str
+        else:
+            return "Empty object to measure slow oscillations:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
+
+    # Because we want to know what our object is.
+    def __str__(self):
+        if self.is_grid:
+            if self.calculated:
+                str = "Grid object to measure slow oscillations:\n"
+            else:
+                str = "Uncalculated grid object to measure slow oscillations:\n"
+
+            # add our parameters for ......
+            if self.num_mu > 1:
+                str = str + f"mu has {self.num_mu} points from {self.nls[0]} to {self.nls[-1]}.\n"
+            else:
+                str = str + f"mu is: {self.mu}\n"
+            if self.num_dk > 1:
+                str = str + f"dk has {self.num_dk} points from {self.ewd[0]} to {self.ewd[-1]}.\n"
+            else:
+                str = str + f"dk is: {self.dk}\n"
+            if self.num_b > 1:
+                str = str + f"B has {self.num_b} points from {self.mfs[0]} to {self.mfs[-1]}.\n"
+            else:
+                str = str + f"B is: {self.B}\n"
+            if self.num_r > 1:
+                str = str + f"R has {self.num_r} points from {self.rr[0]} to {self.rr[-1]}.\n"
+            else:
+                str = str + f"R is: {self.R}\n"
+            if self.num_a > 1:
+                str = str + f"A has {self.num_a} points from {self.amp[0]} to {self.amp[-1]}.\n"
+            else:
+                str = str + f"A is: {self.amp}\n"
+            if self.num_k0 > 1:
+                str = str + f"k0 has {self.num_k0} points from {self.ew[0]} to {self.ew[-1]}.\n"
+            else:
+                str = str + f"k0 is: {self.k}\n"
+            str = str + f"Grid size: {self.grid_size}\n"
+            str = str + f"Total number of parameters: {self.num_mu*self.num_dk*self.num_k0*self.num_b*self.num_a*self.num_r*self.grid_size*self.grid_size}"
+            return str
+        elif self.is_mc:
+            if self.calculated:
+                str = "Monte carlo object to measure slow oscillations"
+            else:
+                str = "Uncalculated monte carlo object to measure slow oscillations"
+            return str
+        else:
+            return "Empty object to measure slow oscillations:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
+
     # ------ MODIFIED FUNCTIONS -------
 
     # because the data is saved in different places ....
     def clear_calcs(self):
         self.slow_osc_t   = None
         self.slow_osc_a   = None
+        self.slow_osc_i   = None
+        self.slow_osc_m   = None
+        self.slow_osc_s   = None
+
+    def setIntegratorParameters(self, solve_mu_0 = False, n = 20, method = 'RK45', rtol = rtol, atol = atol, R_max = 1.0):
+        super().setIntegratorParameters(solve_mu_0, n, method, rtol, atol)
+        self.R_max = R_max
 
     # ---------- PERIOD AND AMPLITUDE CALCULATIONS -------------
 
@@ -56,7 +153,17 @@ class grid_slow_osc(grid_fast_osc):
         return np.max(np.abs(arr))
 
     # nn is the number of divisions within which to search for a maximum
-    def find_period(self, sol, nn=40):
+    def find_period(self, sol, nn=60):
+
+        diff_arr = self.find_gaps(sol, nn)
+        
+        # because I need an average over an even number of cycles
+        if len(diff_arr)%2 == 0:
+            return np.average(diff_arr), np.std(diff_arr)
+        else:
+            return np.average([np.average(diff_arr[:-1]), np.average(diff_arr[1:])]), np.std(diff_arr)
+
+    def find_gaps(self, sol, nn=60):
 
         # In order to shorten the chosen array.
         arr = np.real(sol['y_events'][1][::2, 0])
@@ -106,11 +213,7 @@ class grid_slow_osc(grid_fast_osc):
             dif = arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i]
             diff_arr.append(dif)
 
-        # because I need an average over an even number of cycles
-        if len(diff_arr)%2 == 0:
-            return np.average(diff_arr), np.std(diff_arr)
-        else:
-            return np.average([np.average(diff_arr[:-1]), np.average(diff_arr[1:])]), np.std(diff_arr)
+        return diff_arr
 
 
     # ------------- FIND VALUES ON GRID ---------------
@@ -137,7 +240,7 @@ class grid_slow_osc(grid_fast_osc):
             raise Exception("gridSlowOsc requires forming the grid first. Try calling makeGridPoints.") 
 
         # Integration parameters.
-        pr = 1.0 # can be changed if more cycles needed
+        pr = self.R_max # can be changed if more cycles needed
         plot_code = 1 # only plot er, saving time
 
         # Timing
@@ -169,7 +272,10 @@ class grid_slow_osc(grid_fast_osc):
         # saved data
         slow_oscillation_period = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
         slow_oscillation_amplitude = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
-        #slow_oscillation_period_0 = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
+        slow_oscillation_std = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
+
+        slow_osc_sv_ind = []
+        slow_osc_sv_measures = []
 
         ib = 0
         ir = 0
@@ -204,13 +310,20 @@ class grid_slow_osc(grid_fast_osc):
 
                                         sol_er_u = self.l_calc.solu
 
-                                        slow_oscillation_period[im,ik,ib,ir,ia,ik0,idr,idi] = self.find_period(sol_er_u)[0]
+                                        slow_oscillation_period[im,ik,ib,ir,ia,ik0,idr,idi], slow_oscillation_std[im,ik,ib,ir,ia,ik0,idr,idi] = self.find_period(sol_er_u)
                                         slow_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = self.find_amp(sol_er_u) 
                                         #slow_oscillation_period_0[im,ik,ib,ir,ia,ik0,idr,idi] = self.l_calc.T_fast_0_calc * 2
 
-        self.slow_osc_t = slow_oscillation_period
-        self.slow_osc_a = slow_oscillation_amplitude
-        #self.slow_osc_t_0 = slow_oscillation_period_0    # because I want to know the error.
+                                        slow_osc_sv_ind.append([im,ik,ib,ir,ia,ik0,idr,idi])
+                                        slow_osc_sv_measures.append(self.find_gaps(sol_er_u))
+
+                                        #print()
+
+        self.slow_osc_t = slow_oscillation_period        # estimate for our quarter period for the slow oscillations (note the factor of 2*2 = 4)
+        self.slow_osc_a = slow_oscillation_amplitude     # maximum absolute value
+        self.slow_osc_s = slow_oscillation_std / slow_oscillation_period # standard deviation, in order to check validity of our estimates
+        self.slow_osc_i = slow_osc_sv_ind           # indicies for our spacings, due to the alternative storage mechanism
+        self.slow_osc_m = slow_osc_sv_measures      # save our estimates for spacing between extrema
 
         self.calculated = True
 

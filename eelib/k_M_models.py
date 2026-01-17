@@ -18,7 +18,9 @@ const_dic_001 ={"mA2": 3.675494115574291e-08,
                 "DR2": 8.0960114314636e-17, 
                 "DI4": 9.19298181818588e-17}
 
-
+# Model 2 slow t
+const_dic_002 = {"mdI": 104537.83229936952
+                 }
 # delta k models
 
 # Model 1
@@ -79,6 +81,33 @@ def pred_fast_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
 
 # delta M models
 
+def pred_slow_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_002):
+    M = B*R*phi0inv
+    k_full = k0+dk/R/1e-6/2.0
+
+    #print(M)
+
+    # constant terms
+    M_pred = M 
+
+    # mu linear terms
+    M_pred += mu * consts['mdI'] * np.imag(dphi0) * R * phi0inv / k_full / 4
+
+    #print(mu * consts['mdI'] * np.imag(dphi0) / k_full)
+
+    # Note that the scaling may be wrong due to a factor of 4
+    
+    return M_pred
+
+# fot[imu, ib, idr, idi]
+# (pi / (2*B_g[ib]*eelib.R_max*eelib.phi0inv*eelib.B_max))/(mu_g[imu]+1)
+
+#  2 pi / T = k
+# (mu_g[imu] * S * di / k / b +1) * B_g[ib]*eelib.R_max*eelib.phi0inv
+#* B_g[ib] / np.imag(dgrid[idr, idi]) /mu_g[imu]/slope_fin* (gridl_1.l_calc.k)
+
+
+#(np.power(fot[imu, ib, idr, idi]/(pi / (2*B_g[ib]*eelib.R_max*eelib.phi0inv*eelib.B_max)), -1)-1)
 # psi = e^iq e^iTx f(x)
 # psi0 = 1, f0 = 1, q unknown
 # psip0 = iT psi0 + psi0(fp0/f0)

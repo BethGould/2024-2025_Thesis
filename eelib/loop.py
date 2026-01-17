@@ -16,6 +16,7 @@ import scipy
 from eelib.consts import pi, kFAu, R_max, B_max, phi0inv, rtol, atol, DK_min
 from eelib.deriv_functions import psi_deriv, psi_deriv_old
 from eelib.events import deriv_amp, deriv_real
+from eelib.k_M_models import pred_fast_t, pred_slow_t
 #from eelib.ivp_2 import solve_ivp_mod
 
 #--TABLE OF CONTENTS--------
@@ -224,6 +225,11 @@ class loop:
         self.bj0    = self.bj
         
         self.psi0_deriv_0 = self.psi_prime_0()
+
+        # I need to be careful here, with the understanding of what is found -- t or k, also with factors of 2
+        self.T_fast_mod = 2 * pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        self.T_slow_mod = 2*pi / pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        # I will also need the starting point of the oscillation
         
         self.find_fast_oscillations(20)
         
@@ -243,8 +249,16 @@ class loop:
         self.solve = 0 # Indicates which ivps were solved
         self.bvp_solved = False
 
+        # I need to be careful here, with the understanding of what is found -- t or k, also with factors of 2
+        self.T_fast_mod = pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        self.T_slow_mod = 2*pi / pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        # I will also need the starting point of the oscillation
         
         self.find_fast_oscillations(n, method = method, rtol = rtol, atol = atol)
+        self.T_fast = self.T_fast * 2
+
+        #print(self.T_fast, self.T_fast_mod)
+        print(self.T_slow_mod, 2 * pi / self.M)
         
         #if aj, bk = nan, ....
         
@@ -338,7 +352,7 @@ class loop:
 
         # call the solver multiple times  
         # with ee-interaction -- divided into steps (+), original(2), 
-        # with fixed step size(7), with fixed step modified code(11),
+        # with predicted k_fast (7)
         # without ee-interaction -- original(3), divided into steps(5)
         if solve > 0:      
             #print('1')
@@ -362,23 +376,29 @@ class loop:
             #self.soll0_r = self.ivp_solver_steps(t0l0, tfl0, y0l0, yp0l0, n, fullSol = False, ee_int = False, method = method, rtol = rtol, atol = atol)
         if abs(solve)%7 == 0: 
             #print('7')     
-            self.solu_f = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                               method = method, rtol = rtol, atol = atol)
+            self.solu_m = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
+                                              method = method, rtol = rtol, atol = atol, estimate_k = True)
             #self.soll_f = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
-        if abs(solve)%11 == 0:      
+        #if abs(solve)%11 == 0:      
             #print('11')
-            self.solu_m = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                               method = method, rtol = rtol, atol = atol)
+        #    self.solu_m = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
+        #                                       method = method, rtol = rtol, atol = atol)
             #self.soll_m = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, method = method, rtol = rtol, atol = atol)
         
 
     # This is designed to correct for the drop in power over continuous cycles by just adding it back in
     # calls the solver multiple times for shorter intervals
-    def ivp_solver_steps(self, t0, tf, y0, yp0, n=200, ee_int=True, m = 4, method = 'RK45', rtol = rtol, atol = atol, fullSol = False):
+    def ivp_solver_steps(self, t0, tf, y0, yp0, n=200, ee_int=True, m = 4, method = 'RK45', rtol = rtol, atol = atol, fullSol = False, estimate_k = False):
         # find all of the points we wish to solve for
         if ee_int:
-            t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = self.T_fast)
+            if estimate_k:
+                t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = self.T_fast_mod)
+            else:
+                t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = self.T_fast)
         else:
+            #if estimate_k:
+            #    t_eval_full = self.find_t_points(n,t_max = tf, t_start = t0, T = self.T_fast0_mod)
+            #else:
             t_eval_full = self.find_t_points(n,t_max = tf, t_start = t0, T = self.T_fast0)
 
         # desired step size for our solver
@@ -692,7 +712,7 @@ class loop:
     def find_slow_oscillations_start(self):
         den = 2 * self.M
         x1 = 1j * (np.log(self.aj)+np.log(self.bj)) / den # max
-        print(x1)
+        #print(x1)
         x1 = np.real(x1)
         dx = pi / den
         T = pi / den

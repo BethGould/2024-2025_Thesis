@@ -50,7 +50,7 @@ class deriv_grid:
     # trim -- needs to be even, every x point is used for the plots, used for triggered points
     # to_plot -- list of strings with choises for plotting
 
-    def derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, to_plot = ['er','ed','0d', '0r', '0x']):
+    def derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, to_plot = ['er', '0r', '0x', 'em']):
 
         self.trim = trim
         self.to_plot = to_plot
@@ -62,6 +62,7 @@ class deriv_grid:
         if 'ed' in to_plot: plot_code *= 2
         if '0d' in to_plot: plot_code *= 3
         if '0r' in to_plot: plot_code *= 5
+        if 'em' in to_plot: plot_code *= 7
 
         # place for our solutions
         '''
@@ -70,8 +71,7 @@ class deriv_grid:
         0 -- without ee-interaction
         d -- full calculation
         r -- piecewise, restored power
-        f -- envelope-following
-        m -- modified-library envelope-following
+        m -- piecewise, restored power, triggered by estimated fast period
         x -- exact
         tc, ta, tr -- time for calculated, abs triggered, real triggered
         yc, ya, yr -- value for calculated, abs triggered, real triggered
@@ -81,8 +81,6 @@ class deriv_grid:
         if 'er' in to_plot: s_grid_er_l = []
         if 'ed' in to_plot: s_grid_ed_u = []
         if 'ed' in to_plot: s_grid_ed_l = []
-        if 'ef' in to_plot: s_grid_ef_u = []
-        if 'ef' in to_plot: s_grid_ef_l =[]
         if 'em' in to_plot: s_grid_em_u = []
         if 'em' in to_plot: s_grid_em_l = []
 
@@ -90,10 +88,6 @@ class deriv_grid:
         if '0d' in to_plot: s_grid_0d_l = []
         if '0r' in to_plot: s_grid_0r_u = []
         if '0r' in to_plot: s_grid_0r_l = []
-        if '0f' in to_plot: s_grid_0f_u =[]
-        if '0f' in to_plot: s_grid_0f_l = []
-        if '0m' in to_plot: s_grid_0m_u = []
-        if '0m' in to_plot: s_grid_0m_l = []
 
         if '0x' in to_plot: s_grid_0x_u_tc = []
         if '0x' in to_plot: s_grid_0x_l_tc = []
@@ -124,8 +118,6 @@ class deriv_grid:
             if 'er' in to_plot: s_grid_er_l.append([])
             if 'ed' in to_plot: s_grid_ed_u.append([])
             if 'ed' in to_plot: s_grid_ed_l.append([])
-            if 'ef' in to_plot: s_grid_ef_u.append([])
-            if 'ef' in to_plot: s_grid_ef_l.append([])
             if 'em' in to_plot: s_grid_em_u.append([])
             if 'em' in to_plot: s_grid_em_l.append([])
 
@@ -133,10 +125,6 @@ class deriv_grid:
             if '0d' in to_plot: s_grid_0d_l.append([])
             if '0r' in to_plot: s_grid_0r_u.append([])
             if '0r' in to_plot: s_grid_0r_l.append([])
-            if '0f' in to_plot: s_grid_0f_u.append([])
-            if '0f' in to_plot: s_grid_0f_l.append([])
-            if '0m' in to_plot: s_grid_0m_u.append([])
-            if '0m' in to_plot: s_grid_0m_l.append([])
 
             if '0x' in to_plot: 
                 s_grid_0x_u_tc.append([])
@@ -170,8 +158,6 @@ class deriv_grid:
                 #if 'er' in to_plot: s_grid_er_l[i].append(self.l_calc.soll)
                 if 'ed' in to_plot: s_grid_ed_u[i].append(self.l_calc.solu_d)
                 #if 'ed' in to_plot: s_grid_ed_l[i].append(self.l_calc.soll_d)
-                if 'ef' in to_plot: s_grid_ef_u[i].append(self.l_calc.solu_f)
-                #if 'ef' in to_plot: s_grid_ef_l[i].append(self.l_calc.soll_f)
                 if 'em' in to_plot: s_grid_em_u[i].append(self.l_calc.solu_m)
                 #if 'em' in to_plot: s_grid_em_l[i].append(self.l_calc.soll_m)
 
@@ -179,10 +165,6 @@ class deriv_grid:
                 #if '0d' in to_plot: s_grid_0d_l[i].append(self.l_calc.soll0)
                 if '0r' in to_plot: s_grid_0r_u[i].append(self.l_calc.solu0_r)
                 #if '0r' in to_plot: s_grid_0r_l[i].append(self.l_calc.soll0_r)
-                if '0f' in to_plot: s_grid_0f_u[i].append(self.l_calc.solu0_f)
-                #if '0f' in to_plot: s_grid_0f_l[i].append(self.l_calc.soll0_f)
-                if '0m' in to_plot: s_grid_0m_u[i].append(self.l_calc.solu0_m)
-                #if '0m' in to_plot: s_grid_0m_l[i].append(self.l_calc.soll0_m)
 
                 if '0x' in to_plot:
                     T_arr = self.l_calc.find_period_shift_exact() # fast, slow, pos, neg
@@ -226,8 +208,6 @@ class deriv_grid:
         #if 'er' in to_plot: self.s_grid_er_l = s_grid_er_l
         if 'ed' in to_plot: self.s_grid_ed_u = s_grid_ed_u
         #if 'ed' in to_plot: self.s_grid_ed_l = s_grid_ed_l
-        if 'ef' in to_plot: self.s_grid_ef_u = s_grid_ef_u
-        #if 'ef' in to_plot: self.s_grid_ef_l = s_grid_ef_l
         if 'em' in to_plot: self.s_grid_em_u = s_grid_em_u
         #if 'em' in to_plot: self.s_grid_em_l = s_grid_em_l
 
@@ -235,10 +215,6 @@ class deriv_grid:
         #if '0d' in to_plot: self.s_grid_0d_l = s_grid_0d_l
         if '0r' in to_plot: self.s_grid_0r_u = s_grid_0r_u
         #if '0r' in to_plot: self.s_grid_0r_l = s_grid_0r_l
-        if '0f' in to_plot: self.s_grid_0f_u = s_grid_0f_u
-        #if '0f' in to_plot: self.s_grid_0f_l = s_grid_0f_l
-        if '0m' in to_plot: self.s_grid_0m_u = s_grid_0m_u
-        #if '0m' in to_plot: self.s_grid_0m_l = s_grid_0m_l
 
         if '0x' in to_plot: self.s_grid_0x_u_tc = s_grid_0x_u_tc
         if '0x' in to_plot: self.s_grid_0x_l_tc = s_grid_0x_l_tc
@@ -476,6 +452,8 @@ class deriv_grid:
         if '0r' in to_plot: tu0rc = np.abs(self.s_grid_0r_u[i][j]['t'])
         if 'ed' in to_plot: tuedc = np.abs(self.s_grid_ed_u[i][j]['t'])
         if '0d' in to_plot: tu0dc = np.abs(self.s_grid_0d_u[i][j]['t'])
+        if 'em' in to_plot: tuemc = np.abs(self.s_grid_em_u[i][j]['t'])
+
         
         #value arrays
         if 'er' in to_plot: suera = np.abs(self.s_grid_er_u[i][j]['y_events'][0][0::self.trim, 0])
@@ -492,6 +470,7 @@ class deriv_grid:
         if '0r' in to_plot: su0rc = np.abs(self.s_grid_0r_u[i][j]['y'][0])
         if 'ed' in to_plot: suedc = np.abs(self.s_grid_ed_u[i][j]['y'][0])
         if '0d' in to_plot: su0dc = np.abs(self.s_grid_0d_u[i][j]['y'][0])
+        if 'em' in to_plot: suemc = np.abs(self.s_grid_em_u[i][j]['y'][0])
 
         # exact solutions
         # On the real grid, the calculated version looks the best.
@@ -514,6 +493,9 @@ class deriv_grid:
         if 'er' in to_plot: 
             line1, = ax.plot(tuerc, suerc, color = 'red', label = 'with e-e interaction')
             h_list.append(line1)
+        if 'em' in to_plot: 
+            line2, = ax.plot(tuemc, suemc, color = 'goldenrod', label = 'with e-e interaction')
+            h_list.append(line2)
         #if 'ed' in to_plot: 
         #    line3, = ax.plot(tuedc, suedc, color = 'orange', label = 'with e-e interaction')
         #    h_list.append(line3)

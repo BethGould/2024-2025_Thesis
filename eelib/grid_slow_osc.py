@@ -336,7 +336,10 @@ def fit_sin(sol):
     ydata = np.real(sol['y'][0])
 
     # rescale our x_0 to be an angle shift
-    theta = - MM * xdata[rt_st]
+    if rt_st is not None:
+        theta = - MM * xdata[rt_st]
+    else:
+        theta = pi
 
     # prevent our function fitter from deviating too far from our expected values
     # I need to choose resonable numbers here. 
@@ -370,7 +373,9 @@ def find_root_points(y_points):
     y_mult = np.array(y_points[:-1])*np.array(y_points[1:])
     zero_index = np.nonzero(y_mult == 0)
     root_index = np.nonzero(y_mult < 0)
-    return root_index[0]
+    full_index = list(root_index[0]) + list(zero_index[0])
+    full_index.sort()
+    return full_index
 
 # -- x_0 estimate --
 # here I want to find the first two x values where the function changes sign 
@@ -379,7 +384,9 @@ def find_root_points(y_points):
 def find_root_start(sol):
     y1_list = np.real(sol['y'][0])
     root_ls = find_root_points(y1_list)
-    if y1_list[root_ls[0]+1] > 0: 
+    if len(root_ls) < 2:
+        rt_start = None
+    elif y1_list[root_ls[0]+1] > 0: 
         rt_start = root_ls[0]
     else: 
         rt_start = root_ls[1]

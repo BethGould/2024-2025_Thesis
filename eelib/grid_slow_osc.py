@@ -229,10 +229,10 @@ class grid_slow_osc(grid_fast_osc):
 
                                         sol_er_u = self.l_calc.solu
                                         fit = fit_sin(sol_er_u)
-
-                                        slow_oscillation_wavenumber[im,ik,ib,ir,ia,ik0,idr,idi] = fit[1]
-                                        slow_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = fit[0]
-                                        slow_oscillation_theta[im,ik,ib,ir,ia,ik0,idr,idi] = fit[2]
+                                        if fit is not None:
+                                            slow_oscillation_wavenumber[im,ik,ib,ir,ia,ik0,idr,idi] = fit[1]
+                                            slow_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = fit[0]
+                                            slow_oscillation_theta[im,ik,ib,ir,ia,ik0,idr,idi] = fit[2]
 
                                         #slow_osc_sv_ind.append([im,ik,ib,ir,ia,ik0,idr,idi])
                                         #slow_osc_sv_data.append(sol_er_u.copy())
@@ -329,17 +329,17 @@ def fit_sin(sol):
     # estimate our parameters (amp, M, theta)
     # because we need to start close to the expected value to get a correct fit
     amp, TT, rt_st = find_fit_params(sol)
-    MM = 2 * pi / TT
 
     # extract our x and psi values from our solution
     xdata = sol['t']
     ydata = np.real(sol['y'][0])
 
     # rescale our x_0 to be an angle shift
-    if rt_st is not None:
-        theta = - MM * xdata[rt_st]
-    else:
-        theta = pi
+    if rt_st is None:
+        return None
+    
+    MM = 2 * pi / TT
+    theta = - MM * xdata[rt_st]
 
     # prevent our function fitter from deviating too far from our expected values
     # I need to choose resonable numbers here. 
@@ -355,6 +355,7 @@ def fit_sin(sol):
     # and call scipy
     popt, pcov = curve_fit(sin_fit, xdata, ydata, p0=start_arr, bounds=(min_arr, max_arr))
     return popt
+
 
 # These assume nice behavior. So far, it works well, but I can think of cases when it won't.
 # They will estimate the fitting sin function 
@@ -401,6 +402,8 @@ def find_period(sol):
     t_root_list = []
     for i in root_list: 
         t_root_list.append(t_list[i])
+    if len(t_root_list) == 0:
+        return None
     t_diff = np.array(t_root_list[1:])- np.array(t_root_list[:-1])
     t_dif_ave = np.average(t_diff)
     return t_dif_ave * 2

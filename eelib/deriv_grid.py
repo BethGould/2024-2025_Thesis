@@ -84,6 +84,8 @@ class deriv_grid:
         if 'em' in to_plot: s_grid_em_u = []
         if 'em' in to_plot: s_grid_em_l = []
 
+        if 'er' in to_plot: s_grid_M_pred = []
+
         if '0d' in to_plot: s_grid_0d_u = []
         if '0d' in to_plot: s_grid_0d_l = []
         if '0r' in to_plot: s_grid_0r_u = []
@@ -120,6 +122,8 @@ class deriv_grid:
             if 'ed' in to_plot: s_grid_ed_l.append([])
             if 'em' in to_plot: s_grid_em_u.append([])
             if 'em' in to_plot: s_grid_em_l.append([])
+
+            if 'er' in to_plot: s_grid_M_pred.append([])
 
             if '0d' in to_plot: s_grid_0d_u.append([])
             if '0d' in to_plot: s_grid_0d_l.append([])
@@ -203,6 +207,13 @@ class deriv_grid:
                         s_grid_0x_l_ya[i].append(self.l_calc.psij(s_grid_0x_l_ta[i][j]))
                         s_grid_0x_u_yr[i].append(self.l_calc.psij(s_grid_0x_u_tr[i][j]))
                         s_grid_0x_l_yr[i].append(self.l_calc.psij(s_grid_0x_l_tr[i][j]))
+
+
+                #arr = np.real(self.l_calc.solu['y_events'][1][:, 0])
+                    
+                #print(xT, self.l_calc.T_slow_mod, np.max(np.abs(arr)))
+                if 'er' in to_plot: s_grid_M_pred[i].append(self.l_calc.T_slow_mod)
+
                 
         if 'er' in to_plot: self.s_grid_er_u = s_grid_er_u
         #if 'er' in to_plot: self.s_grid_er_l = s_grid_er_l
@@ -210,6 +221,8 @@ class deriv_grid:
         #if 'ed' in to_plot: self.s_grid_ed_l = s_grid_ed_l
         if 'em' in to_plot: self.s_grid_em_u = s_grid_em_u
         #if 'em' in to_plot: self.s_grid_em_l = s_grid_em_l
+
+        if 'er' in to_plot: self.s_grid_M_pred = s_grid_M_pred
 
         if '0d' in to_plot: self.s_grid_0d_u = s_grid_0d_u
         #if '0d' in to_plot: self.s_grid_0d_l = s_grid_0d_l
@@ -240,6 +253,31 @@ class deriv_grid:
 
 # ---------
 
+# for use with grid plotting
+    # These assume nice behavior. So far, it works well, but I can think of cases when it won't.
+    def find_root_points(self,y_points):
+        y_mult = np.array(y_points[:-1])*np.array(y_points[1:])
+        zero_index = np.nonzero(y_mult == 0)
+        root_index = np.nonzero(y_mult < 0)
+        return root_index[0]
+
+    def find_root_start(self,y_points):
+        root_ls = self.find_root_points(y_points)
+        if y_points[root_ls[0]+1] > 0: 
+            rt_start = root_ls[0]
+        else: 
+            rt_start = root_ls[1]
+        return rt_start
+
+    def find_root_dif(self,y_points):
+        root_list = self.find_root_points(y_points)
+        y_diff = np.array(root_list[1:])- np.array(root_list[:-1])
+        return np.average(y_diff)
+    
+    def find_amp(self, sol):
+        arr = np.real(sol['y_events'][1][:, 0])
+        return np.max(np.abs(arr))
+
 # plotting the grid
     def plot_real(self, i, j, k, R, B, mu, no):
 
@@ -251,6 +289,16 @@ class deriv_grid:
         #R = self.l_calc.R
         #B = self.l_calc.B
         #mu = self.l_calc.mu
+
+        if 'er' in to_plot: 
+            M_pred = self.s_grid_M_pred[i][j]
+            A_pred = self.find_amp(self.s_grid_er_u[i][j])
+            sol_t = np.real(self.s_grid_er_u[i][j]['t']) 
+            sol_y = np.real(self.s_grid_er_u[i][j]['y'][0])
+            ind_st = self.find_root_start(sol_y)
+            t0_pred = sol_t[ind_st]
+            t_pred = sol_t
+            y_pred = A_pred * np.sin(2*pi / M_pred * (t_pred-t0_pred))
 
         #position arrays
         #estimated, triggered buy abs, triggered by real (both) -- c, a, r
@@ -319,24 +367,32 @@ class deriv_grid:
         h_list = []
 
         if 'er' in to_plot: 
-            line1, = ax.plot(tuera, suera, color = 'red', label = 'with e-e interaction')
-            line2, = ax.plot(tlera, slera, color = 'red', label = 'with e-e interaction')
+            if np.max(suera) > np.max(slera):
+                line1, = ax.plot(tuera, suera, color = 'red', label = 'with e-e interaction')
+            else:
+                line1, = ax.plot(tlera, slera, color = 'red', label = 'with e-e interaction')
+            line13, = ax.plot(t_pred, y_pred, color = 'goldenrod', label = 'predicted e-e interaction')
             h_list.append(line1)
+            h_list.append(line13)
         if 'ed' in to_plot: 
             line3, = ax.plot(tueda, sueda, color = 'orange', label = 'with e-e interaction')
             line4, = ax.plot(tleda, sleda, color = 'orange', label = 'with e-e interaction')
             h_list.append(line3)
         if '0r' in to_plot: 
-            line5, = ax.plot(tu0ra, su0ra, color = 'green', label = 'without e-e interaction')
-            line6, = ax.plot(tl0ra, sl0ra, color = 'green', label = 'without e-e interaction')
+            if np.max(su0ra) > np.max(sl0ra):
+                line5, = ax.plot(tu0ra, su0ra, color = 'green', label = 'without e-e interaction')
+            else:
+                line5, = ax.plot(tl0ra, sl0ra, color = 'green', label = 'without e-e interaction')
             h_list.append(line5)
         if '0d' in to_plot: 
             line7, = ax.plot(tu0da, su0da, color = 'blue', label = 'without e-e interaction')
             line8, = ax.plot(tl0da, sl0da, color = 'blue', label = 'without e-e interaction')
             h_list.append(line7)
         if '0x' in to_plot: 
-            line9, = ax.plot(tu0xc, su0xc, color = 'purple', label = 'exact solution')
-            line10, = ax.plot(tl0xc, sl0xc, color = 'purple', label = 'exact solution')
+            if np.max(su0xc) > np.max(sl0xc):
+                line9, = ax.plot(tu0xc, su0xc, color = 'purple', label = 'exact solution')
+            else:
+                line9, = ax.plot(tl0xc, sl0xc, color = 'purple', label = 'exact solution')
             #line11, = ax.plot(tu0xcm, su0xcm, color = 'purple', label = 'exact solution')
             #line12, = ax.plot(tl0xcm, sl0xcm, color = 'purple', label = 'exact solution')
             h_list.append(line9)
@@ -358,7 +414,9 @@ class deriv_grid:
         if 'er' in to_plot: 
             line1, = ax.plot(tuerr, suerr, color = 'red', label = 'with e-e interaction')
             line2, = ax.plot(tlerr, slerr, color = 'red', label = 'with e-e interaction')
+            line13, = ax.plot(t_pred, y_pred, color = 'goldenrod', label = 'predicted e-e interaction')
             h_list.append(line1)
+            h_list.append(line13)
         if 'ed' in to_plot: 
             line3, = ax.plot(tuedr, suedr, color = 'orange', label = 'with e-e interaction')
             line4, = ax.plot(tledr, sledr, color = 'orange', label = 'with e-e interaction')
@@ -372,8 +430,10 @@ class deriv_grid:
             line8, = ax.plot(tl0dr, sl0dr, color = 'blue', label = 'without e-e interaction')
             h_list.append(line7)
         if '0x' in to_plot: 
-            line9, = ax.plot(tu0xc, su0xc, color = 'purple', label = 'exact solution')
-            line10, = ax.plot(tl0xc, sl0xc, color = 'purple', label = 'exact solution')
+            if np.max(su0xc) > np.max(sl0xc):
+                line9, = ax.plot(tu0xc, su0xc, color = 'purple', label = 'exact solution')
+            else:
+                line9, = ax.plot(tl0xc, sl0xc, color = 'purple', label = 'exact solution')
             #line11, = ax.plot(tu0xcm, su0xcm, color = 'purple', label = 'exact solution')
             #line12, = ax.plot(tl0xcm, sl0xcm, color = 'purple', label = 'exact solution')
             h_list.append(line9)
@@ -395,7 +455,9 @@ class deriv_grid:
         if 'er' in to_plot: 
             line1, = ax.plot(tuerr, suerr, color = 'red', label = 'with e-e interaction')
             line2, = ax.plot(tlerr, slerr, color = 'red', label = 'with e-e interaction')
+            #line13, = ax.plot(t_pred, y_pred, color = 'black', label = 'predicted e-e interaction')
             h_list.append(line1)
+            #h_list.append(line13)
         if 'ed' in to_plot: 
             line3, = ax.plot(tuedr, suedr, color = 'orange', label = 'with e-e interaction')
             line4, = ax.plot(tledr, sledr, color = 'orange', label = 'with e-e interaction')

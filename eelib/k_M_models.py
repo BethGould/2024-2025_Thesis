@@ -1,6 +1,6 @@
 
 import numpy as np
-from eelib import pi, kFAu, phi0inv, pppterm
+from eelib import pi, kFAu, phi0inv, pppterm, B_max
 
 # Model 1 fast t
 const_dic_001 ={"mA2": 3.675494115574291e-08, 
@@ -88,14 +88,15 @@ def pred_slow_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_002):
     #print(M)
 
     # constant terms
-    M_pred = M 
+    #M_pred = M 
 
     # mu linear terms
-    M_pred += mu * consts['mdI'] * np.imag(dphi0) * R * phi0inv / k_full / 4
+    #M_pred += mu * consts['mdI'] * np.imag(dphi0) * R * phi0inv / k_full / 4
 
     #print(mu * consts['mdI'] * np.imag(dphi0) / k_full)
 
     # Note that the scaling may be wrong due to a factor of 4
+    M_pred = 4 * (pi / (2*B*R*phi0inv)) / (mu/ B * B_max * np.imag(dphi0) * consts['mdI'] / k_full + 1)
     
     return M_pred
 

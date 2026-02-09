@@ -61,3 +61,15 @@ def psi_deriv_full(x, y, k, B, R, mu, mA):
     dpdxx = k1 * y[1] + k2 * y[0] - k0 * y[0]
     dpdx = y[1]
     return [dpdx, dpdxx, dpdx2, dpdxx2]  
+
+
+# for fitting cosine / sine
+def cos_fit(x, amp, k, theta):
+    return amp * np.cos(k * x + theta)
+
+# for fitting cosine / sine
+def sin_fit(x, amp, k, theta):
+    return amp * np.sin(k * x + theta)
+
+def full_fit(x, M, k, a, b):
+    return np.cos(M * x) * np.cos(k * x) + np.imag(a - b) * np.cos(M * x) * np.sin(k * x) + np.real(a - b) * np.sin(M * x) * np.sin(k * x)

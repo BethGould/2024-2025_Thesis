@@ -23,9 +23,11 @@
 # I should add a Monte Carlo variant.
 
 import numpy as np
+from scipy.optimize import curve_fit
 from eelib.consts import pi, kFAu, rtol, atol
 from eelib.loop import loop
 from eelib.grid_fast_osc import grid_fast_osc
+from eelib.deriv_functions import cos_fit, full_fit, sin_fit
 import time
 import gc
 
@@ -134,87 +136,15 @@ class grid_slow_osc(grid_fast_osc):
 
     # because the data is saved in different places ....
     def clear_calcs(self):
-        self.slow_osc_t   = None
+        self.slow_osc_k   = None
         self.slow_osc_a   = None
+        self.slow_osc_th  = None
         self.slow_osc_i   = None
-        self.slow_osc_m   = None
-        self.slow_osc_s   = None
+        self.slow_osc_sol = None
 
     def setIntegratorParameters(self, solve_mu_0 = False, n = 20, method = 'RK45', rtol = rtol, atol = atol, R_max = 1.0):
         super().setIntegratorParameters(solve_mu_0, n, method, rtol, atol)
         self.R_max = R_max
-
-    # ---------- PERIOD AND AMPLITUDE CALCULATIONS -------------
-
-
-    # Note that this calculation has high error. However, it is likely not used.
-    def find_amp(self, sol):
-        arr = np.real(sol['y_events'][1][:, 0])
-        return np.max(np.abs(arr))
-
-    # nn is the number of divisions within which to search for a maximum
-    def find_period(self, sol, nn=60):
-
-        diff_arr = self.find_gaps(sol, nn)
-        
-        # because I need an average over an even number of cycles
-        if len(diff_arr)%2 == 0:
-            return np.average(diff_arr), np.std(diff_arr)
-        else:
-            return np.average([np.average(diff_arr[:-1]), np.average(diff_arr[1:])]), np.std(diff_arr)
-
-    def find_gaps(self, sol, nn=60):
-
-        # In order to shorten the chosen array.
-        arr = np.real(sol['y_events'][1][::2, 0])
-        arr_t = np.real(sol['t_events'][1][::2])
-
-        leng = len(arr)
-
-        # max and min storage arrays
-        ind_arr_max = []
-        ind_arr_max_s = []
-        ind_arr_min = []
-        ind_arr_min_s = []
-
-        # fill the storage arrays
-        # since I am looking for peaks in the data, and neither local nor global maximum are actually the correct value
-        # I separate the data into chunks and search for a global max for each chunk. 
-        # I then compare to chuncks shifted by half a chunk size.
-        # Then I throw away the boundary half chunks.
-        for i in range(nn):
-            ind_arr_max.append(np.argmax(arr[int(leng/nn)*i:int(leng/nn)*(i+1)]))
-            ind_arr_max[-1] += int(leng/nn)*i
-        for i in range(nn-1):
-            ind_arr_max_s.append(np.argmax(arr[int(leng/nn*(i+0.5)):int(leng/nn*(i+1.5))]))
-            ind_arr_max_s[-1] += int(leng/nn*(i+0.5))
-        for i in range(nn):
-            ind_arr_min.append(np.argmin(arr[int(leng/nn)*i:int(leng/nn)*(i+1)]))
-            ind_arr_min[-1] += int(leng/nn)*i
-        for i in range(nn-1):
-            ind_arr_min_s.append(np.argmin(arr[int(leng/nn*(i+0.5)):int(leng/nn*(i+1.5))]))
-            ind_arr_min_s[-1] += int(leng/nn*(i+0.5))
-
-        # I need to check which curve I am following. I think my period is 4 times the distance between extrema.
-
-        # calculate extrema
-        # if the maxima on the shifted set is the same as that for the unshifted set, then it is a true local maxima
-        # if not, it is just the edge of the data
-        ind_arr_max_int = np.intersect1d(ind_arr_max, ind_arr_max_s)
-        ind_arr_min_int = np.intersect1d(ind_arr_min, ind_arr_min_s)
-        arr_minmax = np.union1d(ind_arr_min_int, ind_arr_max_int)
-
-        # print extreema
-        #print('Max:', np.max(arr[arr_minmax]), "Min:", np.min(arr[arr_minmax]))
-        
-        diff_arr = []
-
-        for i in range(len(arr_t[arr_minmax])-1):
-            dif = arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i]
-            diff_arr.append(dif)
-
-        return diff_arr
-
 
     # ------------- FIND VALUES ON GRID ---------------
 
@@ -241,7 +171,7 @@ class grid_slow_osc(grid_fast_osc):
 
         # Integration parameters.
         pr = self.R_max # can be changed if more cycles needed
-        plot_code = 1 # only plot er, saving time
+        plot_code = 1   # only plot er, saving time
 
         # Timing
         start_time = time.time()
@@ -250,39 +180,29 @@ class grid_slow_osc(grid_fast_osc):
         # Initialize grids
         num_dk = self.num_dk
         num_k0 = self.num_k0
-        num_b = self.num_b
-        num_r = self.num_r
+        num_b  = self.num_b
+        num_r  = self.num_r
         num_mu = self.num_mu
-        num_a = self.num_a
-        num_d = self.grid_size
-
-        # magnetic_field_strength  = self.mfs
-        # electron_wavenumber      = self.ew
-        # electron_wavenumber_diff = self.ewd
-        # nonlinearity_strength    = self.nls
-        # starting_amplitude       = self.amp
-        # ring_radius              = self.rr
-        # d0_grid[idr,idi]
-        # starting_derivative_real = self.dr
-        # starting_derivative_imag = self.di
+        num_a  = self.num_a
+        num_d  = self.grid_size
 
         # saves solution for analysis
         sol_er_u = None
 
         # saved data
-        slow_oscillation_period = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
-        slow_oscillation_amplitude = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
-        slow_oscillation_std = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
+        slow_oscillation_wavenumber = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
+        slow_oscillation_amplitude  = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
+        slow_oscillation_theta      = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
 
-        slow_osc_sv_ind = []
-        slow_osc_sv_measures = []
+        slow_osc_sv_ind  = [] # indicies to match full solution to other saved data
+        slow_osc_sv_data = [] # full solution
 
-        ib = 0
-        ir = 0
-        im = 0
-        ik = 0
+        ib  = 0
+        ir  = 0
+        im  = 0
+        ik  = 0
         ik0 = 0
-        ia = 0
+        ia  = 0
         idr = 0
         idi = 0
 
@@ -306,24 +226,22 @@ class grid_slow_osc(grid_fast_osc):
                                                              rtol = self.rtol, atol = self.atol)
                                         self.l_calc.solve_ivp(n = self.n, percent_range=pr, method = self.method,
                                                              rtol = self.rtol, atol = self.atol, solve = plot_code)
-                                        #print(self.l_calc.T_fast * 2, self.l_calc.A_max)
 
                                         sol_er_u = self.l_calc.solu
+                                        fit = fit_sin(sol_er_u)
 
-                                        slow_oscillation_period[im,ik,ib,ir,ia,ik0,idr,idi], slow_oscillation_std[im,ik,ib,ir,ia,ik0,idr,idi] = self.find_period(sol_er_u)
-                                        slow_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = self.find_amp(sol_er_u) 
-                                        #slow_oscillation_period_0[im,ik,ib,ir,ia,ik0,idr,idi] = self.l_calc.T_fast_0_calc * 2
+                                        slow_oscillation_wavenumber[im,ik,ib,ir,ia,ik0,idr,idi] = fit[1]
+                                        slow_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = fit[0]
+                                        slow_oscillation_theta[im,ik,ib,ir,ia,ik0,idr,idi] = fit[2]
 
-                                        slow_osc_sv_ind.append([im,ik,ib,ir,ia,ik0,idr,idi])
-                                        slow_osc_sv_measures.append(self.find_gaps(sol_er_u))
+                                        #slow_osc_sv_ind.append([im,ik,ib,ir,ia,ik0,idr,idi])
+                                        #slow_osc_sv_data.append(sol_er_u.copy())
 
-                                        #print()
-
-        self.slow_osc_t = slow_oscillation_period        # estimate for our quarter period for the slow oscillations (note the factor of 2*2 = 4)
-        self.slow_osc_a = slow_oscillation_amplitude     # maximum absolute value
-        self.slow_osc_s = slow_oscillation_std / slow_oscillation_period # standard deviation, in order to check validity of our estimates
-        self.slow_osc_i = slow_osc_sv_ind           # indicies for our spacings, due to the alternative storage mechanism
-        self.slow_osc_m = slow_osc_sv_measures      # save our estimates for spacing between extrema
+        self.slow_osc_k  = slow_oscillation_wavenumber  # estimate for our wavenumber for the slow oscillations (found from fitting a sin)
+        self.slow_osc_a  = slow_oscillation_amplitude   # maximum absolute value
+        self.slow_osc_th = slow_oscillation_theta
+        #self.slow_osc_i  = slow_osc_sv_ind             # indicies for our spacings, due to the alternative storage mechanism
+        #self.slow_osc_sol  = slow_osc_sv_data          # save full solution
 
         self.calculated = True
 
@@ -388,8 +306,8 @@ class grid_slow_osc(grid_fast_osc):
         
             sol_er_u = self.l_calc.solu
 
-            slow_oscillation_period[ii] = self.find_period(sol_er_u)
-            slow_oscillation_amplitude[ii] = self.find_amp(sol_er_u) 
+            slow_oscillation_period[ii] = find_period(sol_er_u)
+            slow_oscillation_amplitude[ii] = find_amp(sol_er_u) 
             #fast_oscillation_period_0[ii] = self.l_calc.T_fast_0_calc * 2
 
         self.fast_osc_t = slow_oscillation_period
@@ -399,3 +317,91 @@ class grid_slow_osc(grid_fast_osc):
         self.calculated = True
 
         print("Done grid build: ", time.time() - start_time)
+
+
+# ---------- PERIOD AND AMPLITUDE CALCULATIONS -------------
+
+# Ok. Here is code to fit a sin function
+# I may need to fit to only half a period in order to ensure one-to-one behavior
+# all of our parameters must be set close to the expected value for this to work well
+
+def fit_sin(sol):
+    # estimate our parameters (amp, M, theta)
+    # because we need to start close to the expected value to get a correct fit
+    amp, TT, rt_st = find_fit_params(sol)
+    MM = 2 * pi / TT
+
+    # extract our x and psi values from our solution
+    xdata = sol['t']
+    ydata = np.real(sol['y'][0])
+
+    # rescale our x_0 to be an angle shift
+    theta = - MM * xdata[rt_st]
+
+    # prevent our function fitter from deviating too far from our expected values
+    # I need to choose resonable numbers here. 
+    amp_tol = 0.1
+    M_tol = 0.1
+    th_tol = 0.1 * pi
+
+    # min, max, and start values for our fonction fitter, in the correct form
+    min_arr = np.array([(1.0 - amp_tol) * amp, MM - M_tol * MM , theta - th_tol])
+    max_arr = np.array([(1.0 + 2 * amp_tol) * amp, MM + M_tol * MM, theta + th_tol])
+    start_arr = np.array([amp, MM, theta])
+
+    # and call scipy
+    popt, pcov = curve_fit(sin_fit, xdata, ydata, p0=start_arr, bounds=(min_arr, max_arr))
+    return popt
+
+# These assume nice behavior. So far, it works well, but I can think of cases when it won't.
+# They will estimate the fitting sin function 
+
+# -- amp estimate --
+# given a solution, estimate the amplitude as the furthest distance in the solution from 0
+# the actual amplitude should be slightly more than this
+def find_amp(sol):
+    arr = np.real(sol['y_events'][1][:, 0])
+    return np.max(np.abs(arr))
+
+# used for both x_0 estimation and period estimation
+# y_points = y1_list_0 = np.real(sol['y'][0])
+# given the y points, find the indicies of the roots
+def find_root_points(y_points):
+    y_mult = np.array(y_points[:-1])*np.array(y_points[1:])
+    zero_index = np.nonzero(y_mult == 0)
+    root_index = np.nonzero(y_mult < 0)
+    return root_index[0]
+
+# -- x_0 estimate --
+# here I want to find the first two x values where the function changes sign 
+# and return the one where the sign goes from negative to positive
+# since the sin function starts at 0 and increases from there
+def find_root_start(sol):
+    y1_list = np.real(sol['y'][0])
+    root_ls = find_root_points(y1_list)
+    if y1_list[root_ls[0]+1] > 0: 
+        rt_start = root_ls[0]
+    else: 
+        rt_start = root_ls[1]
+    return rt_start
+
+# -- period estimate --
+# the function goes through 0 twice in a period, 0->0->0 for sin
+def find_period(sol):
+    t_list = sol['t']
+    y1_list = np.real(sol['y'][0])
+    root_list = find_root_points(y1_list)
+    t_root_list = []
+    for i in root_list: 
+        t_root_list.append(t_list[i])
+    t_diff = np.array(t_root_list[1:])- np.array(t_root_list[:-1])
+    t_dif_ave = np.average(t_diff)
+    return t_dif_ave * 2
+
+# call and return the result of all three estimates
+def find_fit_params(sol):
+    amp = find_amp(sol)
+    rt_start = find_root_start(sol)
+    MM = find_period(sol)
+    return amp, MM, rt_start        
+        

@@ -227,11 +227,12 @@ class loop:
         self.psi0_deriv_0 = self.psi_prime_0()
 
         # I need to be careful here, with the understanding of what is found -- t or k, also with factors of 2
-        self.T_fast_mod = 2 * pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
-        self.T_slow_mod = 2*pi / pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        self.T_fast_mod = pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        self.T_slow_mod = pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         # I will also need the starting point of the oscillation
         
         self.find_fast_oscillations(20)
+        self.T_fast = self.T_fast * 2 # This t is now half the real t
         
 
     # This function is for setting the initial psi prime value of the loop
@@ -251,14 +252,14 @@ class loop:
 
         # I need to be careful here, with the understanding of what is found -- t or k, also with factors of 2
         self.T_fast_mod = pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
-        self.T_slow_mod = 2*pi / pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        self.T_slow_mod = pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         # I will also need the starting point of the oscillation
         
         self.find_fast_oscillations(n, method = method, rtol = rtol, atol = atol)
-        self.T_fast = self.T_fast * 2
+        self.T_fast = self.T_fast * 2 # this t is now half the real t, was one fourth before, (corresponds to t of abs plot)
 
-        #print(self.T_fast, self.T_fast_mod)
-        print(self.T_slow_mod, 2 * pi / self.M)
+        #print(self.T_fast, self.T_fast_mod, 2 * pi / self.k)
+        #print(self.T_slow_mod, 2 * pi / self.M)
         
         #if aj, bk = nan, ....
         
@@ -777,4 +778,3 @@ class loop:
         t1 = 1/ self.k / 1j
         t2 = -2j * self.B * self.R * phi0inv
         return t1*(np.conj(psi)*psi_pr - psi*np.conj(psi_pr) + t2*np.conj(psi)*psi)
-

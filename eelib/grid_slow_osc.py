@@ -234,14 +234,14 @@ class grid_slow_osc(grid_fast_osc):
                                             slow_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = fit[0]
                                             slow_oscillation_theta[im,ik,ib,ir,ia,ik0,idr,idi] = fit[2]
 
-                                        #slow_osc_sv_ind.append([im,ik,ib,ir,ia,ik0,idr,idi])
-                                        #slow_osc_sv_data.append(sol_er_u.copy())
+                                        slow_osc_sv_ind.append([im,ik,ib,ir,ia,ik0,idr,idi])
+                                        slow_osc_sv_data.append(sol_er_u.copy())
 
         self.slow_osc_k  = slow_oscillation_wavenumber  # estimate for our wavenumber for the slow oscillations (found from fitting a sin)
         self.slow_osc_a  = slow_oscillation_amplitude   # maximum absolute value
         self.slow_osc_th = slow_oscillation_theta
-        #self.slow_osc_i  = slow_osc_sv_ind             # indicies for our spacings, due to the alternative storage mechanism
-        #self.slow_osc_sol  = slow_osc_sv_data          # save full solution
+        self.slow_osc_i  = slow_osc_sv_ind             # indicies for our spacings, due to the alternative storage mechanism
+        self.slow_osc_sol  = slow_osc_sv_data          # save full solution
 
         self.calculated = True
 

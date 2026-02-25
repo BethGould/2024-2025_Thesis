@@ -159,35 +159,24 @@ class deriv_grid:
                 print("Done, i, j = ", i,j, "time: ", time.time() - start_time)
 
                 if 'er' in to_plot: s_grid_er_u[i].append(self.l_calc.solu)
-                #if 'er' in to_plot: s_grid_er_l[i].append(self.l_calc.soll)
                 if 'ed' in to_plot: s_grid_ed_u[i].append(self.l_calc.solu_d)
-                #if 'ed' in to_plot: s_grid_ed_l[i].append(self.l_calc.soll_d)
                 if 'em' in to_plot: s_grid_em_u[i].append(self.l_calc.solu_m)
-                #if 'em' in to_plot: s_grid_em_l[i].append(self.l_calc.soll_m)
 
                 if '0d' in to_plot: s_grid_0d_u[i].append(self.l_calc.solu0)
-                #if '0d' in to_plot: s_grid_0d_l[i].append(self.l_calc.soll0)
                 if '0r' in to_plot: s_grid_0r_u[i].append(self.l_calc.solu0_r)
-                #if '0r' in to_plot: s_grid_0r_l[i].append(self.l_calc.soll0_r)
 
                 if '0x' in to_plot:
                     T_arr = self.l_calc.find_period_shift_exact() # fast, slow, pos, neg
-                    #stm1_ex, stm2_ex = self.l_calc.find_start_mid_exact()
 
                     # I need start times for the real amplitude following cases
                     # they are from s_grid_0x_u_tc[np.argmax(abs(s_grid_0x_u_yc))]
                     # but then need to caclulate backwards
-                    #xTmin, xTmax = self.l_calc.find_slow_oscillations_start()
                     xT = self.l_calc.find_real_env_start()
 
                     s_grid_0x_u_tc[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stu_ex, T_arr[0]))
                     s_grid_0x_l_tc[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stl_ex, T_arr[0]))
                     s_grid_0x_u_tcm[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, xT, T_arr[2]))
                     s_grid_0x_l_tcm[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, xT, T_arr[3]))
-                    #s_grid_0x_u_tcs[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stu_ex, T_arr[2]))
-                    #s_grid_0x_l_tcs[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stl_ex, T_arr[2]))
-                    #s_grid_0x_u_tcd[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stu_ex, T_arr[3]))
-                    #s_grid_0x_l_tcd[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stl_ex, T_arr[3]))
 
                     if '0r' in to_plot:
                         # triggered times
@@ -207,27 +196,18 @@ class deriv_grid:
                         s_grid_0x_l_ya[i].append(self.l_calc.psij(s_grid_0x_l_ta[i][j]))
                         s_grid_0x_u_yr[i].append(self.l_calc.psij(s_grid_0x_u_tr[i][j]))
                         s_grid_0x_l_yr[i].append(self.l_calc.psij(s_grid_0x_l_tr[i][j]))
-
-
-                #arr = np.real(self.l_calc.solu['y_events'][1][:, 0])
                     
-                #print(xT, self.l_calc.T_slow_mod, np.max(np.abs(arr)))
                 if 'er' in to_plot: s_grid_M_pred[i].append(self.l_calc.T_slow_mod)
 
                 
         if 'er' in to_plot: self.s_grid_er_u = s_grid_er_u
-        #if 'er' in to_plot: self.s_grid_er_l = s_grid_er_l
         if 'ed' in to_plot: self.s_grid_ed_u = s_grid_ed_u
-        #if 'ed' in to_plot: self.s_grid_ed_l = s_grid_ed_l
         if 'em' in to_plot: self.s_grid_em_u = s_grid_em_u
-        #if 'em' in to_plot: self.s_grid_em_l = s_grid_em_l
 
         if 'er' in to_plot: self.s_grid_M_pred = s_grid_M_pred
 
         if '0d' in to_plot: self.s_grid_0d_u = s_grid_0d_u
-        #if '0d' in to_plot: self.s_grid_0d_l = s_grid_0d_l
         if '0r' in to_plot: self.s_grid_0r_u = s_grid_0r_u
-        #if '0r' in to_plot: self.s_grid_0r_l = s_grid_0r_l
 
         if '0x' in to_plot: self.s_grid_0x_u_tc = s_grid_0x_u_tc
         if '0x' in to_plot: self.s_grid_0x_l_tc = s_grid_0x_l_tc
@@ -352,10 +332,6 @@ class deriv_grid:
                 tl0xr = np.real(self.s_grid_0x_l_tr[i][j])
                 su0xr = np.real(self.s_grid_0x_u_yr[i][j])
                 sl0xr = np.real(self.s_grid_0x_l_yr[i][j])
-            tu0xcm = np.real(self.s_grid_0x_u_tcm[i][j])
-            tl0xcm = np.real(self.s_grid_0x_l_tcm[i][j])
-            su0xcm = np.real(self.s_grid_0x_u_ycm[i][j])
-            sl0xcm = np.real(self.s_grid_0x_l_ycm[i][j])
         
         #--PLOTTING--
         #absolute value triggered envelope
@@ -393,8 +369,6 @@ class deriv_grid:
                 line9, = ax.plot(tu0xc, su0xc, color = 'purple', label = 'exact solution')
             else:
                 line9, = ax.plot(tl0xc, sl0xc, color = 'purple', label = 'exact solution')
-            #line11, = ax.plot(tu0xcm, su0xcm, color = 'purple', label = 'exact solution')
-            #line12, = ax.plot(tl0xcm, sl0xcm, color = 'purple', label = 'exact solution')
             h_list.append(line9)
 
         ax.legend(handles=h_list)
@@ -434,8 +408,6 @@ class deriv_grid:
                 line9, = ax.plot(tu0xc, su0xc, color = 'purple', label = 'exact solution')
             else:
                 line9, = ax.plot(tl0xc, sl0xc, color = 'purple', label = 'exact solution')
-            #line11, = ax.plot(tu0xcm, su0xcm, color = 'purple', label = 'exact solution')
-            #line12, = ax.plot(tl0xcm, sl0xcm, color = 'purple', label = 'exact solution')
             h_list.append(line9)
 
         ax.legend(handles=h_list)
@@ -455,9 +427,7 @@ class deriv_grid:
         if 'er' in to_plot: 
             line1, = ax.plot(tuerr, suerr, color = 'red', label = 'with e-e interaction')
             line2, = ax.plot(tlerr, slerr, color = 'red', label = 'with e-e interaction')
-            #line13, = ax.plot(t_pred, y_pred, color = 'black', label = 'predicted e-e interaction')
             h_list.append(line1)
-            #h_list.append(line13)
         if 'ed' in to_plot: 
             line3, = ax.plot(tuedr, suedr, color = 'orange', label = 'with e-e interaction')
             line4, = ax.plot(tledr, sledr, color = 'orange', label = 'with e-e interaction')
@@ -474,8 +444,6 @@ class deriv_grid:
             if '0r' in to_plot:
                 line9, = ax.plot(tu0xr, su0xr, color = 'purple', label = 'exact solution')
                 line10, = ax.plot(tl0xr, sl0xr, color = 'purple', label = 'exact solution')
-                #line11, = ax.plot(tu0xcm, su0xcm, color = 'black', label = 'exact solution')
-                #line12, = ax.plot(tl0xcm, sl0xcm, color = 'gray', label = 'exact solution')
                 h_list.append(line9)
 
         ax.legend(handles=h_list)
@@ -512,8 +480,6 @@ class deriv_grid:
         # Try to also plot the versions which are calculated
         if 'er' in to_plot: tuerc = np.abs(self.s_grid_er_u[i][j]['t'])
         if '0r' in to_plot: tu0rc = np.abs(self.s_grid_0r_u[i][j]['t'])
-        if 'ed' in to_plot: tuedc = np.abs(self.s_grid_ed_u[i][j]['t'])
-        if '0d' in to_plot: tu0dc = np.abs(self.s_grid_0d_u[i][j]['t'])
         if 'em' in to_plot: tuemc = np.abs(self.s_grid_em_u[i][j]['t'])
 
         
@@ -530,8 +496,6 @@ class deriv_grid:
         # Try to also plot the versions which are calculated
         if 'er' in to_plot: suerc = np.abs(self.s_grid_er_u[i][j]['y'][0])
         if '0r' in to_plot: su0rc = np.abs(self.s_grid_0r_u[i][j]['y'][0])
-        if 'ed' in to_plot: suedc = np.abs(self.s_grid_ed_u[i][j]['y'][0])
-        if '0d' in to_plot: su0dc = np.abs(self.s_grid_0d_u[i][j]['y'][0])
         if 'em' in to_plot: suemc = np.abs(self.s_grid_em_u[i][j]['y'][0])
 
         # exact solutions
@@ -558,15 +522,9 @@ class deriv_grid:
         if 'em' in to_plot: 
             line2, = ax.plot(tuemc, suemc, color = 'goldenrod', label = 'with e-e interaction')
             h_list.append(line2)
-        #if 'ed' in to_plot: 
-        #    line3, = ax.plot(tuedc, suedc, color = 'orange', label = 'with e-e interaction')
-        #    h_list.append(line3)
         if '0r' in to_plot: 
             line5, = ax.plot(tu0rc, su0rc, color = 'green', label = 'without e-e interaction')
             h_list.append(line5)
-        #if '0d' in to_plot: 
-        #    line7, = ax.plot(tu0dc, su0dc, color = 'blue', label = 'without e-e interaction')
-        #    h_list.append(line7)
         if '0x' in to_plot: 
             line9, = ax.plot(tu0xa, su0xa, color = 'purple', label = 'exact solution')
             line10, = ax.plot(tl0xa, sl0xa, color = 'purple', label = 'exact solution')
@@ -575,7 +533,6 @@ class deriv_grid:
         ax.legend(handles=h_list)
         ax.set_box_aspect(2.0/3.5)
         
-        #plt.show()
         plt.savefig(f"plot{no}_{i}_{j}_abs_c.pdf", format='pdf')
         plt.close()
         
@@ -606,8 +563,6 @@ class deriv_grid:
         if '0x' in to_plot: 
             line9, = ax.plot(tu0xa, su0xa, color = 'purple', label = 'exact solution')
             line10, = ax.plot(tl0xa, sl0xa, color = 'purple', label = 'exact solution')
-            #line11, = ax.plot(tu0xam, su0xam, color = 'purple', label = 'exact solution')
-            #line12, = ax.plot(tl0xam, sl0xam, color = 'purple', label = 'exact solution')
             h_list.append(line9)
 
         ax.legend(handles=h_list)
@@ -616,99 +571,3 @@ class deriv_grid:
         
         plt.savefig(f"plot{no}_{i}_{j}_abs_a.pdf", format='pdf')
         plt.close()
-
-# ----------------------------------
-    # This is for calculating the period of the slow oscillations
-    # I will need to construct something to instead function fit with Scipy
-    # They are periodic, but not sinisoidal
-
-    # nn is the number of slices for dividing the function
-    # needs to be high enough to minimize the boundary size and ensure that all extreema are found
-    # but still small enough to contain many points
-    # right now the data is printed on the screen, not saved to file
-    def calc_period(self, nn=40, filename = None):
-
-        hand_list = []
-        hand_string = []
-        if 'er' in self.to_plot:
-            hand_list.append(self.s_grid_er_u)
-            hand_string.append('ee, recovered')
-        if 'ed' in self.to_plot:
-            hand_list.append(self.s_grid_ed_u)
-            hand_string.append('ee, decreasing')
-        if '0r' in self.to_plot:
-            hand_list.append(self.s_grid_0r_u)
-            hand_string.append('0, recovered')
-        if '0d' in self.to_plot:
-            hand_string.append('0, decreasing')
-            hand_list.append(self.s_grid_0d_u)
-
-
-        if filename is not None: 
-            file = open(filename, 'a')
-
-        for i1, ii in enumerate(hand_list):
-            print(hand_string[i1])
-            if filename is not None: file.write(f"{hand_string[i1]}\n")
-            for jj in range(self.grid_size):
-                for kk in range(self.grid_size):
-
-                    # choose the array to evaluate
-                    arr = np.real(ii[jj][kk]['y_events'][1][::2, 0])
-                    arr_t = np.real(ii[jj][kk]['t_events'][1][::2])
-
-                    leng = len(arr)
-
-                    # max and min storage arrays
-                    ind_arr_max = []
-                    ind_arr_max_s = []
-                    ind_arr_min = []
-                    ind_arr_min_s = []
-
-                    # fill the storage arrays
-                    for i in range(nn):
-                        ind_arr_max.append(np.argmax(arr[int(leng/nn)*i:int(leng/nn)*(i+1)]))
-                        ind_arr_max[-1] += int(leng/nn)*i
-                    for i in range(nn-1):
-                        ind_arr_max_s.append(np.argmax(arr[int(leng/nn*(i+0.5)):int(leng/nn*(i+1.5))]))
-                        ind_arr_max_s[-1] += int(leng/nn*(i+0.5))
-                    for i in range(nn):
-                        ind_arr_min.append(np.argmin(arr[int(leng/nn)*i:int(leng/nn)*(i+1)]))
-                        ind_arr_min[-1] += int(leng/nn)*i
-                    for i in range(nn-1):
-                        ind_arr_min_s.append(np.argmin(arr[int(leng/nn*(i+0.5)):int(leng/nn*(i+1.5))]))
-                        ind_arr_min_s[-1] += int(leng/nn*(i+0.5))
-
-                    print("For array:", jj, kk)
-                    if filename is not None: file.write(f"For array: {jj}, {kk}\n")
-
-
-                    # print absolute maxima and minima
-                    '''
-                    for i in range(nn):
-                        if ind_arr_max[i] in ind_arr_max_s:
-                            print(arr_t[ind_arr_max[i]], arr[ind_arr_max[i]])
-
-                    for i in range(nn):
-                        if ind_arr_min[i] in ind_arr_min_s:
-                            print(arr_t[ind_arr_min[i]], arr[ind_arr_min[i]])
-                    '''
-
-                    # calculate extrema
-                    ind_arr_max_int = np.intersect1d(ind_arr_max, ind_arr_max_s)
-                    ind_arr_min_int = np.intersect1d(ind_arr_min, ind_arr_min_s)
-                    arr_minmax = np.union1d(ind_arr_min_int, ind_arr_max_int)
-
-                    # print extreema
-                    #print(arr_t[arr_minmax])
-                    print('Max:', np.max(arr[arr_minmax]), "Min:", np.min(arr[arr_minmax]))
-                    if filename is not None: file.write(f"Max: {np.max(arr[arr_minmax])}, Min: {np.min(arr[arr_minmax])}\n")
-
-
-                    print('Difference: ')
-                    if filename is not None: file.write('Difference: \n')
-                    for i in range(len(arr_t[arr_minmax])-1):
-                        print(arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i])
-                        if filename is not None: file.write(f"{str(arr_t[arr_minmax][i+1]-arr_t[arr_minmax][i])}\n")
-        if filename is not None: 
-            file.close()

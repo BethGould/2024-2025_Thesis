@@ -1,5 +1,6 @@
+
 import numpy as np
-from eelib import pi, kFAu, phi0inv, pppterm, B_max, R_max
+from eelib import pi, kFAu, phi0inv, pppterm, B_max
 
 # Model 1 fast t
 const_dic_001 ={"mA2": 3.675494115574291e-08, 
@@ -20,13 +21,6 @@ const_dic_001 ={"mA2": 3.675494115574291e-08,
 # Model 2 slow t
 const_dic_002 = {"mdI": 104537.83229936952
                  }
-
-const_dic_003 ={"mdI": 1116125114862.058
-                 }
-
-const_dic_004 = {"mdI": 1114503328463.9722,
-                  "mdR2I": 1487350163.9047058}
-
 # delta k models
 
 # Model 1
@@ -34,7 +28,7 @@ def pred_fast_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
     t_pred = 0
 
     #k_full = k0+dk/R/1e-6/2.0
-    k_full = k0+dk/R_max/2.0
+    k_full = k0+dk/1e-6/2.0
     t0 = pi / k_full
     dphik = dphi0/k_full
 
@@ -85,7 +79,8 @@ def pred_fast_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
 # Orders are most likely at least close to powers of M / k, which is around 10^-2. (need to check this)
 
 
-# derivative of k, splitting real and imaginary psi derivative as seperate variables
+# derivatives of this model
+
 
 def deriv_fast_k(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
     t_pred_r = 0
@@ -94,12 +89,14 @@ def deriv_fast_k(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
     dphi0 = x[0] + 1j * x[1]
 
     #k_full = k0+dk/R/1e-6/2.0
-    k_full = k0+dk/R_max/2.0
+    k_full = k0+dk/1e-6/2.0
+    t0 = pi / k_full
     dphik = dphi0/k_full
 
     t_new = pred_fast_t(dphi0, mu, dk, B, R, A , k0, consts)
 
-    # constant terms have zero derivitive
+    # constant terms -- t_0 and intercept (error)
+    #t_pred = t0 + consts['intercept']
 
     # terms independent of mu (error)                                
     t_pred_r += (2 * np.real(dphik) * consts['DR2'] / k_full)
@@ -108,6 +105,7 @@ def deriv_fast_k(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
 
     # mu linear terms
     t_pred_r += mu*(consts['mDR2'] * np.real(dphik)* 2 / k_full)
+    
     t_pred_i += mu*(consts['mDI2'] * np.imag(dphik)* 2 / k_full
                 + consts['mDIM'] * B * R / k_full)
 
@@ -129,12 +127,11 @@ def deriv_fast_k(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
 
 def pred_slow_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_002):
     M = B*R*phi0inv
-    #k_full = k0+dk/R/R_max/2.0
-    k_full = k0+dk/R_max/2.0
-    BB = B * R / R_max
+    #k_full = k0+dk/R/1e-6/2.0
+    k_full = k0+dk/1e-6/2.0
+    BB = B * R
 
     #print(M)
-    #print(B, R, M, BB)
 
     # constant terms
     #M_pred = M 
@@ -145,92 +142,85 @@ def pred_slow_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_002):
     #print(mu * consts['mdI'] * np.imag(dphi0) / k_full)
 
     # Note that the scaling may be wrong due to a factor of 4
-    M_pred = 2 * (pi / (M)) / (mu/ BB * B_max * np.imag(dphi0) * consts['mdI'] / k_full + 1)
+    M_pred = 4 * (pi / (2*M)) / (mu/ BB * B_max * np.imag(dphi0) * consts['mdI'] / k_full + 1)
     
     return M_pred
 
-
-# derivative for Jacobian; note that re psi ' = x_0 and im psi ' = x_1
 def deriv_slow_k(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_002):
     M = B*R*phi0inv
-    #k_full = k0+dk/R/2.0
-    k_full = k0+dk/R_max/2.0
-    BB = B * R / R_max
+    k_full = k0+dk/1e-6/2.0
+    #k_full = k0+dk/R/1e-6/2.0
+    BB = B*R
+
+
+    #print(M)
+
+    # constant terms
+    #M_pred = M 
+
+    # mu linear terms
+    #M_pred += mu * consts['mdI'] * np.imag(dphi0) * R * phi0inv / k_full / 4
+
+    #print(mu * consts['mdI'] * np.imag(dphi0) / k_full)
 
     # Note that the scaling may be wrong due to a factor of 4
-    M_pred_i = - 2 * (pi / (2*M)) / (mu/ BB * B_max * x[1] * consts['mdI'] / k_full + 1)**2 * mu/ BB * B_max * consts['mdI'] / k_full
+    M_pred_i = - 4 * (pi / (2*M)) / (mu/ BB * B_max * x[1] * consts['mdI'] / k_full + 1)**2 * mu/ BB * B_max * consts['mdI'] / k_full
     
     return [0., M_pred_i]
 
+# fot[imu, ib, idr, idi]
+# (pi / (2*B_g[ib]*eelib.R_max*eelib.phi0inv*eelib.B_max))/(mu_g[imu]+1)
 
-def pred_slow_k_v2(dpsi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_003):
-    M = B*R*phi0inv
-    k_full = k0+dk/R_max/2.0
-    dpsi0_s = dpsi0 / k_full
-
-    # check for real-imag switching
-    #M_pred = (B*R*R_max*phi0inv*B_max) + consts['mdI'] * mu * np.real(dphi0) / k_full
-    M_pred = M + consts['mdI'] * mu * np.imag(dpsi0_s)
-    #   2 * (pi / (M)) / (mu/ BB * B_max * np.imag(dphi0) * consts['mdI'] / k_full + 1)
-    
-    return M_pred
+#  2 pi / T = k
+# (mu_g[imu] * S * di / k / b +1) * B_g[ib]*eelib.R_max*eelib.phi0inv
+#* B_g[ib] / np.imag(dgrid[idr, idi]) /mu_g[imu]/slope_fin* (gridl_1.l_calc.k)
 
 
-def pred_slow_k_v3(dpsi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_004):
-    M = B*R*phi0inv
-    k_full = k0+dk/R_max/2.0
-    dpsi0_s = dpsi0 / k_full
-    
-    # check for real - imag switching
-    M_pred = M + consts['mdI'] * mu * np.imag(dpsi0_s) + consts['mdR2I'] * mu * np.imag(dpsi0_s) * np.real(dpsi0_s)**2
-    
-    return M_pred
+#(np.power(fot[imu, ib, idr, idi]/(pi / (2*B_g[ib]*eelib.R_max*eelib.phi0inv*eelib.B_max)), -1)-1)
+# psi = e^iq e^iTx f(x)
+# psi0 = 1, f0 = 1, q unknown
+# psip0 = iT psi0 + psi0(fp0/f0)
+# psipp0 = - T^2 psi0 + 2 (iT psi0) (fp0 / f0) + psi0 (fpp0/f0)
 
-def deriv_slow_k_v3(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_004):
-    #M = B*R*phi0inv
-    k_full = k0+dk/R_max/2.0
-    dpsi0_sr = x[0] / k_full
-    dpsi0_si = x[1] / k_full
-    
-    #M_pred = M + consts['mdI'] * mu * np.imag(dpsi0_s) + consts['mdR2I'] * mu * np.imag(dpsi0_s) * np.real(dpsi0_s)**2
-    M_pred_r = 2 * consts['mdR2I'] * mu * dpsi0_si * dpsi0_sr / k_full
-    M_pred_i = consts['mdI'] * mu / k_full + consts['mdR2I'] * mu * dpsi0_sr**2 / k_full
-    
-    return [M_pred_r, M_pred_i]
+'''
+def dM_model_001(f0p, f0pp, mu, B, R, k_0):
+    knl = pppterm * mu
+    T_pred = np.imag(f0p)+ B*R*phi0inv
+    T_rad = np.imag(f0p)**2 - np.real(f0pp) + k_0**2 - knl
+    # sign of the sqrt term chosen to remove the np.imag(f0p) term
+    T_pred -= np.sqrt(T_rad)
+    return T_pred
 
-# Model 1 without error term
-def pred_fast_k_true(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
-    t_pred = 0
+def dM_model_002(f0p, f0pp, mu, B, R, k_0):
+    knl = pppterm * mu
+    T_pred = np.imag(f0p) + B*R*phi0inv
+    T_rad = 1 + (k_0**2 - np.real(f0pp))/(np.imag(f0p)**2) - knl / (np.imag(f0p)**2)
+    # sign of the sqrt term chosen to remove the np.imag(f0p) term
+    T_pred -= np.imag(f0p) * np.sqrt(T_rad)
+    return T_pred
 
-    if A != 1.:
-        mu = mu * np.abs(A)**2
+def dM_model_003(f0p, k_new, mu, B, R, k_0):
+    knl = pppterm * mu
+    T_pred = np.imag(f0p) + B*R*phi0inv
+    T_rad = 1 + (k_0**2 - k_new**2)/(np.imag(f0p)**2) - knl / (np.imag(f0p)**2)
+    # sign of the sqrt term chosen to remove the np.imag(f0p) term
+    T_pred -= np.imag(f0p) * np.sqrt(T_rad)
+    return T_pred
 
-    #k_full = k0+dk/R/1e-6/2.0
-    k_full = k0+dk/R_max/2.0
-    t0 = pi / k_full
-    dphik = dphi0/k_full
+# Im f' = Im psi ' - M 
+def dM_model_004(f0p, k_new, mu, B, R, k_0):
+    knl = pppterm * mu
+    T_pred = B*R*phi0inv
+    T_rad = (k_0**2 - k_new**2)/(np.imag(f0p)**2) - knl / (np.imag(f0p)**2)
+    # sign of the sqrt term chosen to remove the np.imag(f0p) term
+    T_pred -= np.imag(f0p) * (0.5 * T_rad - 0.24 * T_rad **2)
+    return T_pred
 
-    # constant terms -- t_0 and intercept (error)
-    t_pred = t0 #+ consts['intercept']
-
-    # terms independent of mu (error)                                
-    #t_pred += (np.real(dphik)**2 * consts['DR2'] 
-    #            + np.imag(dphik)**2 * consts['DI2'] 
-    #            + np.imag(dphik)**4 * consts['DI4'])
-
-    # mu linear terms
-    t_pred += mu*(consts['mDR2'] * np.real(dphik)**2
-                + consts['mDI2'] * np.imag(dphik)**2
-                + consts['mA2']
-                + consts['mDIM'] * np.imag(dphik) * B * R)
-
-    # mu quadradic terms
-    t_pred += mu**2*(consts['m2']
-                    + consts['m2DI2'] * np.imag(dphik)**2
-                    + consts['m2DR2'] * np.real(dphik)**2 
-                    + consts['m2DR4'] * np.real(dphik)**4 
-                    + consts['m2DI4'] * np.imag(dphik)**4
-                    + consts['m2DI2R2'] * np.real(dphik)**2 * np.imag(dphik)**2)
-    
-    return pi / t_pred
-    
+def dM_model_004(f0p, k_new, mu, B, R, k_0):
+    knl = pppterm * mu
+    T_pred = B*R*phi0inv
+    T_rad = (k_0**2 - k_new**2)/(np.imag(f0p)**2) - knl / (np.imag(f0p)**2)
+    # sign of the sqrt term chosen to remove the np.imag(f0p) term
+    T_pred -= np.imag(f0p) * (0.5 * T_rad - 0.24 * T_rad **2)
+    return T_pred
+    '''

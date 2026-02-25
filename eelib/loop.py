@@ -16,7 +16,8 @@ import scipy
 from eelib.consts import pi, kFAu, R_max, B_max, phi0inv, rtol, atol, DK_min
 from eelib.deriv_functions import psi_deriv, psi_deriv_old
 from eelib.events import deriv_amp, deriv_real
-from eelib.k_M_models import pred_fast_t, pred_slow_t
+from eelib.k_M_models import pred_fast_t, pred_slow_t, pred_slow_k_v2, pred_slow_k_v3, pred_fast_k_true
+from eelib.BVP_matching import fun, pred_fast_k, k_calc_0, M_calc_0
 #from eelib.ivp_2 import solve_ivp_mod
 
 #--TABLE OF CONTENTS--------
@@ -169,11 +170,13 @@ class loop:
     # psi'(0) initially defined based on the known solution for mu = 0
     def __init__(self, R, B, dk, mu, k = kFAu, amp=1.):
         self.R   = R * R_max #R in micrometers
-        self.k   = k + dk/self.R /2.0 #dk adds to min k
+        #self.k   = k + dk/self.R /2.0 #dk adds to min k
+        self.k   = k + dk/R_max/2.0 #dk adds to min k
         self.B   = B * B_max #scales with 130 G
         self.mu  = mu
         self.amp = complex(amp)
         #self.n   = 1e7 #note: +1
+        self.dk   = dk
 
         self.deriv_set = False # False = default derivitive, True = chosen derivitive
         self.ivp_solved = False
@@ -197,11 +200,15 @@ class loop:
         if mu > 0.:
             self.mu = mu
         if k > 0. and dk > 0.:
-            self.k = k + dk/self.R / 2.0
+            self.k = k + dk /R_max/ 2.0
+            #self.k = k + dk/self.R / 2.0
+            self.dk = dk
         elif dk > 0.:
-            self.k = kFAu + dk/self.R / 2.0
+            self.k = kFAu + dk / R_max/ 2.0
+            #self.k = kFAu + dk/self.R / 2.0
+            self.dk = dk
         elif k > 0.:
-            self.k = k + DK_min
+            self.k = k + self.dk / R_max / 2.0
 
         #self.clear_sol()
         self.deriv_set = False # False = default derivitive, True = chosen derivitive
@@ -229,10 +236,19 @@ class loop:
         # I need to be careful here, with the understanding of what is found -- t or k, also with factors of 2
         self.T_fast_mod = pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_slow_mod = pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        self.T_fast_mod_true = pi / pred_fast_k_true(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         # I will also need the starting point of the oscillation
+
+        pred2 = pred_slow_k_v2(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        pred3 = pred_slow_k_v3(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+
+        #print(self.M, 2*pi / self.T_slow_mod, pred2, pred3)
+
+        self.T_slow_mod = 2 * pi / pred2
+
         
-        self.find_fast_oscillations(20)
-        self.T_fast = self.T_fast * 2 # This t is now half the real t
+        #self.find_fast_oscillations(20)
+        #self.T_fast = self.T_fast * 2 # This t is now half the real t
         
 
     # This function is for setting the initial psi prime value of the loop
@@ -253,13 +269,19 @@ class loop:
         # I need to be careful here, with the understanding of what is found -- t or k, also with factors of 2
         self.T_fast_mod = pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_slow_mod = pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        self.T_fast_mod_true = pi / pred_fast_k_true(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+
         # I will also need the starting point of the oscillation
         
-        self.find_fast_oscillations(n, method = method, rtol = rtol, atol = atol)
-        self.T_fast = self.T_fast * 2 # this t is now half the real t, was one fourth before, (corresponds to t of abs plot)
+        #self.find_fast_oscillations(n, method = method, rtol = rtol, atol = atol)
+        #self.T_fast = self.T_fast * 2 # this t is now half the real t, was one fourth before, (corresponds to t of abs plot)
 
-        #print(self.T_fast, self.T_fast_mod, 2 * pi / self.k)
-        #print(self.T_slow_mod, 2 * pi / self.M)
+        pred2 = pred_slow_k_v2(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        pred3 = pred_slow_k_v3(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+
+        #print(self.M, 2* pi / self.T_slow_mod, pred2, pred3)
+
+        self.T_slow_mod = 2 * pi / pred3
         
         #if aj, bk = nan, ....
         
@@ -310,6 +332,14 @@ class loop:
     #old psij function, estimation of derivative at x=0
     def psij(self, x):
         return self.aj*np.exp(1j*x*(self.k+self.M)) + self.bj*np.exp(1j*x*(-self.k+self.M))
+    def psij_pred(self, x):
+        kn = pi / self.T_fast_mod
+        Mn = 2 * pi / self.T_slow_mod
+        return self.aj*np.exp(1j*x*(kn+Mn)) + self.bj*np.exp(1j*x*(-kn+Mn))
+    def psij_pred_true(self, x):
+        kn = pi / self.T_fast_mod_true
+        Mn = 2 * pi / self.T_slow_mod
+        return self.aj*np.exp(1j*x*(kn+Mn)) + self.bj*np.exp(1j*x*(-kn+Mn))
     def psij0(self, x):
         return self.aj0*np.exp(1j*x*(self.k+self.M)) + self.bj0*np.exp(1j*x*(-self.k+self.M))
     def psi_prime_0(self):
@@ -765,16 +795,142 @@ class loop:
 
     
     # 5 -- BVP routines
-    #This is what is called the shooting method for BVP
-    #I will separate it into two versions, for positive and negative mu values
 
+    # This will find a random solution to our BVP. Changing method and prep will change which solution
+    # the rootfinder converges to. I can set this up more intelligently, but I want to have a solution
+    # as fast as possible, and further examination can wait.
+    def find_root_rand(self, method = 'broyden2', tol = 1e-20, prep = 1.0,
+                        model_k=pred_fast_k_true, model_M = pred_slow_k_v3):
+        mu = self.mu
+        dk = self.dk
+        B = self.B
+        R = self.R
+
+        #kfun = lambda dpsi, mu, dk, B, R, A, k0: self.k
+
+        # Find the root of the linear equation
+        #yy = lambda x: fun(x, mu, dk, B, R, k_calc_f=kfun, M_calc_f=M_calc_0)
+        #jj = lambda x: jac(x, mu, dk, B, R, k_calc_f=k_calc_0, M_calc_f=M_calc_0, dk_calc_f=dk_calc_0, dM_calc_f=dM_calc_0)
+
+        der_0 = self.psi_prime_0()
+        #sol = scipy.optimize.root(yy, [-1e12, 1e12], method='hybr')
+
+        xs = np.array([np.real(der_0), np.imag(der_0)])
+        #print(sol.x)
+
+        # Now find the root for the nonlinear solution
+        yy = lambda x: fun(x, mu, dk, B, R, k_calc_f=model_k, M_calc_f=model_M)
+        #jj = lambda x: jac(x, mu, dk, B, R)
+
+        sol = scipy.optimize.root(yy, xs/prep, method=method, tol=tol)
+        dpsi0c = sol.x
+
+        deriv_psi = dpsi0c[0] + 1j * dpsi0c[1]
+        #deriv_psi_o = xs[0]+1j*xs[1]
+
+        return deriv_psi
     
+    def amp_max(self):
+        return np.sqrt(np.abs(self.aj)**2 + np.abs(self.bj)**2 + 2*np.abs(self.aj*np.conj(self.bj)))
+    
+    def amp_max_0(self):
+        return np.sqrt(np.abs(self.aj0)**2 + np.abs(self.bj0)**2 + 2*np.abs(self.aj0*np.conj(self.bj0)))
+
+    # This will find multiple solutions to our BVP. It appears to work well enough to enable a way around our problematic 
+    # solutions. The solution with the smallest amplitude is our most important one, and not all solutions are found, only
+    # only the smallest of them. The main issue with this algorithim is the time requirement, which will be a big cost on a 
+    # big grid. 
+    def find_root_many(self, tol = 1e-20, model_k=pred_fast_k_true, model_M = pred_slow_k_v3):
+        mu = self.mu
+        dk = self.dk
+        B = self.B
+        R = self.R
+        tol2 = 0.01
+
+        der_0 = self.psi_prime_0()
+        xs = np.array([np.real(der_0), np.imag(der_0)])
+
+        #method = ['hybr', 'lm', 'broyden1', 'broyden2', 'anderson', 'linearmixing', 'diagbroyden', 'excitingmixing', 'krylov', 'df-sane']
+        method = ['hybr', 'lm', 'broyden1', 'broyden2', 'anderson', 'linearmixing', 'diagbroyden', 'excitingmixing', 'krylov', 'df-sane']
+        prep = [0.1, 0.5, 1.0, 2.0, 3.0, 5.0, 10.0, 100.0]
+
+        # Now find the root for the nonlinear solution
+        yy = lambda x: fun(x, mu, dk, B, R, k_calc_f=model_k, M_calc_f=model_M)
+        #jj = lambda x: jac(x, mu, dk, B, R)
+
+        dpsi0c = []
+
+        for mm in method:
+            for pp in prep:
+                try:
+                    sol = scipy.optimize.root(yy, xs/pp, method=mm, tol=tol)
+                    dpsi0c.append(sol.x)
+                except:
+                    pass
+
+        dpsi0f = []
+        #print(len(dpsi0c))
+
+        for ii in dpsi0c:
+            deriv_psi = ii[0] + 1j * ii[1]
+            try:
+                self.setDeriv(deriv_psi)
+                sol = self.psij_pred_true(2*pi*self.R) - 1.0
+                #print(self.psij_pred_true(2*pi*self.R))
+                #print(deriv_psi)
+                if np.abs(sol) < tol2:
+                    new = True
+                    #print(deriv_psi)
+                    for jj in dpsi0f:
+                        #print(jj, ii)
+                        if np.abs((jj - deriv_psi)/(jj+deriv_psi)) < tol2:
+                            new = False
+                            break
+                    if new: dpsi0f.append(deriv_psi)
+            except:
+                pass
+            
+
+        return dpsi0f
+
+
     # 6 -- I for exact solution and new solution
-    def current(self):
+    def current_old(self):
+        ajsq = np.square(np.real(self.aj0)) + np.square(np.imag(self.aj0))
+        bjsq = np.square(np.real(self.bj0)) + np.square(np.imag(self.bj0))
+        return ajsq - bjsq
+    
+    def current_new(self):
+        kn = pi / self.T_fast_mod
+        mn = 2* pi /self.T_slow_mod
+        ko = self.k
+        mo = self.M
+
+        ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
+        bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))
+
+        # This is the term independent of position from the solution for current
+        # given modeled nonlinear solution with the fast oscillations assumed
+        # as sinusoidal.
+        cur_new = (ajsq + bjsq)*(mn-mo)/ko + kn/ko * (ajsq - bjsq)
+
+        return cur_new
+    
+    # I suspect that this is the actual current due to how the convergence appears to be structured
+    def current_alt(self):
         ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
         bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))
         return ajsq - bjsq
-    def current_calc(self, psi, psi_pr):
-        t1 = 1/ self.k / 1j
+
+    # This third one is defined at our starting point instead of averaged.
+    def current_calc(self, psi=None, psi_pr=None):
+        if psi is None: psi = self.amp
+        if psi_pr is None: psi_pr = self.psi0_deriv_0
+        t1 = 1/ self.k / 2j
         t2 = -2j * self.B * self.R * phi0inv
         return t1*(np.conj(psi)*psi_pr - psi*np.conj(psi_pr) + t2*np.conj(psi)*psi)
+    
+
+
+
+

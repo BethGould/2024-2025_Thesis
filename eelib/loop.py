@@ -10,15 +10,18 @@
 
 
 #--LIBRARIES----------------
+# Numerical analysis libraries
 import numpy as np
 import scipy
 
+# constant
 from eelib.consts import pi, kFAu, R_max, B_max, phi0inv, rtol, atol, DK_min
+# function handles
 from eelib.deriv_functions import psi_deriv, psi_deriv_old
 from eelib.events import deriv_amp, deriv_real
+# models
 from eelib.k_M_models import pred_fast_t, pred_slow_t, pred_slow_k_v2, pred_slow_k_v3, pred_fast_k_true
 from eelib.BVP_matching import fun, pred_fast_k, k_calc_0, M_calc_0
-#from eelib.ivp_2 import solve_ivp_mod
 
 #--TABLE OF CONTENTS--------
 
@@ -62,8 +65,6 @@ from eelib.BVP_matching import fun, pred_fast_k, k_calc_0, M_calc_0
 #    find_t_points(n_points, t_max, t_start, T)
 
 # 6 ----- BVP matching phases
-
-# 7 ----- BVP shooting
 
 # 8 ----- Finding current
 #    current()

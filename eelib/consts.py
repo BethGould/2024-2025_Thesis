@@ -1,5 +1,4 @@
-# Contains copies of fundamental constants from scipy, 
-# other used constants in the program,
+# Contains copies of fundamental constants from scipy, other used constants in the program,
 # and defined mins, maxes, and tolerances.
 
 #--LIBRARIES--------
@@ -39,7 +38,7 @@ atol = 1.0e-7
 # Other ranges of examination. (mu and psi'_0)
 # These don't have as much reasoning from the experiment.
 MU_min = 1.0e-12 # should give oscillation speed less than from B 
-MU_max = 7.0e-4  # ~max positive mu for proper functioning with k_F
+MU_max = 1.0e-5  # even at this level, I have issues with my analysis
 DK_min = rtol    
 DK_max = 190.0  # approaches the level of error in k_Fermi
 

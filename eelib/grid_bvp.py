@@ -49,6 +49,95 @@ class grid_BVP:
         self.is_mc = False
         self.calculated = False
 
+    # Because we want to know what our object is.
+    def __repr__(self):
+        if self.is_grid:
+            if self.calculated:
+                str = "Grid object to measure current:\n"
+            else:
+                str = "Uncalculated grid object to measure current:\n"
+
+            # add our parameters for ......
+            if self.num_mu > 1:
+                str = str + f"mu has {self.num_mu} points from {self.nls[0]} to {self.nls[-1]}.\n"
+            else:
+                str = str + f"mu is: {self.mu}\n"
+            if self.num_dk > 1:
+                str = str + f"dk has {self.num_dk} points from {self.ewd[0]} to {self.ewd[-1]}.\n"
+            else:
+                str = str + f"dk is: {self.dk}\n"
+            if self.num_b > 1:
+                str = str + f"B has {self.num_b} points from {self.mfs[0]} to {self.mfs[-1]}.\n"
+            else:
+                str = str + f"B is: {self.B}\n"
+            if self.num_r > 1:
+                str = str + f"R has {self.num_r} points from {self.rr[0]} to {self.rr[-1]}.\n"
+            else:
+                str = str + f"R is: {self.R}\n"
+            if self.num_a > 1:
+                str = str + f"A has {self.num_a} points from {self.amp[0]} to {self.amp[-1]}.\n"
+            else:
+                str = str + f"A is: {self.amp}\n"
+            if self.num_k0 > 1:
+                str = str + f"k0 has {self.num_k0} points from {self.ew[0]} to {self.ew[-1]}.\n"
+            else:
+                str = str + f"k0 is: {self.k}\n"
+            str = str + f"Total number of parameters: {self.num_mu*self.num_dk*self.num_k0*self.num_b*self.num_a*self.num_r}"
+            return str
+        elif self.is_mc:
+            if self.calculated:
+                str = "Monte carlo object to measure current"
+            else:
+                str = "Uncalculated monte carlo object to measure current"
+            return str
+        else:
+            return "Empty object to measure current:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
+
+    # Because we want to know what our object is.
+    def __str__(self):
+        if self.is_grid:
+            if self.calculated:
+                str = "Grid object to measure current:\n"
+            else:
+                str = "Uncalculated grid object to measure current:\n"
+
+            # add our parameters for ......
+            if self.num_mu > 1:
+                str = str + f"mu has {self.num_mu} points from {self.nls[0]} to {self.nls[-1]}.\n"
+            else:
+                str = str + f"mu is: {self.mu}\n"
+            if self.num_dk > 1:
+                str = str + f"dk has {self.num_dk} points from {self.ewd[0]} to {self.ewd[-1]}.\n"
+            else:
+                str = str + f"dk is: {self.dk}\n"
+            if self.num_b > 1:
+                str = str + f"B has {self.num_b} points from {self.mfs[0]} to {self.mfs[-1]}.\n"
+            else:
+                str = str + f"B is: {self.B}\n"
+            if self.num_r > 1:
+                str = str + f"R has {self.num_r} points from {self.rr[0]} to {self.rr[-1]}.\n"
+            else:
+                str = str + f"R is: {self.R}\n"
+            if self.num_a > 1:
+                str = str + f"A has {self.num_a} points from {self.amp[0]} to {self.amp[-1]}.\n"
+            else:
+                str = str + f"A is: {self.amp}\n"
+            if self.num_k0 > 1:
+                str = str + f"k0 has {self.num_k0} points from {self.ew[0]} to {self.ew[-1]}.\n"
+            else:
+                str = str + f"k0 is: {self.k}\n"
+            str = str + f"Total number of parameters: {self.num_mu*self.num_dk*self.num_k0*self.num_b*self.num_a*self.num_r}"
+            return str
+        elif self.is_mc:
+            if self.calculated:
+                str = "Monte carlo object to measure current"
+            else:
+                str = "Uncalculated monte carlo object to measure current"
+            return str
+        else:
+            return "Empty object to measure current:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
+
+
 
     # ------------ CHOOSE POINTS (GRID) -----------------
 
@@ -210,6 +299,8 @@ class grid_BVP:
         if R[0]  > -0.1: var_set[3] = True
         if A[0]  > -0.1: var_set[4] = True
         if k0[0] > -0.1: var_set[5] = True
+
+        #print(var_set)
 
         self.var_set = var_set # so I can use this later
 

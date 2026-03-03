@@ -1,5 +1,5 @@
-# grid_fast_osc class 
-# Runs a grid to calculate t_fast.
+# class grid_slow_osc 
+# Runs a grid to calculate t_slow.
 # Fixed R, B, k, dk
 # Grid on mu, amp, psi'(0)
 # psi'(0) grid sinusoidal. mu grid logrithmic, amp grid linear.
@@ -9,7 +9,7 @@
 # makeGridPoints(self, a_min, a_max, mu_min, mu_max, num = 10, num_m = 10)
 # gridFastOsc(self, n = 20, method = 'RK45', rtol = rtol, atol = atol)
 
-# need to run init -> makeGridPoints -> gridFastOsc
+# need to run init -> makeGridPoints -> gridSlowOsc
 
 # init forms the derivative grid and creates a loop with the given parameters
 
@@ -20,14 +20,14 @@
 # gridFastOsc does the work of calcuation
 # time is spent here
 
-# I should add a Monte Carlo variant.
+# Monte Carlo variant.
 
 import numpy as np
 from scipy.optimize import curve_fit
 from eelib.consts import pi, kFAu, rtol, atol
 from eelib.loop import loop
 from eelib.grid_fast_osc import grid_fast_osc
-from eelib.deriv_functions import cos_fit, full_fit, sin_fit
+from eelib.deriv_functions import sin_fit
 import time
 import gc
 

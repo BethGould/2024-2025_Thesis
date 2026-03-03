@@ -4,6 +4,8 @@
 
 #--LIBRARIES--------
 import numpy as np
+from scipy.special import ellipj
+
 from eelib.consts import pppterm, phi0inv
 
 #--DERIVITIVE FUNCTIONS FOR ODE SOLVERS--
@@ -63,13 +65,34 @@ def psi_deriv_full(x, y, k, B, R, mu, mA):
     return [dpdx, dpdxx, dpdx2, dpdxx2]  
 
 
-# for fitting cosine / sine
-def cos_fit(x, amp, k, theta):
-    return amp * np.cos(k * x + theta)
+# ------- FUNCTIONS FOR FUNCTION FITTING --------
+# Fitting functions for trigonometric functions
 
-# for fitting cosine / sine
 def sin_fit(x, amp, k, theta):
     return amp * np.sin(k * x + theta)
 
-def full_fit(x, M, k, a, b):
-    return np.cos(M * x) * np.cos(k * x) + np.imag(a - b) * np.cos(M * x) * np.sin(k * x) + np.real(a - b) * np.sin(M * x) * np.sin(k * x)
+def sin_fit_2(x, amp, k, x0):
+    return amp * np.sin(k * (x - x0))
+
+# Fitting functions for elliptical functions
+# note that x0 for cn must move the function to a maximum
+# sn starts at zero, like sine
+def cn_fit(x, k, x0, m, A, y0):
+    cn,sn,dn,ph = ellipj(k * (x - x0), m)
+    return A * cn - y0
+
+def sn_fit(x, k, x0, m, A, y0):
+    cn,sn,dn,ph = ellipj(k * (x - x0), m)
+    return A * sn - y0
+
+def dn_fit(x, k, x0, m, A, y0):
+    cn,sn,dn,ph = ellipj(k * (x - x0), m)
+    return A * dn - y0
+
+def cn2_fit(x, k, x0, m, A, y0):
+    cn,sn,dn,ph = ellipj(k * (x - x0), m)
+    return A * (cn)**2 - y0
+
+def sn2_fit(x, k, x0, m, A, y0):
+    cn,sn,dn,ph = ellipj(k * (x - x0), m)
+    return A * (sn)**2 - y0

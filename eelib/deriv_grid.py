@@ -1,40 +1,182 @@
-# deriv_grid class 
-# Takes fixed R, B, k, dk, mu, and amp, 
-# and creates a sinusoidal-spaced grid of grid_size real and imaginary values.
-# There are grid_size^2 runs of the loop.
+# class deriv_grid
+#  
+# Takes fixed R, B, k, dk, mu, and amp, and creates a sinusoidal-spaced grid of 
+# grid_size real and imaginary values. There are grid_size^2 runs of the loop.
+# The runs are saved, and may be plotted later with the same object. 
+# Plots allow for the possibility to plot the expected curve as given by our model.
+# This code is only for visual analysis of the IVP results.
+'''
+Принимает фиксированные значения R, B, k, dk, mu и amp и создает сетку 
+с синусоидальным интервалом, состоящую из действительных и мнимых значений grid_size. 
+Цикл выполняется с использованием grid_size^2. Результаты сохраняются и могут быть 
+построены позже с использованием того же объекта. Графики позволяют построить 
+ожидаемую кривую в соответствии с нашей моделью. 
+Этот код предназначен только для визуального анализа результатов IVP.
+'''
+# Sample plotting script:
+#
+# * first set R (% R_max), B (% R_max), k (dk, 0-1 is one period for R = R_max)
+# * mu (raw, ranges of 10^-10 to 10^-6 appear relevant, preferably 10^-8 to 10^-7)
+# * n_g (number of points in one direction), no (plot number for plot naming)
+# 
+# > loopl = eelib.deriv_grid(R, B, k, mu, grid_size=n_g) # create object
+# > loopl.derivGrid()                                    # run object
 
+# PLOTTING FOR GRIDS (Large number of saved pdf files.)
+# > for i in range(n_g):
+# >     for j in range(n_g):
+# >         loopl.plot_abs(i,j,k,R,B,mu,no)
+# >         loopl.plot_real(i,j,k,R,B,mu,no)
+
+# ----- Methods ---- 
 # __init__(self, R, B, dk, mu, k = kFAu, amp=1., grid_size = 9, ang_lim = 0.1)
-# derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, to_plot = ['er','ed','0d', '0r', '0x'])
+# derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, to_plot = ['er','0r','0x','em'])
 # plot_real(self, i, j, k, R, B, mu, no)
 # plot_abs(self, i, j, k, R, B, mu, no)
-# calc_period(self, nn=40, filename = None)
+#
+# __repr__(self)
+# __str__(self)
+# change_parameters(self, R=None, B=None, dk=None, mu=None, k=None, amp = None, grid_size = None, ang_lim = None)
+# clear_run(self)
+#
+# find_root_points(self,y_points)
+# find_root_start(self,y_points)
+# find_root_dif(self,y_points)
+# find_amp(self, sol)
 
-# derivGrid runs the integration, the most intensive part
-# n and trim reduce the number of points on the plots
-# pr is the percentage of the radious to evaluate
-# method, rtol, atol control the integrator
+# change_parameters clears all the data and resets the object as if created with the given parameters.
+# In this case, any parameters not given will be unchanged.
+# clear_run just clears the data from the integration run of derivGrid. Nothing else is changed.
+
+# to_plot can accept the following codes (assuming the code hasn't been broken, which is a possibility).
+# 'er' -- Amplitude recovered (with error deleted) solution with electron-electron interaction.
+# 'ed' -- Amplitude decreasing (erroneous) solution with electron-electron interaction.
+# '0r' -- Amplitude recovered (with error deleted) solution without electron-electron interaction.
+# '0d' -- Amplitude decreasing (erroneous) solution without electron-electron interaction.
+# '0x' -- Exact solution without electron-electron interaction. 
+# 'em' -- Modeled solution with electron-electron interaction.
+# Desired codes are passed as a list of two character strings. Unrecognized codes are most likely ignored.
+
+# derivGrid runs the integration, the most intensive part.
+# n and trim reduce the number of points on the plots.
+# pr is the percentage of the radius to evaluate. It can also be set greater that 1.0 to get more data.
+# method, rtol, atol control the integrator.
 # to_plot gives the versions of integration to evaluate, with all saved and plotted.
 
 # plot_real, plot_abs plot and save the indicated loop. 
 # i, j are the indicies in the grid of the desired loop.
-# k, R, B, mu are for labeling the plot
-# no is an index used to label the plots, allowing for unique labeling
+# k, R, B, mu are for labeling the plot.
+# no is an index used to label the plots, allowing for unique labeling.
 
-# Error handling has not been added to this class
+# find_root_points, find_root_start_find_root_dif_ and find_amp are used by the code to fit the slow 
+# oscillations to a sine function. They don't interact with the object, so external use is irrelevant. 
 
+# Error handling has not been added to this class, so it may function incorrectly if used incorrectly.
+
+'''
+# класс deriv_grid
+#  
+# Принимает фиксированные значения R, B, k, dk, mu и amp и создает синусоидальную сетку из 
+# сетка_размеряет реальные и мнимые значения. Цикл выполняется по grid_size^ 2 раза.
+# Результаты сохраняются и могут быть построены позже с использованием того же объекта. 
+# Графики позволяют построить ожидаемую кривую в соответствии с нашей моделью.
+# Этот код предназначен только для визуального анализа результатов IVP.
+"
+Фиксирует значения R, B, k, dk, mu и создает сетку 
+с синусоидальным интерфейсом, который зависит от размера государственной и мнимо значимой сетки. 
+Клик выполняется с использованием grid_size^2. Пользователи настраиваются и могут быть 
+построены позже с использованием того же объекта. Графики позволяют построить 
+ожидаемую кривую в соответствии с нашей моделью. 
+Этот код предназначен только для визуального анализа результатов ИВП.
+
+# Пример сценария построения:
+#
+# * сначала задаем значения R (% R_max), B (% R_max), k (dk, 0-1 - это один период для R = R_max)
+# * mu (необработанный, диапазон от 10^-10 до 10^-6 выглядит уместным, предпочтительно от 10^-8 до 10^-7)
+# * n_g (количество точек в одном направлении), no (номер участка для обозначения участка)
+# 
+# > loopl = eelib.deriv_grid(R, B, k, mu, grid_size=n_g) # создать объект
+# > loopl.derivGrid() # запустить объект
+
+# ПОСТРОЕНИЕ ГРАФИКОВ ДЛЯ СЕТОК (большое количество сохраненных pdf-файлов.)
+# > для i в диапазоне(n_g):
+# > для j в диапазоне(n_g):
+# > цикл.plot_abs(i,j,k,R,B,mu,no)
+# > loopl.plot_real(i,j,k,R,B,mu,no)
+
+# ----- Методы ---- 
+# __init__(self, R, B, dk, mu, k = kFAu, amp=1., grid_size = 9, ang_lim = 0.1)
+# Производная сетка(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, to_plot = ['er','0r','0x','em'])
+# сюжет_реальный(self, i, j, k, R, B, mu, no)
+# сюжет_abs(self, i, j, k, R, B, mu, no)
+#
+# __repr__(self)
+# __str__(self)
+# изменяем_параметры(self, R=Нет, B=Нет, dk=Нет, mu=Нет, k=Нет, amp = Нет, grid_size = Нет, ang_lim = Нет)
+# clear_run(self)
+#
+# find_root_points(self,y_points)
+# find_root_start(self,y_points)
+# find_root_dif(self,y_points)
+# find_amp(self, sol)
+
+# change_parameters очищает все данные и восстанавливает объект, как если бы он был создан с заданными параметрами.
+# В этом случае все параметры, которые не были указаны, останутся неизменными.
+# clear_run просто удаляет данные из процесса интеграции derivGrid. Больше ничего не меняется.
+
+# to_plot может принимать следующие коды (при условии, что код не был взломан, что вполне возможно).
+# "er" - Решение с восстановленной амплитудой (с удаленной ошибкой) при электрон-электронном взаимодействии.
+# "ed" - Решение с уменьшенной амплитудой (ошибочное) при электрон-электронном взаимодействии.
+# "0r" - Решение с восстановленной амплитудой (с удаленной ошибкой) без электрон-электронного взаимодействия.
+# '0d' - уменьшающееся по амплитуде (ошибочное) решение без учета электрон-электронного взаимодействия.
+# '0x' - Точное решение без учета электрон-электронного взаимодействия. 
+# 'em" - Смоделированное решение с учетом электрон-электронного взаимодействия.
+# Требуемые коды передаются в виде списка из двух символьных строк. Нераспознанные коды, скорее всего, игнорируются.
+
+# derivGrid выполняет интеграцию, наиболее трудоемкую часть.
+# n и trim уменьшают количество точек на графиках.
+# pr - это процент от вычисляемого радиуса. Его также можно задать больше, чем 1.0, чтобы получить больше данных.
+# method, rtol, atol управляют интегратором.
+# to_plot предоставляет версии интеграции для оценки, все сохраненные и нанесенные на график.
+
+# plot_real, plot_abs постройте и сохраните указанный цикл. 
+# i, j - это обозначения в сетке нужного цикла.
+# k, R, B, mu предназначены для обозначения графика.
+# no - это индекс, используемый для обозначения графиков, позволяющий создавать уникальные обозначения.
+
+# find_root_points, find_root_start_find_root_dif_ и find_amp используются в коде для соответствия медленному графику. 
+# колебания преобразуются в синусоидальную функцию. Они не взаимодействуют с объектом, поэтому внешнее использование не имеет значения. 
+
+# В этот класс не добавлена обработка ошибок, поэтому при неправильном использовании он может работать некорректно.
+'''
+
+# --- LIBRARIES ---
 import numpy as np
 import matplotlib.pyplot as plt
-from eelib.consts import pi, kFAu, rtol, atol
+from eelib.consts import pi, kFAu, rtol, atol, R_max, B_max
 from eelib.loop import loop
 import time
 
 class deriv_grid:
+
+    # Initialize the grid by creating a loop object and choosing derivitive points on the grid.
+
     def __init__(self, R, B, dk, mu, k = kFAu, amp=1., grid_size = 9, ang_lim = 0.1):
         self.l_calc = loop(R, B, dk, mu, k, amp)  # loop class for calculations
         self.grid_size = grid_size
         self.dlim = self.l_calc.psi_prime_0_max() # max(abs(psi'(0)))
+
+        self.ang_lim = ang_lim
+        self.R = R
+        self.B = B
+        self.dk = dk
+        self.mu = mu
+        self.k = k
+        self.amp = amp
         
         # form the derivative grid for t = 0
+        # ang_limit helps prevent issues, while the max grid size is determined by the maximum amplitude
+        # of the exact solution. 
         x = np.linspace(pi-ang_lim, ang_lim, num=self.grid_size, dtype = complex)
         x = np.cos(x) * self.dlim 
         y = np.linspace(pi-ang_lim, ang_lim, num=self.grid_size, dtype = complex)
@@ -43,20 +185,133 @@ class deriv_grid:
         d0_grid = xx + 1j * yy
         self.d0_grid = d0_grid
 
-    # this just creates a grid of values for various psi'_0 values
+        self.run = False
+
+    # Outputs for the print statement.
+    def __repr__(self):
+        if self.run:
+            str = "Object with a grid of loop runs for various derivatives:\n"
+        else:
+            str = "Object to construct a grid of loop runs for various derivatives:\n"
+
+        # And show our parameters.
+        str = str + f"mu is: {self.mu}\n"
+        str = str + f"dk is: {self.dk}\n"
+        str = str + f"B is: {self.B}\n"
+        str = str + f"R is: {self.R}\n"
+        str = str + f"A is: {self.amp}\n"
+        str = str + f"k0 is: {self.k}\n"
+        str = str + f"Grid size (in each direction -- real and imaginary): {self.grid_size}"
+        return str
+
+    def __str__(self):
+        if self.run:
+            str = "Object with a grid of loop runs for various derivatives:\n"
+        else:
+            str = "Object to construct a grid of loop runs for various derivatives:\n"
+            
+        # And show our parameters.
+        str = str + f"mu is: {self.mu}\n"
+        str = str + f"dk is: {self.dk}\n"
+        str = str + f"B is: {self.B}\n"
+        str = str + f"R is: {self.R}\n"
+        str = str + f"A is: {self.amp}\n"
+        str = str + f"k0 is: {self.k}\n"
+        str = str + f"Grid size is (in each direction -- real and imaginary): {self.grid_size}"
+        return str
+
+    # Code to reset the grid object and change parameters.
+    def change_parameters(self, R=None, B=None, dk=None, mu=None, k=None, amp = None, grid_size = None, ang_lim = None):
+        # Clear the data for the old parameters.
+        self.clear_run()
+
+        # Change parameters which are set in the code.
+        if R is not None: 
+            self.R = R
+        if B is not None:
+            self.B = B
+        if dk is not None:
+            self.dk = dk
+        if mu is not None: 
+            self.mu = mu
+        if amp is not None: 
+            self.amp = amp
+        if k is not None:
+            self.k = k
+        if grid_size is not None:
+            self.grid_size = grid_size
+        if ang_lim is not None:
+            self.ang_lim = ang_lim
+
+        # Apply this change in parameters:
+        self.l_calc.update_params(self.R, self.B, self.dk, self.mu, self.k, self.amp)
+        self.dlim = self.l_calc.psi_prime_0_max()
+        self.d0_grid = None
+
+        # form the derivative grid for t = 0
+        # ang_limit helps prevent issues, while the max grid size is determined by the maximum amplitude
+        # of the exact solution. 
+        x = np.linspace(pi-self.ang_lim, self.ang_lim, num=self.grid_size, dtype = complex)
+        x = np.cos(x) * self.dlim 
+        y = np.linspace(pi-self.ang_lim, self.ang_lim, num=self.grid_size, dtype = complex)
+        y = np.cos(y) * self.dlim
+        xx, yy = np.meshgrid(x, y)
+        d0_grid = xx + 1j * yy
+        self.d0_grid = d0_grid
+
+    # Delete all the data. 
+    def clear_run(self):
+        self.run = False
+
+        self.s_grid_er_u = None
+        self.s_grid_ed_u = None
+        self.s_grid_em_u = None
+        self.s_grid_M_pred = None
+        self.s_grid_0d_u = None
+        self.s_grid_0r_u = None
+        self.s_grid_0x_u_tc = None
+        self.s_grid_0x_l_tc = None
+        self.s_grid_0x_u_tcm = None
+        self.s_grid_0x_l_tcm = None
+        self.s_grid_0x_u_ta = None
+        self.s_grid_0x_l_ta = None
+        self.s_grid_0x_u_tr = None
+        self.s_grid_0x_l_tr = None
+        self.s_grid_0x_u_yc = None
+        self.s_grid_0x_l_yc = None
+        self.s_grid_0x_u_ycm = None
+        self.s_grid_0x_l_ycm = None
+        self.s_grid_0x_u_ya = None
+        self.s_grid_0x_l_ya = None
+        self.s_grid_0x_u_yr = None
+        self.s_grid_0x_l_yr = None
+
+    # This just creates a grid of values for various psi'_0 values.
+    # Due to running the integrator multiple times, it can be quite slow. Therefore, the program uses
+    # the time library to calculate the time required regularly, to allow for keeping track of how much
+    # time is left. 
     # n -- number of points to plot, used for untriggered, predefined points
     # pr -- percent_range
     # method, rtol (relative tolerance), atol (absolute tolerance)
     # trim -- needs to be even, every x point is used for the plots, used for triggered points
     # to_plot -- list of strings with choises for plotting
+    # n_start -- number of oscillations to use in averaging to estimate k for the fast oscillations
 
-    def derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, to_plot = ['er', '0r', '0x', 'em']):
+    def derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, 
+                  to_plot = ['er', '0r', '0x', 'em'], n_start=20):
 
+        if self.run:
+            print("This object has already calculated the grid.")
+            return None
+
+        # save imput parameters
         self.trim = trim
         self.to_plot = to_plot
 
+        # start timing
         start_time = time.time()
 
+        # Convert the clear plot code system of the deriv_grid class to the difficult to understand one of the loop class.
         plot_code = -1
         if 'er' in to_plot: plot_code *= -1
         if 'ed' in to_plot: plot_code *= 2
@@ -64,7 +319,7 @@ class deriv_grid:
         if '0r' in to_plot: plot_code *= 5
         if 'em' in to_plot: plot_code *= 7
 
-        # place for our solutions
+        # Places for our solutions (which will be lists of lists of solutions).
         '''
         u, l -- upper, lower
         e -- with ee-interaction
@@ -110,12 +365,13 @@ class deriv_grid:
             if '0x' in to_plot: s_grid_0x_u_yr = []
             if '0x' in to_plot: s_grid_0x_l_yr = []
 
+        # Begin the time-consuming part of the code
         print('Begin grid build: ', time.time() - start_time)
         print('Plot Code:', to_plot, plot_code)
         
-        # solve for each point on the grid
+        # Solve for each point on the grid
         for i in range(self.grid_size):
-
+            # The grid is stored on a two-dimensional list. This creates the second dimension.
             if 'er' in to_plot: s_grid_er_u.append([])
             if 'er' in to_plot: s_grid_er_l.append([])
             if 'ed' in to_plot: s_grid_ed_u.append([])
@@ -150,14 +406,23 @@ class deriv_grid:
                     s_grid_0x_u_yr.append([])
                     s_grid_0x_l_yr.append([])
             
-            print("i = ", i, "of ", self.grid_size-1, "time: ", time.time() - start_time)
+            # Output our current stage of calculation and the time so far taken.
+            # I switched this from counting from 0 to counting from 1 to be more intuitive. 
+            print("i = ", i + 1, "of ", self.grid_size, "time: ", time.time() - start_time)
 
             for j in range(self.grid_size):
+                # This is the one and only place where we call the integrator, which is slow. 
+                # Note that find_fast_oscillations has been moved here from setDeriv, as it was 
+                # slowing down my BVP matching algorithm. 
                 self.l_calc.setDeriv(self.d0_grid[i,j])
+                self.l_calc.find_fast_oscillations(n=n_start, method = method, rtol = rtol, atol = atol)
                 self.l_calc.solve_ivp(n = n, percent_range = pr, method = method, rtol = rtol, atol = atol, solve=plot_code)
 
-                print("Done, i, j = ", i,j, "time: ", time.time() - start_time)
+                # Output our current stage of calculation and the time so far taken.
+                # I switched this from counting from 0 to counting from 1 to be more intuitive. 
+                print("Done, i, j = ", i+1,j+1, "time: ", time.time() - start_time)
 
+                # Now we are appending all of our solutions to our saved solution lists, chosen based on our plot_code.
                 if 'er' in to_plot: s_grid_er_u[i].append(self.l_calc.solu)
                 if 'ed' in to_plot: s_grid_ed_u[i].append(self.l_calc.solu_d)
                 if 'em' in to_plot: s_grid_em_u[i].append(self.l_calc.solu_m)
@@ -199,7 +464,7 @@ class deriv_grid:
                     
                 if 'er' in to_plot: s_grid_M_pred[i].append(self.l_calc.T_slow_mod)
 
-                
+        # And now we need to save our solutions (because I, for some reason, chose not to save them earlier).
         if 'er' in to_plot: self.s_grid_er_u = s_grid_er_u
         if 'ed' in to_plot: self.s_grid_ed_u = s_grid_ed_u
         if 'em' in to_plot: self.s_grid_em_u = s_grid_em_u
@@ -228,13 +493,15 @@ class deriv_grid:
             if '0x' in to_plot: self.s_grid_0x_u_yr = s_grid_0x_u_yr
             if '0x' in to_plot: self.s_grid_0x_l_yr = s_grid_0x_l_yr
 
+        # And now we output the full timing.
         print("Done grid build: ", time.time() - start_time)
+        self.run = True
 
 
 # ---------
 
-# for use with grid plotting
-    # These assume nice behavior. So far, it works well, but I can think of cases when it won't.
+    # These functions are for use with grid plotting (sine fitting), and are not for external use.
+    # They assume nice behavior. So far, it works well, but I can think of cases when it won't.
     def find_root_points(self,y_points):
         y_mult = np.array(y_points[:-1])*np.array(y_points[1:])
         zero_index = np.nonzero(y_mult == 0)
@@ -261,6 +528,7 @@ class deriv_grid:
 # plotting the grid
     def plot_real(self, i, j, k, R, B, mu, no):
 
+        # Because I still don't want to write self.* all the time.
         to_plot = self.to_plot
 
         # currently the below parameters are used for labeling the graph, 
@@ -270,6 +538,11 @@ class deriv_grid:
         #B = self.l_calc.B
         #mu = self.l_calc.mu
 
+        # This will calculate the model for the curve for slow oscillations. It is a sine curve
+        # which models sampling at the same part of every fast oscillation period. The fast 
+        # oscillation model is given by the 'em' curve, which integrates the solution, providing 
+        # outputs at every time given by our modeled k, allowing for the difference between the 
+        # actual and modeled k values to be observed.
         if 'er' in to_plot: 
             M_pred = self.s_grid_M_pred[i][j]
             A_pred = self.find_amp(self.s_grid_er_u[i][j])
@@ -334,12 +607,15 @@ class deriv_grid:
                 sl0xr = np.real(self.s_grid_0x_l_yr[i][j])
         
         #--PLOTTING--
-        #absolute value triggered envelope
+        # Plots the values for points triggered by the absolute value reaching a maximum,
+        # thus showing the envelope of psi.
         fig, ax = plt.subplots()
         ax.set_ylabel('Real Part of \u03A8')
         ax.set_xlabel('x (m)')
         plt.title(f"\u03A8 envelope, abs triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
 
+        # I form my label based on a list which is appended, so that only the plots which exist will
+        # be plotted.
         h_list = []
 
         if 'er' in to_plot: 
@@ -377,7 +653,7 @@ class deriv_grid:
         plt.savefig(f"plot{no}_{i}_{j}_real_a.pdf", format='pdf')
         plt.close()
 
-        # real triggered envelope
+        # This curve is determined by plotting cases when the derivative of the real part is zero.
         fig, ax = plt.subplots()
         ax.set_ylabel('Real Part of \u03A8')
         ax.set_xlabel('x (m)')
@@ -416,7 +692,9 @@ class deriv_grid:
         plt.savefig(f"plot{no}_{i}_{j}_real_r.pdf", format='pdf')
         plt.close()
 
-        # real triggered envelope with triggered exact solution
+        # This also triggers on the maxima of the real values and also uses these calculated points for 
+        # the points at which to calculate the exact solution. This will ensure that the exact solution also
+        # produces an envelope rather than a sinusoid.
         fig, ax = plt.subplots()
         ax.set_ylabel('Real Part of \u03A8')
         ax.set_xlabel('x (m)')
@@ -468,6 +746,7 @@ class deriv_grid:
         #position arrays
         # estimated, triggered buy abs, triggered by real (both) -- e, a, r
         # here everything is triggered by absolute value
+        # This should create horizontal lines on the graph. 
         if 'er' in to_plot: tuera = np.abs(self.s_grid_er_u[i][j]['t_events'][0][0::self.trim])
         if '0r' in to_plot: tu0ra = np.abs(self.s_grid_0r_u[i][j]['t_events'][0][0::self.trim])
         if 'ed' in to_plot: tueda = np.abs(self.s_grid_ed_u[i][j]['t_events'][0][0::self.trim])
@@ -477,12 +756,12 @@ class deriv_grid:
         if 'ed' in to_plot: tleda = np.abs(self.s_grid_ed_u[i][j]['t_events'][0][1::self.trim])
         if '0d' in to_plot: tl0da = np.abs(self.s_grid_0d_u[i][j]['t_events'][0][1::self.trim])
 
-        # Try to also plot the versions which are calculated
+        # Try to also plot the versions which are calculated. 
+        # The accuracy of the calculation is seen by the drop in what should be a straight line.
         if 'er' in to_plot: tuerc = np.abs(self.s_grid_er_u[i][j]['t'])
         if '0r' in to_plot: tu0rc = np.abs(self.s_grid_0r_u[i][j]['t'])
         if 'em' in to_plot: tuemc = np.abs(self.s_grid_em_u[i][j]['t'])
 
-        
         #value arrays
         if 'er' in to_plot: suera = np.abs(self.s_grid_er_u[i][j]['y_events'][0][0::self.trim, 0])
         if 'ed' in to_plot: sueda = np.abs(self.s_grid_ed_u[i][j]['y_events'][0][0::self.trim, 0])
@@ -493,7 +772,7 @@ class deriv_grid:
         if '0r' in to_plot: sl0ra = np.abs(self.s_grid_0r_u[i][j]['y_events'][0][1::self.trim, 0])
         if '0d' in to_plot: sl0da = np.abs(self.s_grid_0d_u[i][j]['y_events'][0][1::self.trim, 0])
 
-        # Try to also plot the versions which are calculated
+        # Try to also plot the versions which are calculated.
         if 'er' in to_plot: suerc = np.abs(self.s_grid_er_u[i][j]['y'][0])
         if '0r' in to_plot: su0rc = np.abs(self.s_grid_0r_u[i][j]['y'][0])
         if 'em' in to_plot: suemc = np.abs(self.s_grid_em_u[i][j]['y'][0])

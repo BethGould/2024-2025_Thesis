@@ -1,4 +1,4 @@
-# grid_fast_osc class 
+# class grid_fast_osc 
 # Runs a grid to calculate t_fast.
 # Fixed R, B, k, dk
 # Grid on mu, amp, psi'(0)

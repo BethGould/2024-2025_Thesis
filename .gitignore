@@ -1,1 +1,3 @@
 *.pkl
+eelib/__pycache__/
+eelib/__pycache__/**

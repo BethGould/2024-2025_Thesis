@@ -1,26 +1,72 @@
-# grid_fast_osc class 
-# Runs a grid to calculate t_fast.
-# Fixed R, B, k, dk
-# Grid on mu, amp, psi'(0)
-# psi'(0) grid sinusoidal. mu grid logrithmic, amp grid linear.
+# class grid_BVP
 
-# __init__(self, R, B, dk, mu, k = kFAu, amp=1., grid_size = 9, ang_lim = 0.1)
-# makeDerivPoints(self) -- called by init
-# makeGridPoints(self, a_min, a_max, mu_min, mu_max, num = 10, num_m = 10)
-# gridFastOsc(self, n = 20, method = 'RK45', rtol = rtol, atol = atol)
+# Author: Elizabeth Gould
+# Date Last Edit: 03.03.2026
 
-# need to run init -> makeGridPoints -> gridFastOsc
 
-# init forms the derivative grid and creates a loop with the given parameters
+# This code builds a grid of solutions to the BVP, in order to calculate Psi'(0), 
+# our initial derivative of Psi. Here we can vary R, B, k, dk, mu, and A and 
+# construct either a grid of values, or generate a set of random values. 
+#
+# The mu grid is spaced logrithmically. The other grids 
+# are spaced linearly. Note that one of the results of this is that mu is taken as a exponent of 
+# powers of 10 for the grid, while it is taken as a raw number for Monte Carlo runs.
 
-# makeGridPoints forms the grid for other parameters which vary
-# num is the number of amp values
-# num_mu is the number of mu values
+# Grid run code:
+# > gridl = eelib.grid_BVP(R, B, dk, mu)
+# > gridl.makeGridPoints(mu=mu_r, B=b_r, num = [n])
+# > gridl.gridBVP()
 
-# gridFastOsc does the work of calcuation
-# time is spent here
+# Monte Carlo run code:
+# > gridl = eelib.grid_BVP(R, B, dk, mu)
+# > gridl.makeMCPoints(mu=mu_r, B=b_r, num = n)
+# > gridl.mcBVP()
 
-# I should add a Monte Carlo variant.
+# __init__(self, R=1.0, B=0.8, dk=0.5, mu=1.e-6, k = kFAu, amp=1.) --
+#       Creates a loop object with the given parameters. Note that the passed values of parameters
+#       are relevant only for those parameters which are not to be varied as varied parameters will 
+#       be replaced during the calculations.
+
+# __repr__(self)
+# __str__(self)
+#       Prints a description of the object. 
+
+# clear_calcs(self) -- Clears the data. 
+
+# makeGridPoints(self, mu = (1.0, 1.0), dk = (-1.0, -1.0), B = (-1.0, -1.0), R = (-1.0, -1.0), 
+#                       A = (-1.0, -1.0), k0 = (-1.0, -1.0), num = [10])
+# makeMCPoints(self, mu = (1.0, 1.0), dk = (-1.0, -1.0), B = (-1.0, -1.0), R = (-1.0, -1.0), 
+#                       A = (-1.0, -1.0), k0 = (-1.0, -1.0), num = 1000)
+
+# These define the various values of parameters for which to analyze the BVP. If a set of points is not included,
+# it will not be varied, instead using the value of the parameter passed in initialization. Otherwise, the values
+# will be varied from the minimum value given to the maximum value given. 
+#   !!! Note -- mu is varied based on exponents of 10 for the grid points, but as a pure number for Monte Carlo 
+#               analysis. I know this is an issue, but it how things are written.
+#   num is a positive integer indicating the number of points for the Monte Carlo case.
+#   For a grid, num must be a list of positive integers. A list size of one will set all dimensions of the grid to
+# this number, for num ^ n points. You can also provide a value for every parameter separately.
+
+# gridBVP(self) does the work of the calcuation if given a grid, with all of the time spent here.
+# mcBVP(self) does the work of the calculation if given a random assortment of points to run.
+# runCalc(self) does the work of the calculation for either case.
+
+# Results are saved in the following variables:
+# self.derivs gives a list of dictionaries with the calculated values. The data can be retrieved with pandas:
+# > tbl = pd.DataFrame(gridl.derivs)
+
+# For a grid run, the saved arrays are indicated as follows:  [n_mu, n_dk, n_b, n_r, n_a, n_k0]
+
+# Parameters are saved in the following variables.
+# - Monte Carlo Table:
+# self.val_table    -- The table of random values of parameters for the Monte Carlo variant.
+# - Grid Tables:
+# magnetic_field_strength  = self.mfs
+# electron_wavenumber      = self.ew
+# electron_wavenumber_diff = self.ewd
+# nonlinearity_strength    = self.nls
+# starting_amplitude       = self.amp
+# ring_radius              = self.rr
 
 import numpy as np
 from eelib.consts import pi, kFAu, rtol, atol
@@ -36,7 +82,7 @@ class grid_BVP:
     # R, B, dk, mu, k, and amp must be given if they are fixed
     # k defaults to gold, amp defaults to 1
     def __init__(self, R=0.5, B=0.8, dk=0.5, mu=1.e-6, k = kFAu, amp=1.):
-        self.l_calc = loop(R, B, dk, mu, k, amp) # I should probably do this with inheritance
+        self.l_calc = loop(R, B, dk, mu, k, amp)
 
         self.R = R
         self.B = B
@@ -49,6 +95,7 @@ class grid_BVP:
         self.is_mc = False
         self.calculated = False
 
+    # ------------ STRING OUTPUT ---------------
     # Because we want to know what our object is.
     def __repr__(self):
         if self.is_grid:
@@ -57,7 +104,7 @@ class grid_BVP:
             else:
                 str = "Uncalculated grid object to measure current:\n"
 
-            # add our parameters for ......
+            # Indicate our parameters for our grid.
             if self.num_mu > 1:
                 str = str + f"mu has {self.num_mu} points from {self.nls[0]} to {self.nls[-1]}.\n"
             else:
@@ -86,9 +133,17 @@ class grid_BVP:
             return str
         elif self.is_mc:
             if self.calculated:
-                str = "Monte carlo object to measure current"
+                str = f"Monte Carlo object to measure current:\n"
             else:
-                str = "Uncalculated monte carlo object to measure current"
+                str = f"Uncalculated Monte Carlo object to measure current:\n"
+            # The following output is not eligant.
+            str = str + f"mu has points from {np.min(self.val_table[:,0])} to {np.max(self.val_table[:,0])}.\n"
+            str = str + f"dk has points from {np.min(self.val_table[:,1])} to {np.max(self.val_table[:,1])}.\n"
+            str = str + f"B has points from {np.min(self.val_table[:,2])} to {np.max(self.val_table[:,2])}.\n"
+            str = str + f"R has points from {np.min(self.val_table[:,3])} to {np.max(self.val_table[:,3])}.\n"
+            str = str + f"A has points from {np.min(self.val_table[:,4])} to {np.max(self.val_table[:,4])}.\n"
+            str = str + f"k0 has points from {np.min(self.val_table[:,5])} to {np.max(self.val_table[:,5])}.\n"
+            str = str + f"Number of points: {self.val_table.shape[0]}"
             return str
         else:
             return "Empty object to measure current:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
@@ -101,7 +156,7 @@ class grid_BVP:
             else:
                 str = "Uncalculated grid object to measure current:\n"
 
-            # add our parameters for ......
+            #  Indicate our parameters for our grid.
             if self.num_mu > 1:
                 str = str + f"mu has {self.num_mu} points from {self.nls[0]} to {self.nls[-1]}.\n"
             else:
@@ -130,27 +185,34 @@ class grid_BVP:
             return str
         elif self.is_mc:
             if self.calculated:
-                str = "Monte carlo object to measure current"
+                str = f"Monte Carlo object to measure current:\n"
             else:
-                str = "Uncalculated monte carlo object to measure current"
+                str = f"Uncalculated Monte Carlo object to measure current:\n"
+            # The following output is not eligant.
+            str = str + f"mu has points from {np.min(self.val_table[:,0])} to {np.max(self.val_table[:,0])}.\n"
+            str = str + f"dk has points from {np.min(self.val_table[:,1])} to {np.max(self.val_table[:,1])}.\n"
+            str = str + f"B has points from {np.min(self.val_table[:,2])} to {np.max(self.val_table[:,2])}.\n"
+            str = str + f"R has points from {np.min(self.val_table[:,3])} to {np.max(self.val_table[:,3])}.\n"
+            str = str + f"A has points from {np.min(self.val_table[:,4])} to {np.max(self.val_table[:,4])}.\n"
+            str = str + f"k0 has points from {np.min(self.val_table[:,5])} to {np.max(self.val_table[:,5])}.\n"
+            str = str + f"Number of points: {self.val_table.shape[0]}"
             return str
         else:
             return "Empty object to measure current:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
 
-
-
     # ------------ CHOOSE POINTS (GRID) -----------------
 
-    #def makeGridPoints(self, m_min, m_max, k_min, k_max, a_min, a_max, mu_min, mu_max, num = 10):
+    # def makeGridPoints(self, m_min, m_max, k_min, k_max, a_min, a_max, mu_min, mu_max, num = 10):
     # In order -- mu, dk, B, R, M, A, k0
-    # num length -- 1, 2 (grid vs non-grid), n = defined vars + 1 for grid
+    # num length -- 1 or n = defined vars for grid
     def makeGridPoints(self, mu = (1.0, 1.0), dk = (-1.0, -1.0), B = (-1.0, -1.0), R = (-1.0, -1.0), 
                        A = (-1.0, -1.0), k0 = (-1.0, -1.0), num = [10]):
         
         # Determines with which parameters to build the grid.
-        # For dk, I need something else to indicate that it is not needed, as negative values in theory could be useful
-        # however, I assume dk goes from 0 to 1.
+        # For dk, I need something else to indicate that it is not needed, as negative values in theory could be useful.
+        # However, I assume dk goes from 0 to 1.
         # There is a wider range of error-checking which can be performed at this step, limiting our ranges.
+        # I don't know why I didn't just use None.
         var_set = [False,False,False,False,False,False]
         if mu[0] <  0.0: var_set[0] = True
         if dk[0] > -0.1: var_set[1] = True
@@ -198,7 +260,6 @@ class grid_BVP:
             self.amp = np.array([self.a])
 
         if self.calculated: self.clear_calcs()
-        #if self.is_mc: self.clear_mc_list()
 
         self.is_grid = True
         self.is_mc = False
@@ -206,8 +267,8 @@ class grid_BVP:
 
         gc.collect()
 
-    # separated for clarity of previous code as this is long and repetitive
-    # it is not to be run independently
+    # This is separated for clarity of previous code as this is long and repetitive.
+    # It is not to be run independently.
     def set_nums(self, var_set, num):
 
         self.num_mu = 1
@@ -268,23 +329,17 @@ class grid_BVP:
             if j != ln:
                 raise ValueError(f"Too many values passed for num. j = {j}, i = {i}, ln = {ln}")
 
-    # inputs:
-    #       self.ang_lim -- should remain constant; 
-    #       self.dlim -- should change and be recorded in an array; scale of derivative
-    #       self.grid_size -- must remain constant, set at start
-
-
+    # Clear memory
     def clear_calcs(self):
         self.derivs   = None
+        gc.collect()
 
 
     # ------------ CHOOSE POINTS (MONTE CARLO) -----------------
 
-    # This is the alternative variant for function fitting. It works better for a combined regression task, 
-    # but is not so clear when fitting the parameters separately, where I prefer the option of keeping other
-    # parameters fixed. I have yet to implement this variant. (MC + stabalized LR or MCMC)
-
-
+    # Monte Carlo points take ranges of parameters like the grid, but since they are random,
+    # it will output an array of random points, rather than building a grid. num is the full 
+    # number of points, not for each parameter like is the case for the grid.
     def makeMCPoints(self, mu = (1.0, 1.0), dk = (-1.0, -1.0), B = (-1.0, -1.0), R = (-1.0, -1.0), 
                        A = (-1.0, -1.0), k0 = (-1.0, -1.0), num = 1000):
         
@@ -299,8 +354,6 @@ class grid_BVP:
         if R[0]  > -0.1: var_set[3] = True
         if A[0]  > -0.1: var_set[4] = True
         if k0[0] > -0.1: var_set[5] = True
-
-        #print(var_set)
 
         self.var_set = var_set # so I can use this later
 
@@ -350,7 +403,6 @@ class grid_BVP:
 
         # Free up memory after clearing the old data, as it is no longer valid
         if self.calculated: self.clear_calcs()
-        #if self.is_mc: self.clear_mc_list()
 
         self.is_grid = False
         self.is_mc = True
@@ -361,13 +413,17 @@ class grid_BVP:
 
     # ------------- FIND VALUES ON GRID ---------------
 
-    # def calculate_fast_t(self):
-    # if self.is_grid: gridFastOsc()
-    # if self.is_mc: mcFastOsc()
+    # Wrapper for the two following functions to run the code.
+    def runCalc(self):
+        if self.is_grid: 
+            self.gridBVP()
+        elif self.is_mc: 
+            self.mcBVP()
+        else: 
+            print("Points to calculate have not yet been set.")
 
     # Perform the calculation on the grid.
-    # This take time, but no longer requires parameters. It is separate from the parameters due to this.
-    # I need to add functionality which uses self.is_grid, ...
+    # This take time, but no longer requires parameters. It is separate from the parameters due to this requirement.
     def gridBVP(self):
 
         # Old calculation already exists.
@@ -402,8 +458,10 @@ class grid_BVP:
         #fast_oscillation_amplitude = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0))
         #fast_oscillation_period_0 = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0))
 
+        # saved data
         found_derivs_array = []
 
+        # Indicies for each parameter to vary.
         ib = 0
         ir = 0
         im = 0
@@ -411,8 +469,8 @@ class grid_BVP:
         ik0 = 0
         ia = 0
 
-        # solve for each point on the grid
-        # The 8 levels are only a problem if they are all used.
+        # Solve for each point on the grid.
+        # The 6 levels are only a problem if they are all used.
         print("Number of periods to calculate:", num_dk*num_k0*num_b*num_r*num_mu*num_a)
         for im in range(num_mu):
             for ik in range(num_dk):
@@ -421,19 +479,20 @@ class grid_BVP:
                     for ir in range(num_r):    
                         for ia in range(num_a):
                             for ik0 in range(num_k0):
-                                # set the loop
+                                # Set the loop.
                                 self.l_calc.update_params(R=self.rr[ir], B=self.mfs[ib], dk=self.ewd[ik], 
                                                   mu=self.nls[im], k = self.ew[ik0], amp=self.amp[ia])
-                                # find the roots which solve our BVP; this is the part which takes time (~30s)
+                                # Find the roots which solve our BVP; this is the part which takes time.
                                 with warnings.catch_warnings(action="ignore"):
                                     deriv_found = self.l_calc.find_root_many()
-                                # numbers here are for the solution without ee interaction
+                                # The numbers here are for the solution without ee interaction.
                                 psiprime0 = self.l_calc.psi_prime_0()
                                 exactend = self.l_calc.psij0(2*pi*self.l_calc.R)
                                 i0 = self.l_calc.current_old()
                                 a0 = self.l_calc.aj0
                                 b0 = self.l_calc.bj0
                                 A_max_0 = self.l_calc.amp_max_0()
+                                # Save all of our data in a dictionary object, for use with pandas.
                                 for deriv in deriv_found:
                                     self.l_calc.setDeriv(deriv)
                                     new_element = {"R": self.rr[ir],
@@ -461,13 +520,16 @@ class grid_BVP:
                                     found_derivs_array.append(new_element)
 
 
+        # Transfer our local variables to object variables, saving our data.
         self.derivs = found_derivs_array
 
+        # Indicate that this function has been run.
         self.calculated = True
 
+        # And end timing.
         print("Done grid build: ", time.time() - start_time)
 
-
+    # Now our run for randomly determined points.
     def mcBVP(self):
 
         # Old calculation already exists.
@@ -483,7 +545,7 @@ class grid_BVP:
         start_time = time.time()
         print('Begin grid build: ', time.time() - start_time)
 
-        # Initialize grids
+        # Retrieve number of points.
         num = self.num
 
         # magnetic_field_strength  = self.mfs
@@ -495,25 +557,27 @@ class grid_BVP:
 
         # self.val_table
 
+        # results
         found_derivs_array = []
         
-        # solve for each point on the grid
+        # Solve for each randomly determined point.
         print("Number of periods to calculate:", num)
         for ii in range(num):
             self.l_calc.update_params(R=self.val_table[ii,3], B=self.val_table[ii,2], dk=self.val_table[ii,1], 
                                       mu=self.val_table[ii,0], k = self.val_table[ii,5], amp=self.val_table[ii,4])
-            # calculate derivative from our parameters if it is not as given
+            # Calculate derivative from our parameters.
 
-            # find the roots which solve our BVP; this is the part which takes time (~30s)
+            # Find the roots which solve our BVP. This is the part which takes time.
             with warnings.catch_warnings(action="ignore"):
                 deriv_found = self.l_calc.find_root_many()
-            # numbers here are for the solution without ee interaction
+            # The numbers here are for the solution without ee interaction.
             psiprime0 = self.l_calc.psi_prime_0()
             exactend = self.l_calc.psij0(2*pi*self.l_calc.R)
             i0 = self.l_calc.current_old()
             a0 = self.l_calc.aj0
             b0 = self.l_calc.bj0
             A_max_0 = self.l_calc.amp_max_0()
+            # Save all of our data in a dictionary object, for use with pandas.
             for deriv in deriv_found:
                 self.l_calc.setDeriv(deriv)
                 new_element = {"R": self.val_table[ii,3],
@@ -540,7 +604,11 @@ class grid_BVP:
                               }
                 found_derivs_array.append(new_element)
 
+        # Transfer our local variables to object variables, saving our data.
         self.derivs = found_derivs_array
+
+        # Indicate that this function has been run.
         self.calculated = True
 
+        # And end timing.
         print("Done grid build: ", time.time() - start_time)

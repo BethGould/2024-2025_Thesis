@@ -42,5 +42,3 @@ def deriv_real(x,y,k,B,R,mu,mA):
     A = np.abs(y[0])
     p = np.angle(y[0])
     return dA * np.cos(p) - A * dp * np.sin(p)
-
-#What if I solve for abs(psi) rather than psi? Or abs and phi separately?

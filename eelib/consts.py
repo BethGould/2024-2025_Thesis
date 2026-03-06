@@ -37,6 +37,8 @@ atol = 1.0e-7
 
 # Other ranges of examination. (mu and psi'_0)
 # These don't have as much reasoning from the experiment.
+# They are not actually used in our program, as they are often set by hand.
+
 MU_min = 1.0e-12 # should give oscillation speed less than from B 
 MU_max = 1.0e-5  # even at this level, I have issues with my analysis
 DK_min = rtol    

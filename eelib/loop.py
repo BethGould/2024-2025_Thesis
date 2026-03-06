@@ -20,7 +20,7 @@ from eelib.consts import pi, kFAu, R_max, B_max, phi0inv, rtol, atol, DK_min
 from eelib.deriv_functions import psi_deriv, psi_deriv_old
 from eelib.events import deriv_amp, deriv_real
 # models
-from eelib.k_M_models import pred_fast_t, pred_slow_t, pred_slow_k_v2, pred_slow_k_v3, pred_fast_k_true
+from eelib.k_M_models_ivp import pred_fast_t, pred_slow_t, pred_slow_k_v2, pred_slow_k_v3, pred_fast_k_true
 from eelib.BVP_matching import fun, pred_fast_k, k_calc_0, M_calc_0
 
 #--TABLE OF CONTENTS--------
@@ -367,11 +367,11 @@ class loop:
 
         #t_vals = self.find_oscil_old(n, self.lngt * percent_range)
 
-        t0h0 = self.sth0
-        tfh0 = self.lngt * percent_range #t_vals[1]
-        t0l0 = self.stl0
-        tfl0 = self.lngt * percent_range #t_vals[3]
-
+        if solve % 3 == 0 or solve % 5 == 0:
+            t0h0 = self.sth0
+            tfh0 = self.lngt * percent_range #t_vals[1]
+            t0l0 = self.stl0
+            tfl0 = self.lngt * percent_range #t_vals[3]
 
         #calculate y0
         y0h = self.amp

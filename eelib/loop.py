@@ -20,7 +20,7 @@ from eelib.consts import pi, kFAu, R_max, B_max, phi0inv, rtol, atol, DK_min
 from eelib.deriv_functions import psi_deriv, psi_deriv_old
 from eelib.events import deriv_amp, deriv_real
 # models
-from eelib.k_M_models_ivp import pred_fast_t, pred_slow_t, pred_slow_k_v2, pred_slow_k_v3, pred_fast_k_true
+from eelib.k_M_models_ivp import pred_fast_t, pred_slow_k_v2, pred_slow_k_v3, pred_fast_k_true
 from eelib.BVP_matching import fun, pred_fast_k, k_calc_0, M_calc_0
 
 #--TABLE OF CONTENTS--------
@@ -236,16 +236,16 @@ class loop:
 
         # I need to be careful here, with the understanding of what is found -- t or k, also with factors of 2
         self.T_fast_mod = pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
-        self.T_slow_mod = pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        #self.T_slow_mod = pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_fast_mod_true = pi / pred_fast_k_true(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         # I will also need the starting point of the oscillation
 
-        pred2 = pred_slow_k_v2(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        #pred2 = pred_slow_k_v2(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         pred3 = pred_slow_k_v3(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
 
         #print(self.M, 2*pi / self.T_slow_mod, pred2, pred3)
 
-        self.T_slow_mod = 2 * pi / pred2
+        self.T_slow_mod = 2 * pi / pred3
 
         
         #self.find_fast_oscillations(20)
@@ -269,7 +269,7 @@ class loop:
 
         # I need to be careful here, with the understanding of what is found -- t or k, also with factors of 2
         self.T_fast_mod = pred_fast_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
-        self.T_slow_mod = pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        #self.T_slow_mod = pred_slow_t(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_fast_mod_true = pi / pred_fast_k_true(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
 
         # I will also need the starting point of the oscillation
@@ -277,7 +277,7 @@ class loop:
         #self.find_fast_oscillations(n, method = method, rtol = rtol, atol = atol)
         #self.T_fast = self.T_fast * 2 # this t is now half the real t, was one fourth before, (corresponds to t of abs plot)
 
-        pred2 = pred_slow_k_v2(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+        #pred2 = pred_slow_k_v2(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         pred3 = pred_slow_k_v3(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
 
         #print(self.M, 2* pi / self.T_slow_mod, pred2, pred3)

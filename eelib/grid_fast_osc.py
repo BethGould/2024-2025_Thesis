@@ -395,6 +395,9 @@ class grid_fast_osc:
         y = np.cos(y) * self.dlim
         xx, yy = np.meshgrid(x, y)
         d0_grid = xx + 1j * yy
+
+        d0_grid = d0_grid.T
+
         self.d0_grid = d0_grid
 
     # Clear memory
@@ -565,7 +568,7 @@ class grid_fast_osc:
                                 for idr in range(num_d):
                                     for idi in range(num_d):
                                         # Calculate the derivative from our parameters, if it is not as given.
-                                        self.l_calc.setDeriv(self.d0_grid[idi,idr], n = self.n_sm, method = self.method,
+                                        self.l_calc.setDeriv(self.d0_grid[idr,idi], n = self.n_sm, method = self.method,
                                                              rtol = self.rtol, atol = self.atol)
                                         # Estimate k. This is no longer automatic, and it is required. 
                                         self.l_calc.find_fast_oscillations(self.n_sm, method = self.method, 

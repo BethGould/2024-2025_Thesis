@@ -1,6 +1,12 @@
+# fitted_functions.py
+
+# Author: Elizabeth Gould
+# Date Last Edit: 08.03.2026
+
 # This contains functions used by reference for non-linear function regression (scipy.optimize.curve_fit). 
 # They are included outside the class structure and in a unified form
 # so that they can be easily switched out.
+# The code which uses them is below.
 
 #--LIBRARIES--------
 import numpy as np

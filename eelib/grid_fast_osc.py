@@ -568,8 +568,7 @@ class grid_fast_osc:
                                 for idr in range(num_d):
                                     for idi in range(num_d):
                                         # Calculate the derivative from our parameters, if it is not as given.
-                                        self.l_calc.setDeriv(self.d0_grid[idr,idi], n = self.n_sm, method = self.method,
-                                                             rtol = self.rtol, atol = self.atol)
+                                        self.l_calc.setDeriv(self.d0_grid[idr,idi])
                                         # Estimate k. This is no longer automatic, and it is required. 
                                         self.l_calc.find_fast_oscillations(self.n_sm, method = self.method, 
                                                                            rtol = self.rtol, atol = self.atol)
@@ -631,8 +630,7 @@ class grid_fast_osc:
             self.l_calc.update_params(R=self.val_table[ii,3], B=self.val_table[ii,2], dk=self.val_table[ii,1], 
                                       mu=self.val_table[ii,0], k = self.val_table[ii,5], amp=self.val_table[ii,4])
             # calculate derivative from our parameters if it is not as given
-            self.l_calc.setDeriv(self.val_table[ii,6]+ 1.j *self.val_table[ii,7], n = self.n_sm, method = self.method,
-                                                                        rtol = self.rtol, atol = self.atol)
+            self.l_calc.setDeriv(self.val_table[ii,6]+ 1.j *self.val_table[ii,7])
             # Estimate k. This is no longer automatic, and it is required.
             self.l_calc.find_fast_oscillations(self.n_sm, method = self.method, rtol = self.rtol, atol = self.atol)
 

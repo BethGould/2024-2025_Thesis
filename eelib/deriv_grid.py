@@ -1,4 +1,7 @@
 # class deriv_grid
+#
+# Author: Elizabeth Gould
+# Date Last Edit: 03.03.2026
 #  
 # Takes fixed R, B, k, dk, mu, and amp, and creates a sinusoidal-spaced grid of 
 # grid_size real and imaginary values. There are grid_size^2 runs of the loop.

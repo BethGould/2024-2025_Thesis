@@ -1,3 +1,8 @@
+# consts.py
+
+# Author: Elizabeth Gould
+# Date Last Edit: 03.03.2026
+
 # Contains copies of fundamental constants from scipy, other used constants in the program,
 # and defined mins, maxes, and tolerances.
 

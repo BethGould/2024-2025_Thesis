@@ -1,7 +1,7 @@
 # class grid_slow_osc 
 #
 # Author: Elizabeth Gould
-# Date Last Edit: 03.03.2026
+# Date Last Edit: 09.03.2026
 #
 # This code builds a grid of solutions to the IVP, in order to calculate t_slow (= 2*pi / M), 
 # the period of the slow oscillations. Here we can vary R, B, k, dk, mu, A, and Psi'(0) and 
@@ -39,6 +39,9 @@
 # __repr__(self)
 # __str__(self)
 #       Prints a description of the object. 
+
+# save_solution -- Boolean set to false by default. If true, the full solutions to the IVP will be saved. 
+#                  This is used as the solutions can be large, and are rarely needed.
 
 # clear_calcs(self) -- Clears the data. 
 # setIntegratorParameters(self, solve_mu_0 = None, n_sm = None, method = None, rtol = None, atol = None, R_max = None, n_lg = None)
@@ -112,6 +115,7 @@ class grid_slow_osc(grid_fast_osc):
         super().__init__(R,B,dk,mu,k,amp)
 
         self.setIntegratorParameters(solve_mu_0=False, R_max = 1.0, n_lg = 1000)
+        self.save_solution = False # Tests with the solution saved show that it is too large.
 
     # Because we want to know what our object is.
     def __repr__(self):
@@ -322,8 +326,7 @@ class grid_slow_osc(grid_fast_osc):
                                 for idr in range(num_d):
                                     for idi in range(num_d):
                                         # Calculate the derivative from our parameters, if it is not as given.
-                                        self.l_calc.setDeriv(self.d0_grid[idr,idi], n = self.n_sm, method = self.method,
-                                                             rtol = self.rtol, atol = self.atol)
+                                        self.l_calc.setDeriv(self.d0_grid[idr,idi])
                                         # Estimate k. This is no longer automatic, and it is required. 
                                         self.l_calc.find_fast_oscillations(self.n_sm, method = self.method, 
                                                                            rtol = self.rtol, atol = self.atol)
@@ -339,16 +342,18 @@ class grid_slow_osc(grid_fast_osc):
                                             slow_oscillation_amplitude[im,ik,ib,ir,ia,ik0,idr,idi] = fit[0]
                                             slow_oscillation_theta[im,ik,ib,ir,ia,ik0,idr,idi] = fit[2]
 
+                                        if self.save_solution:
                                         # Save our full data as well.
-                                        slow_osc_sv_ind.append([im,ik,ib,ir,ia,ik0,idr,idi])
-                                        slow_osc_sv_data.append(sol_er_u.copy())
+                                            slow_osc_sv_ind.append([im,ik,ib,ir,ia,ik0,idr,idi])
+                                            slow_osc_sv_data.append(sol_er_u.copy())
 
         # Transfer our local variables to object variables, saving our data.
         self.slow_osc_k  = slow_oscillation_wavenumber  # Estimate for our wavenumber for the slow oscillations (found from fitting a sin).
         self.slow_osc_a  = slow_oscillation_amplitude   # Maximum absolute value.
         self.slow_osc_th = slow_oscillation_theta
-        self.slow_osc_i  = slow_osc_sv_ind              # Indicies for our spacings, due to the alternative storage mechanism.
-        self.slow_osc_sol  = slow_osc_sv_data           # Save full solution.
+        if self.save_solution:
+            self.slow_osc_i  = slow_osc_sv_ind              # Indicies for our spacings, due to the alternative storage mechanism.
+            self.slow_osc_sol  = slow_osc_sv_data           # Save full solution.
 
         # Indicate that this function has been run.
         self.calculated = True
@@ -409,8 +414,7 @@ class grid_slow_osc(grid_fast_osc):
             self.l_calc.update_params(R=self.val_table[ii,3], B=self.val_table[ii,2], dk=self.val_table[ii,1], 
                                       mu=self.val_table[ii,0], k = self.val_table[ii,5], amp=self.val_table[ii,4])
             # Calculate derivative from our parameters if it is not as given.
-            self.l_calc.setDeriv(self.val_table[ii,6]+ 1.j *self.val_table[ii,7], n = self.n_sm, method = self.method,
-                                                                        rtol = self.rtol, atol = self.atol)
+            self.l_calc.setDeriv(self.val_table[ii,6]+ 1.j *self.val_table[ii,7])
             # Estimate k. This is no longer automatic, and it is required.
             self.l_calc.find_fast_oscillations(self.n_sm, method = self.method, rtol = self.rtol, atol = self.atol)
             self.l_calc.solve_ivp(n = self.n_lg, percent_range=pr, method = self.method,
@@ -427,13 +431,13 @@ class grid_slow_osc(grid_fast_osc):
                 slow_oscillation_theta[ii] = fit[2]
 
             # And also save our full solution.
-            sol_er_u_save.append(sol_er_u.copy())
+            if self.save_solution: sol_er_u_save.append(sol_er_u.copy())
 
         # Transfer our local variables to object variables, saving our data.
         self.slow_osc_k  = slow_oscillation_wavenumber  # Estimate for our wavenumber for the slow oscillations (found from fitting a sin).
         self.slow_osc_a  = slow_oscillation_amplitude   # Maximum absolute value.
         self.slow_osc_th = slow_oscillation_theta
-        self.slow_osc_sol  = sol_er_u_save              # Save full solution.
+        if self.save_solution: self.slow_osc_sol  = sol_er_u_save  # Save full solution.
 
         # Indicate that this function has been run.
         self.calculated = True

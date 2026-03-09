@@ -3,7 +3,6 @@
 # Author: Elizabeth Gould
 # Date Last Edit: 03.03.2026
 
-
 # This code builds a grid of solutions to the BVP, in order to calculate Psi'(0), 
 # our initial derivative of Psi. Here we can vary R, B, k, dk, mu, and A and 
 # construct either a grid of values, or generate a set of random values. 

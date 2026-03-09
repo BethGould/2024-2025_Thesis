@@ -1,3 +1,8 @@
+# deriv_functions.py
+#
+# Author: Elizabeth Gould
+# Date Last Edit: 03.03.2026
+#
 # This contains functions used by reference by the ODE solver. 
 # They are included outside the class structure and in a unified form
 # so that they can be easily switched out.

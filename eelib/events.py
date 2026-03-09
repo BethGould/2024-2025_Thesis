@@ -1,3 +1,8 @@
+# events.py
+
+# Author: Elizabeth Gould
+# Date Last Edit: 03.03.2026
+
 # Like the derivative functions, these are used by the loop class
 # when it calls the ODE solver. They are referred to by handle.
 

@@ -1,7 +1,7 @@
 # class deriv_grid
 #
 # Author: Elizabeth Gould
-# Date Last Edit: 03.03.2026
+# Date Last Edit: 09.03.2026
 #  
 # Takes fixed R, B, k, dk, mu, and amp, and creates a sinusoidal-spaced grid of 
 # grid_size real and imaginary values. There are grid_size^2 runs of the loop.
@@ -63,9 +63,6 @@
 # k, R, B, mu are for labeling the plot.
 # no is an index used to label the plots, allowing for unique labeling.
 
-# find_root_points, find_root_start_find_root_dif_ and find_amp are used by the code to fit the slow 
-# oscillations to a sine function. They don't interact with the object, so external use is irrelevant. 
-
 # Error handling has not been added to this class, so it may function incorrectly if used incorrectly.
 
 
@@ -74,6 +71,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from eelib.consts import pi, kFAu, rtol, atol, R_max, B_max
 from eelib.loop import loop
+from eelib.fitted_functions import fit_sin
 import time
 
 class deriv_grid:
@@ -190,8 +188,8 @@ class deriv_grid:
         self.s_grid_0r_u = None
         self.s_grid_0x_u_tc = None
         self.s_grid_0x_l_tc = None
-        self.s_grid_0x_u_tcm = None
-        self.s_grid_0x_l_tcm = None
+        #self.s_grid_0x_u_tcm = None
+        #self.s_grid_0x_l_tcm = None
         self.s_grid_0x_u_ta = None
         self.s_grid_0x_l_ta = None
         self.s_grid_0x_u_tr = None
@@ -267,8 +265,8 @@ class deriv_grid:
 
         if '0x' in to_plot: s_grid_0x_u_tc = []
         if '0x' in to_plot: s_grid_0x_l_tc = []
-        if '0x' in to_plot: s_grid_0x_u_tcm = []
-        if '0x' in to_plot: s_grid_0x_l_tcm = []
+        #if '0x' in to_plot: s_grid_0x_u_tcm = []
+        #if '0x' in to_plot: s_grid_0x_l_tcm = []
         if '0r' in to_plot:
             if '0x' in to_plot: s_grid_0x_u_ta = []
             if '0x' in to_plot: s_grid_0x_l_ta = []
@@ -276,8 +274,8 @@ class deriv_grid:
             if '0x' in to_plot: s_grid_0x_l_tr = []
         if '0x' in to_plot: s_grid_0x_u_yc = []
         if '0x' in to_plot: s_grid_0x_l_yc = []
-        if '0x' in to_plot: s_grid_0x_u_ycm = []
-        if '0x' in to_plot: s_grid_0x_l_ycm = []
+        #if '0x' in to_plot: s_grid_0x_u_ycm = []
+        #if '0x' in to_plot: s_grid_0x_l_ycm = []
         if '0r' in to_plot:
             if '0x' in to_plot: s_grid_0x_u_ya = []
             if '0x' in to_plot: s_grid_0x_l_ya = []
@@ -308,8 +306,8 @@ class deriv_grid:
             if '0x' in to_plot: 
                 s_grid_0x_u_tc.append([])
                 s_grid_0x_l_tc.append([])
-                s_grid_0x_u_tcm.append([])
-                s_grid_0x_l_tcm.append([])
+                #s_grid_0x_u_tcm.append([])
+                #s_grid_0x_l_tcm.append([])
                 if '0r' in to_plot:
                     s_grid_0x_u_ta.append([])
                     s_grid_0x_l_ta.append([])
@@ -317,8 +315,8 @@ class deriv_grid:
                     s_grid_0x_l_tr.append([])
                 s_grid_0x_u_yc.append([])
                 s_grid_0x_l_yc.append([])
-                s_grid_0x_u_ycm.append([])
-                s_grid_0x_l_ycm.append([])
+                #s_grid_0x_u_ycm.append([])
+                #s_grid_0x_l_ycm.append([])
                 if '0r' in to_plot:
                     s_grid_0x_u_ya.append([])
                     s_grid_0x_l_ya.append([])
@@ -361,8 +359,8 @@ class deriv_grid:
 
                     s_grid_0x_u_tc[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stu_ex, T_arr[0]))
                     s_grid_0x_l_tc[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stl_ex, T_arr[0]))
-                    s_grid_0x_u_tcm[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, xT, T_arr[2]))
-                    s_grid_0x_l_tcm[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, xT, T_arr[3]))
+                    #s_grid_0x_u_tcm[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, xT, T_arr[2]))
+                    #s_grid_0x_l_tcm[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, xT, T_arr[3]))
 
                     if '0r' in to_plot:
                         # triggered times
@@ -374,8 +372,8 @@ class deriv_grid:
                     # y values
                     s_grid_0x_u_yc[i].append(self.l_calc.psij(s_grid_0x_u_tc[i][j]))
                     s_grid_0x_l_yc[i].append(self.l_calc.psij(s_grid_0x_l_tc[i][j]))
-                    s_grid_0x_u_ycm[i].append(self.l_calc.psij(s_grid_0x_u_tcm[i][j]))
-                    s_grid_0x_l_ycm[i].append(self.l_calc.psij(s_grid_0x_l_tcm[i][j]))
+                    #s_grid_0x_u_ycm[i].append(self.l_calc.psij(s_grid_0x_u_tcm[i][j]))
+                    #s_grid_0x_l_ycm[i].append(self.l_calc.psij(s_grid_0x_l_tcm[i][j]))
                     
                     if '0r' in to_plot:
                         s_grid_0x_u_ya[i].append(self.l_calc.psij(s_grid_0x_u_ta[i][j]))
@@ -397,8 +395,8 @@ class deriv_grid:
 
         if '0x' in to_plot: self.s_grid_0x_u_tc = s_grid_0x_u_tc
         if '0x' in to_plot: self.s_grid_0x_l_tc = s_grid_0x_l_tc
-        if '0x' in to_plot: self.s_grid_0x_u_tcm = s_grid_0x_u_tcm
-        if '0x' in to_plot: self.s_grid_0x_l_tcm = s_grid_0x_l_tcm
+        #if '0x' in to_plot: self.s_grid_0x_u_tcm = s_grid_0x_u_tcm
+        #if '0x' in to_plot: self.s_grid_0x_l_tcm = s_grid_0x_l_tcm
         if '0r' in to_plot:
             if '0x' in to_plot: self.s_grid_0x_u_ta = s_grid_0x_u_ta
             if '0x' in to_plot: self.s_grid_0x_l_ta = s_grid_0x_l_ta
@@ -406,8 +404,8 @@ class deriv_grid:
             if '0x' in to_plot: self.s_grid_0x_l_tr = s_grid_0x_l_tr
         if '0x' in to_plot: self.s_grid_0x_u_yc = s_grid_0x_u_yc
         if '0x' in to_plot: self.s_grid_0x_l_yc = s_grid_0x_l_yc
-        if '0x' in to_plot: self.s_grid_0x_u_ycm = s_grid_0x_u_ycm
-        if '0x' in to_plot: self.s_grid_0x_l_ycm = s_grid_0x_l_ycm
+        #if '0x' in to_plot: self.s_grid_0x_u_ycm = s_grid_0x_u_ycm
+        #if '0x' in to_plot: self.s_grid_0x_l_ycm = s_grid_0x_l_ycm
         if '0r' in to_plot:
             if '0x' in to_plot: self.s_grid_0x_u_ya = s_grid_0x_u_ya
             if '0x' in to_plot: self.s_grid_0x_l_ya = s_grid_0x_l_ya
@@ -421,32 +419,7 @@ class deriv_grid:
 
 # ---------
 
-    # These functions are for use with grid plotting (sine fitting), and are not for external use.
-    # They assume nice behavior. So far, it works well, but I can think of cases when it won't.
-    def find_root_points(self,y_points):
-        y_mult = np.array(y_points[:-1])*np.array(y_points[1:])
-        zero_index = np.nonzero(y_mult == 0)
-        root_index = np.nonzero(y_mult < 0)
-        return root_index[0]
-
-    def find_root_start(self,y_points):
-        root_ls = self.find_root_points(y_points)
-        if y_points[root_ls[0]+1] > 0: 
-            rt_start = root_ls[0]
-        else: 
-            rt_start = root_ls[1]
-        return rt_start
-
-    def find_root_dif(self,y_points):
-        root_list = self.find_root_points(y_points)
-        y_diff = np.array(root_list[1:])- np.array(root_list[:-1])
-        return np.average(y_diff)
-    
-    def find_amp(self, sol):
-        arr = np.real(sol['y_events'][1][:, 0])
-        return np.max(np.abs(arr))
-
-# plotting the grid
+    # plotting the grid
     def plot_real(self, i, j, k, R, B, mu, no):
 
         # Because I still don't want to write self.* all the time.
@@ -464,15 +437,21 @@ class deriv_grid:
         # oscillation model is given by the 'em' curve, which integrates the solution, providing 
         # outputs at every time given by our modeled k, allowing for the difference between the 
         # actual and modeled k values to be observed.
+        # To get a good angle offset and amplitude, I fit my data to a sine curve, but discard
+        # the wavefunction data, since I want to see how this differs from the expected value.
         if 'er' in to_plot: 
             M_pred = self.s_grid_M_pred[i][j]
-            A_pred = self.find_amp(self.s_grid_er_u[i][j])
+            #A_pred = find_amp(self.s_grid_er_u[i][j])
             sol_t = np.real(self.s_grid_er_u[i][j]['t']) 
-            sol_y = np.real(self.s_grid_er_u[i][j]['y'][0])
-            ind_st = self.find_root_start(sol_y)
-            t0_pred = sol_t[ind_st]
+            #sol_y = np.real(self.s_grid_er_u[i][j]['y'][0])
+            fit_func = fit_sin(self.s_grid_er_u[i][j])
+            #ind_st = find_root_start(sol_y)
+            #t0_pred = sol_t[ind_st]
+            theta = fit_func[2]
+            A_pred = fit_func[0]
             t_pred = sol_t
-            y_pred = A_pred * np.sin(2*pi / M_pred * (t_pred-t0_pred))
+            y_pred = A_pred * np.sin(2*pi / M_pred * (t_pred)+ theta)
+
 
         #position arrays
         #estimated, triggered buy abs, triggered by real (both) -- c, a, r

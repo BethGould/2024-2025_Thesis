@@ -1,7 +1,7 @@
 # k_M_models_ivp.py
 #
 # Author: Elizabeth Gould
-# Date Last Edit: 03.03.2026
+# Date Last Edit: 09.03.2026
 
 # This contains our models for the shift in frequencies of both types of oscillations. 
 # They are calculated as functions of mu, dk, B, R, and dpsi0. The dpsi0 dependence means that 
@@ -102,8 +102,11 @@ def pred_fast_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
     
     return t_pred
     
-# Here I return k instead of t/2, which tends to be more useful.
+# Here I return k instead of t/2, which tends to be more useful. 
+# I also rescale B and R back to a percent scale, as this is called with raw B and R.
 def pred_fast_k(dpsi0, mu, dk, B, R, A = 1., k0=kFAu):
+    B = B / B_max
+    R = R / R_max
     return pi / pred_fast_t(dpsi0, mu, dk, B, R, A, k0)
 
 # Rescaling of A is equivalent to a rescaling of mu and dphi0.
@@ -259,6 +262,9 @@ def pred_fast_k_true(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001)
     k_full = k0+dk/R_max/2.0
     t0 = pi / k_full
     dphik = dphi0/k_full
+
+    B = B / B_max
+    R = R / R_max
 
     # constant terms -- t_0 and intercept (error)
     t_pred = t0 #+ consts['intercept']

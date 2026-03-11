@@ -652,9 +652,9 @@ class loop:
         # Find all of the points we wish to solve for.
         if ee_int:
             if estimate_k:
-                t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = self.T_fast_mod)
+                t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = 2*self.T_fast_mod)
             else:
-                t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = self.T_fast)
+                t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = 2*self.T_fast)
         else:
             t_eval_full = self.find_t_points(n,t_max = tf, t_start = t0, T = self.T_fast0)
 

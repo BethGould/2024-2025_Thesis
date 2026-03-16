@@ -3,11 +3,11 @@
 # Author: Elizabeth Gould
 # Date Last Modified: 08/03/2026
 #
-# This class is the core of the IVP and BVP solver for the non-linear Shrodinger equation for this 
-# model. The class can solve either the IVP or the BVP on a single loop for a given set of parameters. 
+# This class is the core of the IVP and BVP solver for the nonlinear Schrodinger equation for this 
+# model. The class can solve either the IVP or the BVP on a single ring for a given set of parameters. 
 #
-# It can solve the equations for both the linear and non-linear cases. There is no need to set the 
-# non-linearity parameter to zero in order to solve the linear case. Just call the functions which
+# It can solve the equations for both the linear and nonlinear cases. There is no need to set the 
+# nonlinearity parameter to zero in order to solve the linear case. Just call the methods which
 # provide the solution for the linear case. This functionality was ensured for easy comparison between
 # both solutions. Even the solution to the BVP for the linear case is saved, and not deleted upon 
 # changes to the initial derivative, despite it having a different initial derivative.
@@ -16,8 +16,8 @@
 # at once, but not both together. The IVP solver takes a derivative as an input and does not require
 # solving the BVP to run, while the BVP solutions will not provide a matching solution when run using 
 # the IVP solver. BVP full solutions are found using the modeled solutions of the IVP, which have been 
-# previously found by analysis of the IVP solver solutions. You will need to call the functions which 
-# give the modelled solution at a given x value to get the BVP solution. The BVP solvers also reset the 
+# previously found by analysis of the IVP solver solutions. You will need to call the methods which 
+# give the modeled solution at a given x value to get the BVP solution. The BVP solvers also reset the 
 # derivative, which will clear all of the IVP solver data. BVP solution data, however, is only cleared 
 # upon resetting the other parameters, but is saved upon changes to only the derivative.
 #
@@ -26,9 +26,9 @@
 # - magnetic field strength (B) as a percent of the maximum expected field strength,
 # - electron wavenumber (k and dk), where k defaults to the Fermi wavenumber for gold and dk is a
 #        percent of the period of a sine function in a ring of the maximum length,
-# - non-linear coupling strength (mu) as a dimensionless coefficent,
+# - nonlinear coupling strength (mu) as a dimensionless coefficent,
 # - initial wavefunction (A), which defaults to 1. + 0.j,
-# - and the initial derivative of the wavefuction, which is to be found by the solution to the BVP
+# - and the initial derivative of the wavefuction, which is to be found by solving the BVP.
 #
 # The solutions to the BVP are modeled assuming the loop material is gold, and will not be valid for 
 # other materials. The initial wavefunction is assumed to be 1, and changes to this will correspond 
@@ -37,18 +37,18 @@
 # case, but are assumed to not be physical, but rather just a relic of our imprecision.
 
 '''
-The code and documentation of this file is split into the following sections:
+The code and documentation of this file are split into the following sections:
 1. Libraries -- This is where I import external libraries or code from elsewhere in this library.
 2. Default values -- This is where I set the default values used by the code. Default values can 
    be changed either directly in the code, or by changing the variable in your loop class instance 
-   which stores this default value. You can also just call the relevant functions with your 
+   which stores this default value. You can also just call the relevant methods with your 
    prefered value and ignore the default. 
    There are a few exceptions, where the default values are stored in the consts.py file and these 
    values can't be modified within the class structure, but can be ignored by providing your own
    value.
-3. Table of contents -- Lists the sections of the loop class and the functions contained within.
+3. Table of contents -- Lists the sections of the loop class and the methods contained within.
 4. Variables -- Lists the variables contained within the loop class and their purpose.
-5. Functions to call -- Provides a short description of all the relevant functions of the class.
+5. Methods to call -- Provides a short description of all the relevant methods of the class.
 6. class loop -- Our code.
 '''
 
@@ -152,7 +152,7 @@ default_number_fast_oscillations_between_recoveries = 4
 # ---- VARIABLES -----
 
 # Do not change variables by hand, with the exception of the indicated defaults.
-# loop parameters are changed with update_params and setDeriv functions, while others 
+# loop parameters are changed with update_params and setDeriv methods, while others 
 # are set by running the code, not given by the user.
 
 # -- Inputs
@@ -190,7 +190,7 @@ default_number_fast_oscillations_between_recoveries = 4
 #   T_fast0  -- known, error-free period of fast oscillations for the linear case
 #   T_fast_ex -- known, error-free period of fast oscillations for the linear case
 #   T_fast_0_calc -- estimated half period of fast oscillations for the linear case
-# Starting values for our non-linear, linear, and linear exact solutions for our integrator.
+# Starting values for our nonlinear, linear, and linear exact solutions for our integrator.
 # They should be the first maxima and minima of our absolute value of our wavefunction.
 #   stl
 #   sth
@@ -200,22 +200,22 @@ default_number_fast_oscillations_between_recoveries = 4
 #   stu_ex
 
 # -- State indicators
-#   k_ee_estimated -- Have we estimated our fast oscillation wavenumber for the non-linear case from solving for the first n oscillations?
+#   k_ee_estimated -- Have we estimated our fast oscillation wavenumber for the nonlinear case from solving for the first n oscillations?
 #   k_0_estimated  -- Have we estimated our fast oscillation wavenumber for the linear case from solving for the first n oscillations?
-#   bvp_solved     -- Is our initial Psi derivative that which has been determined by solving the BVP?
+#   bvp_solved     -- Is our initial psi derivative that which has been determined by solving the BVP?
 #   deriv_set      -- Has our derivative been changed from the solution to the linear BVP?
 
 # -- Solutions to full IVP  
-#   solu    -- recovered non-linear solution
-#   solu_d  -- decreasing non-linear solution
+#   solu    -- recovered nonlinear solution
+#   solu_d  -- decreasing nonlinear solution
 #   solu0   -- decreasing linear solution
 #   solu0_r -- recovered linear solution
-#   solu_m  -- recovered non-linear solution with points selected based on our modeled k
+#   solu_m  -- recovered nonlinear solution with points selected based on our modeled k
 #
 #   ivp     -- dictionary of the following solutions, with the following labels: ['er', 'ed', 'em', '0r', '0d']
-#              'er' = recovered non-linear
-#              'ed' = decreasing non-linear
-#              'em' = recovered non-linear, modeled
+#              'er' = recovered nonlinear
+#              'ed' = decreasing nonlinear
+#              'em' = recovered nonlinear, modeled
 #              '0r' = recovered linear solution
 #              '0d' = decreasing linear solution
 #   percent_R_solved -- dictionary of the percent of the radius R each solution contains a solution for
@@ -226,13 +226,13 @@ default_number_fast_oscillations_between_recoveries = 4
 
 # -- Defaults
 # These may be altered by hand if needed. 
-#   k_model_bvp -- function handle of model for fast oscillation wavenumber withour error
+#   k_model_bvp -- function handle of model for fast oscillation wavenumber without error
 #   k_model_ivp -- function handle of model for fast oscillation wavenumber with error
 #   M_model     -- function handle of model for slow oscillation wavenumber
 #   tol_root_finder
 #   tol_bvp_matching
-#   default_rootfinder         -- string of name of SciPy rootfinder algorithm
-#   default_integration_method -- string of name of SciPy rootfinder algorithm
+#   default_rootfinder         -- string of name of SciPy root finder algorithm
+#   default_integration_method -- string of name of SciPy root finder algorithm
 #   default_no_ave_init_osc
 #   default_no_int_points
 #   default_recovery_rate
@@ -241,29 +241,29 @@ default_number_fast_oscillations_between_recoveries = 4
 #                 oscillation wavenumber should include and estimation for the linear case.
 #                 It defaults to True. It is required for accurate envelope following of the 
 #                 linear case (mu = 0) for the IVP solutions due to the error in period.
-#                 If you want to solve the non-linear IVP without solving the linear IVP, 
+#                 If you want to solve the nonlinear IVP without solving the linear IVP, 
 #                 setting this to false will save some time.
 
 
-# ---- FUNCTIONS TO CALL --------
+# ---- METHODS TO CALL --------
 
 # 1 ----- Defining Constants
 #    __init__(R, B, dk, mu, k = kFAu, amp=1.)
 #    update_params(R=-1., B=-1., dk=-1., mu=-1., k=-1., amp=-1.) 
 #        -- Will change all passed parameters of the loop, while keeping the old values of those not passed.
-#    setDeriv(p_prime)                 -- Set the initial derivative of Psi to the given value.
+#    setDeriv(p_prime)                 -- Set the initial derivative of psi to the given value.
 #    ivp_solved(ivp_type="er")         -- Indicates if the queried solution exists.
 
 # 2 ----- Analytic calculations of the case without e-e interaction
-#    psij(x)           -- Returns exact solution of Psi without e-e interaction, for the set derivative.
-#    psij_pred(x)      -- Returns modelled solution of Psi with e-e interaction, for the set derivative.
-#    psij_pred_true(x) -- Returns modelled solution without error of Psi with e-e interaction, for the set derivative.
+#    psij(x)           -- Returns exact solution of psi without e-e interaction, for the set derivative.
+#    psij_pred(x)      -- Returns modeled solution of psi with e-e interaction, for the set derivative.
+#    psij_pred_true(x) -- Returns modeled solution without error of psi with e-e interaction, for the set derivative.
 #    psij0(x)          -- Returns exact solution of psi without e-e interaction, for the BVP solution.
 #    psi_prime_0_max() -- Returns the maximum abs of psi' without e-e interaction for the BVP solution. 
 #                         For use in constructing derivative grids.
-#    amp_max()         -- Returns the maximum absolute value of Psi for the modelled solution without error of psi with
+#    amp_max()         -- Returns the maximum absolute value of psi for the modeled solution without error of psi with
 #                         e-e interaction, for the set derivative.
-#    amp_max_0()       -- Returns the maximum absolute value of Psi for the exact solution of psi without
+#    amp_max_0()       -- Returns the maximum absolute value of psi for the exact solution of psi without
 #                         e-e interaction, which solves the BVP.
 
 # 3 ----- ODE solver wrappers
@@ -274,8 +274,8 @@ default_number_fast_oscillations_between_recoveries = 4
 
 # 4 ----- Fast oscillation calculations
 #    find_fast_oscillations(n=None, method = None, rtol = rtol, atol = atol)
-#        -- Estimates the half period of the fast oscillation from the first n oscillations of the absolute value of Psi.
-#           It can be run separately of the IVP solver, but the IVP solver will call this function if needed on its own. 
+#        -- Estimates the half period of the fast oscillation from the first n oscillations of the absolute value of psi.
+#           It can be run separately of the IVP solver, but the IVP solver will call this method if needed on its own. 
 #           There is a separate input of solve_mu_0, which indicated whether or not to estimate k for the linear case. 
 #           It is set to True by default, and must be set to False by hand to avoid this extra calculation. The IVP solver
 #           will set this to True if it is needed, but will ignore this if the linear solutions are not calculated.
@@ -296,20 +296,20 @@ default_number_fast_oscillations_between_recoveries = 4
 #       -- Tries to find the solution to the BVP using multiple algorithms and starting points. 
 #          Returns a list of found solutions.
 #    check_solution_for_boundary_matching(deriv_psi = None, tol = None)
-#       -- Checks if the Psi derivative solves the BVP (based on the modelled solution).
+#       -- Checks if the psi derivative solves the BVP (based on the modeled solution).
 #    find_root_min(tol_root_finder = None, tol_bvp_matching = None)
 #       -- Sets the derivative to the solution of the BVP.
 
 # 7 ----- Finding current
 #    current_old() -- Returns the current of the linear BVP-solving case with the loop parameters.
-#    current_bvp() -- Solves the bvp and returns the current of this non-linear solution using the model
+#    current_bvp() -- Solves the bvp and returns the current of this nonlinear solution using the model
 #                     for current of current_alt.
-#    current_new() -- Returns the current of the non-linear solution of the saved loop, based
+#    current_new() -- Returns the current of the nonlinear solution of the saved loop, based
 #                     on the constant term of the exact solution.
 #                     This estimate for current is most likely incorrect.
-#    current_alt() -- Returns the current of the non-linear solution of the saved loop, based
+#    current_alt() -- Returns the current of the nonlinear solution of the saved loop, based
 #                     on the hypothesized form of this current. It is likely correct.
-#    current_calc(psi=None, psi_pr=None)   -- Returns the current of the non-linear solution of the loop
+#    current_calc(psi=None, psi_pr=None)   -- Returns the current of the nonlinear solution of the loop
 #                                             at the saved or indicated psi and psi prime values, based on 
 #                                             the equation to calculate current. 
 #                                             
@@ -341,7 +341,7 @@ class loop:
 
         # defaults
         # These are changed by hand or by changing the indicated constants in the code.
-        # They are used only if the indicated parameter is not passed to the functions.
+        # They are used only if the indicated parameter is not passed to the methods.
         self.k_model_bvp = default_k_model_bvp
         self.k_model_ivp = default_k_model_ivp
         self.M_model     = default_M_model
@@ -357,7 +357,7 @@ class loop:
         self.solve_mu_0 = True # Set to False by hand to save some time estimating the half period of fast oscillations.
 
         # This indicates which steps have been taken so far in the solution process.
-        self.deriv_set  = False   # False = default derivitive, True = chosen derivitive
+        self.deriv_set  = False   # False = default derivative, True = chosen derivative
         self.bvp_deriv  = None  # This has not yet been calculated.
         self.clear_solution()  # Initializes variables to be unset.
 
@@ -376,15 +376,15 @@ class loop:
         self.k_0_estimated  = False
 
         self.ivp = {"er": None,   # with e-e interaction, recovered solution
-                    "ed": None,   # with ee interaction, decreasing solution
-                    "em": None,   # with ee interaction, recovered solution, with spacing based on predicted k
-                    "0r": None,   # without ee interaction, recovered solution
-                    "0d": None}   # without ee interaction, decreasing solution
+                    "ed": None,   # with e-e interaction, decreasing solution
+                    "em": None,   # with e-e interaction, recovered solution, with spacing based on predicted k
+                    "0r": None,   # without e-e interaction, recovered solution
+                    "0d": None}   # without e-e interaction, decreasing solution
         self.percent_R_solved = {"er": None,   # with e-e interaction, recovered solution
-                    "ed": None,   # with ee interaction, decreasing solution
-                    "em": None,   # with ee interaction, recovered solution, with spacing based on predicted k
-                    "0r": None,   # without ee interaction, recovered solution
-                    "0d": None}   # without ee interaction, decreasing solution
+                    "ed": None,   # with e-e interaction, decreasing solution
+                    "em": None,   # with e-e interaction, recovered solution, with spacing based on predicted k
+                    "0r": None,   # without e-e interaction, recovered solution
+                    "0d": None}   # without e-e interaction, decreasing solution
 
         self.bvp_solved = False
 
@@ -419,7 +419,7 @@ class loop:
             self.k0 = k
 
         self.clear_solution() # Clear old solutions.
-        self.deriv_set = False # False = default derivitive, True = chosen derivitive
+        self.deriv_set = False # False = default derivative, True = chosen derivative
         self.bvp_deriv = None # Clear old solution.
 
         self.calcInit() # Recalculate derived quantities.
@@ -444,7 +444,7 @@ class loop:
         self.T_slow_mod      = 2 * pi / self.M_model(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         
 
-    # This function is for setting the initial psi prime value of the loop.
+    # This method is for setting the initial psi prime value of the loop.
     # It is meant to be called numerous times.
     def setDeriv(self, p_prime):
         self.psi0_deriv_0 = p_prime
@@ -453,7 +453,7 @@ class loop:
         self.bj = self.bjN_calc()
 
         self.clear_solution()
-        self.deriv_set = True # False = default derivitive, True = chosen derivitive
+        self.deriv_set = True # False = default derivative, True = chosen derivative
 
         self.T_fast_mod      = pi / self.k_model_ivp(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_fast_mod_true = pi / self.k_model_bvp(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
@@ -533,7 +533,7 @@ class loop:
     def psi_prime_0(self):
         return 1j * (self.aj0*(self.k+self.M)+self.bj0*(-self.k+self.M))
     
-    # This is the max absolute value of Psi' without e-e interaction which solves the BVP.
+    # This is the max absolute value of psi' without e-e interaction which solves the BVP.
     def psi_prime_0_max(self):
         #psi = e^(iMx)*[ae^(ikx)+be^(-ikx)]
         #psi' = iM*psi + ik* e^(iMx)*[ae^(ikx)-be^(-ikx)]
@@ -542,11 +542,11 @@ class loop:
         d_max = (self.M+self.k)*(np.abs(self.aj0)+np.abs(self.bj0))
         return d_max
     
-    # This is the max absolute value of Psi for the current derivative.
+    # This is the max absolute value of psi for the current derivative.
     def amp_max(self):
         return np.sqrt(np.abs(self.aj)**2 + np.abs(self.bj)**2 + 2*np.abs(self.aj*np.conj(self.bj)))
     
-    # This is the max absolute value of Psi without e-e interaction which solves the BVP.
+    # This is the max absolute value of psi without e-e interaction which solves the BVP.
     def amp_max_0(self):
         return np.sqrt(np.abs(self.aj0)**2 + np.abs(self.bj0)**2 + 2*np.abs(self.aj0*np.conj(self.bj0)))
     
@@ -599,9 +599,9 @@ class loop:
         #y0l0, yp0l0 = self.amp, self.psi0_deriv_0 #self.calc_yvals_old(n, t0l0)
 
         # call the solver multiple times  
-        # with ee-interaction -- divided into steps (+), original(2), 
+        # with e-e-interaction -- divided into steps (+), original(2), 
         # with predicted k_fast (7)
-        # without ee-interaction -- original(3), divided into steps(5)
+        # without e-e-interaction -- original(3), divided into steps(5)
         if solve > 0:      
             self.solu = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
                                               method = method, rtol = rtol, atol = atol)
@@ -844,7 +844,7 @@ class loop:
     # These find the (half) period and starting point of the fast oscillations
 
     # This estimates the half period of the fast oscillations by averaging the spacing between n 
-    # oscillations of the squared absolute value of Psi, found from our ODE solver.
+    # oscillations of the squared absolute value of psi, found from our ODE solver.
     # self.solve_mu_0 can be flipped to False to remove our linear solution estimate and speed up 
     # calculations. We estimate this because T0 doesn't correctly estimate the period due to error. 
     def find_fast_oscillations(self, n=None, method = None, rtol = rtol, atol = atol):
@@ -997,7 +997,7 @@ class loop:
     # 6 -- BVP routines
 
     # This will find a random solution to our BVP. Changing method and prep will change which solution
-    # the rootfinder converges to. I can set this up more intelligently, but I want to have a solution
+    # the root finder converges to. I can set this up more intelligently, but I want to have a solution
     # as fast as possible, and further examination can wait.
     def find_root_rand(self, method = None, tol = None, ratio = 1.0):
         mu = self.mu
@@ -1154,7 +1154,7 @@ class loop:
         return ajsq - bjsq
     
 
-    # These functions below are not set up to check if the solution given solves the bvp, so be careful
+    # These methods below are not set up to check if the solution given solves the bvp, so be careful
 
     def current_new(self):
         kn = pi / self.T_fast_mod

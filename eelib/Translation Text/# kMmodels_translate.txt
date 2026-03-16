@@ -1,0 +1,219 @@
+This contains our models for the shift in frequencies of both types of oscillations. 
+They are calculated as functions of mu, dk, B, R, and dpsi0. The dpsi0 dependence means that 
+they solve the initial value problem, not the boundary value problem.
+
+Здесь приведены наши модели для изменения частот обоих типов колебаний. 
+Они рассчитаны как функции mu, dk, B, R и dpsi0. Зависимость dpsi0 означает, что 
+они решают проблему начального значения, а не краевую задачу.
+
+The most important functions contained here are:
+  -- Our model for k for ee interaction, as calculated by the ODE solver.
+  -- Our model for k for ee interaction, after subtracting the error term.
+  -- Our model for M for ee interaction.
+Наиболее важными функциями, содержащимися здесь, являются:
+  -- Наша модель для k для ee-взаимодействия, рассчитанная с помощью ODE-решателя.
+  -- Наша модель для k для ee-взаимодействия, после вычитания члена ошибки.
+  -- Наша модель для M для ee-взаимодействия.
+
+Uncommented are also: 
+
+  This is our raw model for the fast oscillations. It is the same as pred_fast_k, but 
+  returns t/2 instead of k. I tend to prefer this to pred_fast_k, since it was first.
+
+  This is the same as pred_slow_k. Our current model was the third I have in this
+  document, hence the name. The others have been removed, but I still use this 
+  name due to this reason.
+
+  This is a less precise model for slow oscillations, which remains for demonstration of 
+  our model extraction script.
+
+Также есть комментарии: 
+
+  Это наша исходная модель для быстрых колебаний. Она такая же, как и pred_fast_k, но
+возвращает значение t/2 вместо k. Я предпочитаю это значение pred_fast_k, поскольку оно было первым.
+
+  Это то же самое, что и pred_slow_k. Наша текущая модель была третьей, которую я использовал в этом
+документе, отсюда и название. Остальные были удалены, но я по-прежнему использую это
+название по этой причине.
+Это менее точная модель для медленных колебаний, которая остается для демонстрации
+нашего сценария извлечения модели.
+
+------ CONSTANTS --------
+These dictionaries are hard-coded parameters, which we already found numerically.
+They are not used outside of the functions here.
+
+Model 1 fast t
+
+Model 2 slow t
+
+------ КОНСТАНТЫ --------
+Эти словари являются жестко заданными параметрами, которые мы уже вычислили численно.
+Они не используются вне функций, описанных здесь.
+
+Модель 1 быстрый t
+
+Модель 2 медленный t
+
+----- DELTA k MODELS -----
+
+Model 1
+Calculates t/2 for the fast oscillations. t/2 is what I get from my averaging 
+of the spacing between maxima of the |Psi|**2 function.
+
+constant terms -- t_0 and intercept (error)
+
+terms independent of mu (error)
+
+mu linear terms
+
+mu quadradic terms
+
+----- МОДЕЛИ DELTA k -----
+
+Модель 1
+Вычисляет t/2 для быстрых колебаний. t/ 2 - это то, что я получаю в результате усреднения
+интервала между максимумами функции |Psi|**2.
+
+постоянные члены - t_0 и перехват (ошибка)
+
+члены, не зависящие от mu (ошибка)
+
+mu линейных членов
+
+mu квадратичных членов
+
+Here I return k instead of t/2, which tends to be more useful. 
+I also rescale B and R back to a percent scale, as this is called with raw B and R.
+
+Rescaling of A is equivalent to a rescaling of mu and dphi0.
+However, the rescaling of dphi0 is not straightforward without knowing Psi(x).
+
+Our final solution is sensitive to R, but not A, while our model for k is sensitive to A, but not R.
+This is due to the difference between initial value problems and boundary value problems. It also means I can leave out both A and R variations.
+But I should test R variations for stability (to know if it affects error, which it did, but no longer does). 
+
+Здесь я возвращаю значение k вместо t/ 2, что, как правило, более полезно. 
+Я также изменяю масштаб B и R обратно на процентный, так как это происходит с необработанными B и R.
+
+Изменение масштаба A эквивалентно изменению масштаба mu и dphi0.
+Однако масштабирование dphi0 не является простым без знания Psi(x).
+
+Наше окончательное решение чувствительно к R, но не к A, в то время как наша модель для k чувствительна к A, но не к R.
+Это связано с различием между задачами с начальными значениями и краевыми задачами. Это также означает, что я могу исключить варианты A и R.
+Но я должен протестировать варианты R на стабильность (чтобы узнать, влияет ли это на ошибку, что он и сделал, но больше не делает).
+
+Our model contains:
+0th order:
+-- The expected k without ee interaction.
+1st order: 
+-- The main delta k term(s) for non-linear ee interaction.
+Appears to be effectively one term, which is useful.
+2nd order: 
+-- Second order corrections for the non-linear ee interaction modification.
+-- First order error corrections for numerical solutions without ee interaction.
+As far as I can tell, the error is identical to the case without ee interaction.
+Most likely the error from the corrections will be visible only in fourth order terms,
+while I will need at most third order terms. This is a hypothesis, and not proven.
+
+Наша модель содержит:
+0-й порядок:
+-- Ожидаемое значение k без взаимодействия с ee.
+1-й порядок: 
+-- Основной член (-ы) дельта-k для нелинейного взаимодействия с ee.
+По сути, это один член, который полезен.
+2-й порядок: 
+-- Поправки второго порядка для модификации нелинейного взаимодействия ee.
+-- Поправки первого порядка для численных решений без взаимодействия ee.
+Насколько я могу судить, ошибка идентична случаю без взаимодействия ee.
+Скорее всего, ошибка от исправлений будет видна только в терминах четвертого порядка,
+хотя мне понадобятся не более чем члены третьего порядка. Это гипотеза, и она не доказана.
+
+This is the derivative of k, splitting real and imaginary Psi derivative as separate variables.
+It has been removed, as the Jacobian is not used.
+
+constant terms have zero derivative
+
+terms independent of mu (error)
+
+mu linear terms
+
+mu quadratic terms
+
+These are our old, unsuccessful models of M, and have thus been removed.
+
+constant terms
+
+mu linear terms
+
+Это производная от k, разделяющая действительную и мнимую производные Psi как отдельные переменные.
+Она была удалена, поскольку якобиан не используется.
+
+постоянные члены имеют нулевую производную
+
+члены, не зависящие от mu (ошибка)
+
+mu линейных членов
+
+mu квадратичных членов
+
+Это наши старые, неудачные модели M, и поэтому они были удалены.
+
+постоянные члены
+
+линейные члены mu
+
+Note that the scaling may be wrong due to a factor of 4
+
+derivative for Jacobian; note that re psi ' = x_0 and im psi ' = x_1
+
+Note that the scaling may be wrong due to a factor of 4
+
+This model here remains for demonstrating my model tests.
+
+check for real-imag switching
+
+The model for M here is just calling our most successful model below.
+
+Our successful model for M
+
+check for real - imag switching
+
+The Jacobian is not used, so it has been removed.
+
+Our model for k (our fast oscillation wavenumber), with the error term removed. 
+
+constant terms -- t_0 and intercept (error)
+
+terms independent of mu (error)
+
+mu linear terms
+
+mu quadratic terms
+
+Обратите внимание, что масштабирование может быть неправильным из-за коэффициента 4
+
+производная для якобиана; обратите внимание, что re psi ' = x_0 и im psi ' = x_1
+
+Обратите внимание, что масштабирование может быть неправильным из-за коэффициента 4
+
+Эта модель остается здесь для демонстрации моих модельных тестов.
+
+проверьте переключение реального изображения
+
+Приведенная здесь модель для M просто вызывает нашу наиболее успешную модель, представленную ниже.
+
+Наша успешная модель для M
+
+проверьте переключение реального изображения
+
+Якобиан не используется, поэтому он был удален.
+
+Наша модель для k (нашего волнового числа с быстрым колебанием), с удаленным элементом ошибки. 
+
+постоянные элементы - t_0 и intercept (ошибка)
+
+члены, не зависящие от mu (ошибка)
+
+mu линейных членов
+
+mu квадратичных членов

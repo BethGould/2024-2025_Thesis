@@ -1,0 +1,37 @@
+This contains functions used by reference by the ODE solver. They are included outside the class structure and in a unified form so that they can be easily switched out.
+
+Здесь содержатся функции, используемые решателем ODE по ссылке. Они включены вне структуры класса и в унифицированном виде, так что их можно легко отключить.
+
+--DERIVATIVE FUNCTIONS FOR ODE SOLVERS--
+x
+y  = [psi, dpsi/dx]
+k  -- electron wavenumber
+B  -- magnetic field strength
+R  -- radius -- note that here only B * R is relevant, not B and R independently
+mu -- ee coupling strength
+mA -- maximum amplitude -- used by events, not derivative solvers, but must be included
+
+I could combine B and R
+
+Within a loop, with ee coupling
+Within a loop, without ee coupling
+For the input to the loop, without magnetic field or coupling
+Contains both versions together, for compactness.
+May or may not be used ...
+
+--ПРОИЗВОДНЫЕ ФУНКЦИИ ДЛЯ РЕШАТЕЛЕЙ ODE--
+
+xy = [psi, dpsi/dx]
+k - волновое число электрона
+B - напряженность магнитного поля
+R - радиус - обратите внимание, что здесь имеет значение только B * R, а не B и R независимо
+друг от друга, mu - сила связи
+, mA - максимальная амплитуда - используется событиями, а не решателями производных, но должна быть включена
+
+Я мог бы объединить B и R
+
+В цикле с помощью ee-связи
+Внутри контура, без электромагнитной связи
+Для ввода в контур, без магнитного поля или связи
+Для компактности содержит оба варианта вместе.
+Может использоваться, а может и не использоваться...

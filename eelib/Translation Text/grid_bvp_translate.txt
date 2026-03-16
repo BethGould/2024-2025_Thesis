@@ -1,0 +1,237 @@
+This code builds a grid of solutions to the boundary value problem, in order to calculate Psi'(0), 
+our initial derivative of Psi. Here we can vary R, B, k, dk, mu, and A and 
+construct either a grid of values, or generate a set of random values. 
+
+The mu grid is spaced logrithmically. The other grids 
+are spaced linearly. Note that one of the results of this is that mu is taken as a exponent of 
+powers of 10 for the grid, while it is taken as a raw number for Monte Carlo runs.
+
+Grid run code:
+
+Monte Carlo run code:
+
+  Creates a loop object with the given parameters. Note that the passed values of parameters
+  are relevant only for those parameters which are not to be varied as varied parameters will 
+  be replaced during the calculations.
+
+  Prints a description of the object. 
+
+clear_calcs(self) -- Clears the data. 
+
+These define the various values of parameters for which to analyze the boundary value problem. If a set of points is not included,
+it will not be varied, instead using the value of the parameter passed in initialization. Otherwise, the values
+will be varied from the minimum value given to the maximum value given. 
+  !!! Note -- mu is varied based on exponents of 10 for the grid points, but as a pure number for Monte Carlo 
+  analysis. I know this is an issue, but it how things are written.
+  num is a positive integer indicating the number of points for the Monte Carlo case.
+  For a grid, num must be a list of positive integers. A list size of one will set all dimensions of the grid to
+this number, for num ^ n points. You can also provide a value for every parameter separately.
+
+gridboundary value problem(self) does the work of the calcuation if given a grid, with all of the time spent here.
+mcboundary value problem(self) does the work of the calculation if given a random assortment of points to run.
+runCalc(self) does the work of the calculation for either case.
+
+Results are saved in the following variables:
+self.derivs gives a list of dictionaries with the calculated values. The data can be retrieved with pandas:
+
+For a grid run, the saved arrays are indicated as follows:  [n_mu, n_dk, n_b, n_r, n_a, n_k0]
+
+Parameters are saved in the following variables.
+- Monte Carlo Table:
+self.val_table-- The table of random values of parameters for the Monte Carlo variant.
+- Grid Tables:
+magnetic_field_strength  = self.mfs
+electron_wavenumber  = self.ew
+electron_wavenumber_diff = self.ewd
+nonlinearity_strength= self.nls
+starting_amplitude   = self.amp
+ring_radius  = self.rr
+
+------ INITIALIZATION --------------
+
+R, B, dk, mu, k, and amp must be given if they are fixed
+k defaults to gold, amp defaults to 1
+
+------------ STRING OUTPUT ---------------
+Because we want to know what our object is.
+str = "Grid object to measure current:\n"
+str = "Uncalculated grid object to measure current:\n"
+
+Indicate our parameters for our grid.
+str = str + f"Total number of parameters: {self.num_mu*self.num_dk*self.num_k0*self.num_b*self.num_a*self.num_r}"
+str = f"Monte Carlo object to measure current:\n"
+str = f"Uncalculated Monte Carlo object to measure current:\n"
+The following output is not eligant.
+str = str + f"mu has points from {np.min(self.val_table[:,0])} to {np.max(self.val_table[:,0])}.\n"
+str = str + f"dk has points from {np.min(self.val_table[:,1])} to {np.max(self.val_table[:,1])}.\n"
+str = str + f"B has points from {np.min(self.val_table[:,2])} to {np.max(self.val_table[:,2])}.\n"
+str = str + f"R has points from {np.min(self.val_table[:,3])} to {np.max(self.val_table[:,3])}.\n"
+str = str + f"A has points from {np.min(self.val_table[:,4])} to {np.max(self.val_table[:,4])}.\n"
+str = str + f"k0 has points from {np.min(self.val_table[:,5])} to {np.max(self.val_table[:,5])}.\n"
+str = str + f"Number of points: {self.val_table.shape[0]}"
+return "Empty object to measure current:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
+
+Because we want to know what our object is.
+str = "Grid object to measure current:\n"
+str = "Uncalculated grid object to measure current:\n"
+
+ Indicate our parameters for our grid.
+str = str + f"mu has {self.num_mu} points from {self.nls[0]} to {self.nls[-1]}.\n"
+str = str + f"mu is: {self.mu}\n"
+str = str + f"dk has {self.num_dk} points from {self.ewd[0]} to {self.ewd[-1]}.\n"
+str = str + f"dk is: {self.dk}\n"
+str = str + f"B has {self.num_b} points from {self.mfs[0]} to {self.mfs[-1]}.\n"
+str = str + f"B is: {self.B}\n"
+str = str + f"R has {self.num_r} points from {self.rr[0]} to {self.rr[-1]}.\n"
+str = str + f"R is: {self.R}\n"
+str = str + f"A has {self.num_a} points from {self.amp[0]} to {self.amp[-1]}.\n"
+str = str + f"A is: {self.amp}\n"
+str = str + f"k0 has {self.num_k0} points from {self.ew[0]} to {self.ew[-1]}.\n"
+str = str + f"k0 is: {self.k}\n"
+str = str + f"Total number of parameters: {self.num_mu*self.num_dk*self.num_k0*self.num_b*self.num_a*self.num_r}"
+str = f"Monte Carlo object to measure current:\n"
+str = f"Uncalculated Monte Carlo object to measure current:\n"
+The following output is not eligant.
+str = str + f"mu has points from {np.min(self.val_table[:,0])} to {np.max(self.val_table[:,0])}.\n"
+str = str + f"dk has points from {np.min(self.val_table[:,1])} to {np.max(self.val_table[:,1])}.\n"
+str = str + f"B has points from {np.min(self.val_table[:,2])} to {np.max(self.val_table[:,2])}.\n"
+str = str + f"R has points from {np.min(self.val_table[:,3])} to {np.max(self.val_table[:,3])}.\n"
+str = str + f"A has points from {np.min(self.val_table[:,4])} to {np.max(self.val_table[:,4])}.\n"
+str = str + f"k0 has points from {np.min(self.val_table[:,5])} to {np.max(self.val_table[:,5])}.\n"
+str = str + f"Number of points: {self.val_table.shape[0]}"
+return "Empty object to measure current:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
+
+------------ CHOOSE POINTS (GRID) -----------------
+
+def makeGridPoints(self, m_min, m_max, k_min, k_max, a_min, a_max, mu_min, mu_max, num = 10):
+In order -- mu, dk, B, R, M, A, k0
+num length -- 1 or n = defined vars for grid
+
+Determines with which parameters to build the grid.
+For dk, I need something else to indicate that it is not needed, as negative values in theory could be useful.
+However, I assume dk goes from 0 to 1.
+There is a wider range of error-checking which can be performed at this step, limiting our ranges.
+I don't know why I didn't just use None.
+
+so I can use this later
+
+Put the number of grid points to use into our object.
+
+non-linear strength / mu
+
+electron wavenumber / k
+
+oscillations due to magnetic field, magnetic field strenth and ring radius
+
+Initial values for Psi, Psi'
+
+This is separated for clarity of previous code as this is long and repetitive.
+It is not to be run independently.
+raise ValueError("Numbers of points have not been indicated.")
+separating derivitive from other parameters
+raise ValueError("Expecting only one value for num, as only the grid will be built.")
+raise ValueError(f"Not enough values passed for num. Stopped at parameter index {i} (R) and number array {j}.")
+raise ValueError(f"Not enough values passed for num. Stopped at parameter index {i} (A0) and number array {j}.")
+raise ValueError(f"Not enough values passed for num. Stopped at parameter index {i} (k0) and number array {j}.")
+raise ValueError(f"Too many values passed for num. j = {j}, i = {i}, ln = {ln}")
+
+Clear memory
+
+
+------------ CHOOSE POINTS (MONTE CARLO) -----------------
+
+Monte Carlo points take ranges of parameters like the grid, but since they are random,
+it will output an array of random points, rather than building a grid. num is the full 
+number of points, not for each parameter like is the case for the grid.
+
+Determines with which parameters to build the grid.
+For dk, I need something else to indicate that it is not needed, as negative values in theory could be useful
+however, I assume dk goes from 0 to 1.
+There is a wider range of error-checking which can be performed at this step, limiting our ranges.
+
+so I can use this later
+
+Create a table of values. 
+
+non-linear strength / mu
+
+electron wavenumber / k
+
+oscillations due to magnetic field, magnetic field strength and ring radius
+
+Initial values for Psi, Psi'
+
+Free up memory after clearing the old data, as it is no longer valid
+
+
+------------- FIND VALUES ON GRID ---------------
+
+Wrapper for the two following functions to run the code.
+
+print("Points to calculate have not yet been set.")
+
+Perform the calculation on the grid.
+This take time, but no longer requires parameters. It is separate from the parameters due to this requirement.
+
+Old calculation already exists.
+
+
+The grid is not set.
+raise Exception("gridFastOsc requires forming the grid first. Try calling makeGridPoints.") 
+
+Timing
+print('Begin grid build: ', time.time() - start_time)
+
+Initialize grids
+
+saved data
+
+Indicies for each parameter to vary.
+
+Solve for each point on the grid.
+The 6 levels are only a problem if they are all used.
+print("Number of periods to calculate:", num_dk*num_k0*num_b*num_r*num_mu*num_a)
+
+Set the loop.
+Find the roots which solve our boundary value problem; this is the part which takes time.
+The numbers here are for the solution without ee interaction.
+
+Save all of our data in a dictionary object, for use with pandas.
+
+Transfer our local variables to object variables, saving our data.
+
+Indicate that this function has been run.
+
+And end timing.
+print("Done grid build: ", time.time() - start_time)
+
+Now our run for randomly determined points.
+
+Old calculation already exists.
+
+The grid is not set.
+raise Exception("mcFastOsc requires choosing the points first. Try calling makeMCPoints.") 
+
+Timing
+
+Retrieve number of points.
+
+self.val_table
+
+results
+
+Solve for each randomly determined point.
+print("Number of periods to calculate:", num)
+
+Calculate derivative from our parameters.
+
+Find the roots which solve our boundary value problem. This is the part which takes time.
+The numbers here are for the solution without ee interaction.
+Save all of our data in a dictionary object, for use with pandas.
+
+Transfer our local variables to object variables, saving our data.
+
+Indicate that this function has been run.
+
+And end timing.
+print("Done grid build: ", time.time() - start_time)

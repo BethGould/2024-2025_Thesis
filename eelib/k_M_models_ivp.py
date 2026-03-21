@@ -24,7 +24,7 @@
 #       document, hence the name. The others have been removed, but I still use this 
 #       name due to this reason.
 # pred_slow_k_v2(dpsi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_004)
-#       This is a less precise model for slow oscillations, which remains for demostration of 
+#       This is a less precise model for slow oscillations, which remains for demonstration of 
 #       our model extraction script.
 
 
@@ -69,7 +69,7 @@ const_dic_004 = {"mdI": 1114503328463.9722,
 
 # Model 1
 # Calculates t/2 for the fast oscillations. t/2 is what I get from my averaging 
-# of the spacing between maxima of the |Psi|**2 function.
+# of the spacing between maxima of the |psi|**2 function.
 def pred_fast_t(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
     t_pred = 0
 
@@ -110,7 +110,7 @@ def pred_fast_k(dpsi0, mu, dk, B, R, A = 1., k0=kFAu):
     return pi / pred_fast_t(dpsi0, mu, dk, B, R, A, k0)
 
 # Rescaling of A is equivalent to a rescaling of mu and dphi0.
-# However, the rescaling of dphi0 is not straightforward without knowing Psi(x).
+# However, the rescaling of dphi0 is not straightforward without knowing psi(x).
 
 # Our final solution is sensitive to R, but not A, while our model for k is sensitive to A, but not R.
 # This is due to the difference between IVPs and BVPs. It also means I can leave out both A and R variations.
@@ -129,7 +129,7 @@ def pred_fast_k(dpsi0, mu, dk, B, R, A = 1., k0=kFAu):
 #    Most likely the error from the corrections will be visible only in fourth order terms,
 #    while I will need at most third order terms. This is a hypothesis, and not proven.
 
-# This is the derivative of k, splitting real and imaginary Psi derivative as seperate variables.
+# This is the derivative of k, splitting real and imaginary psi derivative as separate variables.
 # It has been removed, as the Jacobian is not used.
 '''
 def deriv_fast_k(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
@@ -144,7 +144,7 @@ def deriv_fast_k(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
 
     t_new = pred_fast_t(dphi0, mu, dk, B, R, A , k0, consts)
 
-    # constant terms have zero derivitive
+    # constant terms have zero derivative
 
     # terms independent of mu (error)                                
     t_pred_r += (2 * np.real(dphik) * consts['DR2'] / k_full)
@@ -156,7 +156,7 @@ def deriv_fast_k(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
     t_pred_i += mu*(consts['mDI2'] * np.imag(dphik)* 2 / k_full
                 + consts['mDIM'] * B * R / k_full)
 
-    # mu quadradic terms
+    # mu quadratic terms
     t_pred_r += mu**2*(consts['m2DR2'] * np.real(dphik)*2/k_full 
                     + consts['m2DR4'] * np.real(dphik)**3 * 4 / k_full
                     + consts['m2DI2R2'] * np.real(dphik)*2 * np.imag(dphik)**2/k_full)
@@ -251,7 +251,7 @@ def deriv_slow_k_v3(x, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_004):
     return [M_pred_r, M_pred_i]
 '''
 
-# Our model for k (our fast oscillation wavenumber), with the error term removed. 
+# Our model for k (our fast oscillation wave number), with the error term removed. 
 def pred_fast_k_true(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001):
     t_pred = 0
 
@@ -280,7 +280,7 @@ def pred_fast_k_true(dphi0, mu, dk, B, R, A = 1., k0=kFAu, consts=const_dic_001)
                 + consts['mA2']
                 + consts['mDIM'] * np.imag(dphik) * B * R)
 
-    # mu quadradic terms
+    # mu quadratic terms
     t_pred += mu**2*(consts['m2']
                     + consts['m2DI2'] * np.imag(dphik)**2
                     + consts['m2DR2'] * np.real(dphik)**2 

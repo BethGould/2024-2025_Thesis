@@ -4,14 +4,14 @@
 # Date Last Edit: 09.03.2026
 #
 # This code builds a grid of solutions to the IVP, in order to calculate t_slow (= 2*pi / M), 
-# the period of the slow oscillations. Here we can vary R, B, k, dk, mu, A, and Psi'(0) and 
+# the period of the slow oscillations. Here we can vary R, B, k, dk, mu, A, and psi'(0) and 
 # construct either a grid of values, or generate a set of random values. 
 # 
-# The Psi'(0) grid is spaced sinusoidally. The mu grid is spaced logrithmically. The other grids 
+# The psi'(0) grid is spaced sinusoidally. The mu grid is spaced logarithmically. The other grids 
 # are spaced linearly. Note that one of the results of this is that mu is taken as a exponent of 
 # powers of 10 for the grid, while it is taken as a raw number for Monte Carlo runs.
 # 
-# grid_slow_osc is built off of grid_fast_osc, inhereting the routines for forming the grid, 
+# grid_slow_osc is built off of grid_fast_osc, inheriting the methods for forming the grid, 
 # as the structure is identical. 
 
 # __init__(self, R, B, dk, mu, k = kFAu, amp=1., grid_size = 9, ang_lim = 0.1)
@@ -46,8 +46,8 @@
 # clear_calcs(self) -- Clears the data. 
 # setIntegratorParameters(self, solve_mu_0 = None, n_sm = None, method = None, rtol = None, atol = None, R_max = None, n_lg = None)
 # The default parameter values are: solve_mu_0 = False, n_sm = 20, method = 'RK45', rtol = rtol, atol = atol, R_max = 1.0, n_lg = 1000.
-# n_sm counts how many oscillations of |Psi|^2 to count in order to estimate t / 2, (which is pi / k).
-# n_lg counts how many points to sample of Psi when the fast oscillations reaches its maximum value. This will calculate the curve 
+# n_sm counts how many oscillations of |psi|^2 to count in order to estimate t / 2, (which is pi / k).
+# n_lg counts how many points to sample of psi when the fast oscillations reaches its maximum value. This will calculate the curve 
 # for the slow oscillations. 
 # If solve_mu_0 = True, the code will estimate the fast oscillations for the case without ee interaction as well.
 # Parameters not given will not be changed.
@@ -68,16 +68,16 @@
 # numbers, or more to provide a value for every parameter separately. (The real and imaginary derivatives must be 
 # equal, and they will never take two parameters, only one.)
 
-# gridSlowOsc(self) does the work of the calcuation if given a grid, with all of the time spent here.
+# gridSlowOsc(self) does the work of the calculation if given a grid, with all of the time spent here.
 # mcSlowOsc(self) does the work of the calculation if given a random assortment of points to run.
 # runCalc(self) does the work of the calculation for either case.
 
 # Results are saved in the following variables:
-# self.slow_osc_k   -- Estimate for our wavenumber for the slow oscillations. (Found from fitting to a sine function.)
+# self.slow_osc_k   -- Estimate for our wave number for the slow oscillations. (Found from fitting to a sine function.)
 # self.slow_osc_a   -- Estimate our slow oscillation amplitude.
 # self.slow_osc_th  -- Estimate our slow oscillation angle offset from a sine function.
 # self.slow_osc_sol -- Saves our full solution. Note that this is saved as a list rather than an array like the other solutions.
-# self.slow_osc_i   -- The i-th element of this list matches the full solution to the array indicies of the other estimates, 
+# self.slow_osc_i   -- The i-th element of this list matches the full solution to the array indexes of the other estimates, 
 #                      as given by the contained list.
 #                      For i[j] = [n_mu, n_dk, n_b, n_r, n_a, n_k0, n_d, n_d] (where j and all ns are integers),
 #                      sol[j] is the full solution for the estimated k[i], a[i], and th[i].
@@ -158,7 +158,7 @@ class grid_slow_osc(grid_fast_osc):
                 str = f"Monte Carlo object to measure slow oscillations:\n"
             else:
                 str = f"Uncalculated Monte Carlo object to measure slow oscillations:\n"
-            # The following output is not eligant.
+            # The following output is not elegant.
             str = str + f"mu has points from {np.min(self.val_table[:,0])} to {np.max(self.val_table[:,0])}.\n"
             str = str + f"dk has points from {np.min(self.val_table[:,1])} to {np.max(self.val_table[:,1])}.\n"
             str = str + f"B has points from {np.min(self.val_table[:,2])} to {np.max(self.val_table[:,2])}.\n"
@@ -211,7 +211,7 @@ class grid_slow_osc(grid_fast_osc):
                 str = f"Monte carlo object to measure slow oscillations:\n"
             else:
                 str = f"Uncalculated monte carlo object to measure slow oscillations:\n"
-            # The following output is not eligant.
+            # The following output is not elegant.
             str = str + f"mu has points from {np.min(self.val_table[:,0])} to {np.max(self.val_table[:,0])}.\n"
             str = str + f"dk has points from {np.min(self.val_table[:,1])} to {np.max(self.val_table[:,1])}.\n"
             str = str + f"B has points from {np.min(self.val_table[:,2])} to {np.max(self.val_table[:,2])}.\n"
@@ -223,7 +223,7 @@ class grid_slow_osc(grid_fast_osc):
         else:
             return "Empty object to measure slow oscillations:\nR is %s, B is %s, dk is %s, k is %s, mu is %s, A is %s" % (self.R, self.B, self.dk, self.k, self.mu, self.amp)
 
-    # ------ MODIFIED FUNCTIONS -------
+    # ------ MODIFIED METHODS -------
 
     # This is changed, because the data is saved in a different manner.
     def clear_calcs(self):
@@ -246,7 +246,7 @@ class grid_slow_osc(grid_fast_osc):
 
     # ------------- FIND VALUES ON GRID ---------------
 
-    # Wrapper for the two following functions to run the code.
+    # Wrapper for the two following methods to run the code.
     def runCalc(self):
         if self.is_grid: 
             self.gridSlowOsc()
@@ -255,7 +255,7 @@ class grid_slow_osc(grid_fast_osc):
         else: 
             print("Points to calculate have not yet been set.")
 
-    # Remove the inherited function.
+    # Remove the inherited method.
     def gridFastOsc(self):
         print("Incorrect type of object. Try gridSlowOsc instead.")
 
@@ -297,10 +297,10 @@ class grid_slow_osc(grid_fast_osc):
         slow_oscillation_amplitude  = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
         slow_oscillation_theta      = np.zeros((num_mu, num_dk, num_b, num_r, num_a, num_k0, num_d, num_d))
 
-        slow_osc_sv_ind  = [] # indicies to match full solution to other saved data
+        slow_osc_sv_ind  = [] # indexes to match full solution to other saved data
         slow_osc_sv_data = [] # full solution
 
-        # Indicies for each parameter to vary.
+        # Indexes for each parameter to vary.
         ib  = 0
         ir  = 0
         im  = 0
@@ -348,20 +348,20 @@ class grid_slow_osc(grid_fast_osc):
                                             slow_osc_sv_data.append(sol_er_u.copy())
 
         # Transfer our local variables to object variables, saving our data.
-        self.slow_osc_k  = slow_oscillation_wavenumber  # Estimate for our wavenumber for the slow oscillations (found from fitting a sin).
+        self.slow_osc_k  = slow_oscillation_wavenumber  # Estimate for our wave number for the slow oscillations (found from fitting a sin).
         self.slow_osc_a  = slow_oscillation_amplitude   # Maximum absolute value.
         self.slow_osc_th = slow_oscillation_theta
         if self.save_solution:
-            self.slow_osc_i  = slow_osc_sv_ind              # Indicies for our spacings, due to the alternative storage mechanism.
+            self.slow_osc_i  = slow_osc_sv_ind              # Indexes for our spacings, due to the alternative storage mechanism.
             self.slow_osc_sol  = slow_osc_sv_data           # Save full solution.
 
-        # Indicate that this function has been run.
+        # Indicate that this method has been run.
         self.calculated = True
 
         # And end timing.
         print("Done grid build: ", time.time() - start_time)
 
-    # Delete the inherited function.
+    # Delete the inherited method.
     def mcFastOsc(self):
         print("Wrong type of object. Try mcSlowOsc.")
 
@@ -408,7 +408,7 @@ class grid_slow_osc(grid_fast_osc):
         slow_oscillation_theta = np.zeros((num))
         slow_oscillation_amplitude = np.zeros((num))
 
-        # Solve for each rndomly determined point.
+        # Solve for each randomly determined point.
         print("Number of periods to calculate:", num)
         for ii in range(num):
             self.l_calc.update_params(R=self.val_table[ii,3], B=self.val_table[ii,2], dk=self.val_table[ii,1], 
@@ -434,12 +434,12 @@ class grid_slow_osc(grid_fast_osc):
             if self.save_solution: sol_er_u_save.append(sol_er_u.copy())
 
         # Transfer our local variables to object variables, saving our data.
-        self.slow_osc_k  = slow_oscillation_wavenumber  # Estimate for our wavenumber for the slow oscillations (found from fitting a sin).
+        self.slow_osc_k  = slow_oscillation_wavenumber  # Estimate for our wave number for the slow oscillations (found from fitting a sin).
         self.slow_osc_a  = slow_oscillation_amplitude   # Maximum absolute value.
         self.slow_osc_th = slow_oscillation_theta
         if self.save_solution: self.slow_osc_sol  = sol_er_u_save  # Save full solution.
 
-        # Indicate that this function has been run.
+        # Indicate that this method has been run.
         self.calculated = True
 
         # And end timing.

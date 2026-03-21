@@ -59,7 +59,7 @@
 # to_plot gives the versions of integration to evaluate, with all saved and plotted.
 
 # plot_real, plot_abs plot and save the indicated loop. 
-# i, j are the indicies in the grid of the desired loop.
+# i, j are the indexes in the grid of the desired loop.
 # k, R, B, mu are for labeling the plot.
 # no is an index used to label the plots, allowing for unique labeling.
 
@@ -76,7 +76,7 @@ import time
 
 class deriv_grid:
 
-    # Initialize the grid by creating a loop object and choosing derivitive points on the grid.
+    # Initialize the grid by creating a loop object and choosing derivative points on the grid.
 
     def __init__(self, R, B, dk, mu, k = kFAu, amp=1., grid_size = 9, ang_lim = 0.1):
         self.l_calc = loop(R, B, dk, mu, k, amp)  # loop class for calculations
@@ -211,7 +211,7 @@ class deriv_grid:
     # pr -- percent_range
     # method, rtol (relative tolerance), atol (absolute tolerance)
     # trim -- needs to be even, every x point is used for the plots, used for triggered points
-    # to_plot -- list of strings with choises for plotting
+    # to_plot -- list of strings with choices for plotting
     # n_start -- number of oscillations to use in averaging to estimate k for the fast oscillations
 
     def derivGrid(self, n = 200, pr=1.0, method = 'RK45', rtol = rtol, atol = atol, trim = 16, 
@@ -354,7 +354,7 @@ class deriv_grid:
 
                     # I need start times for the real amplitude following cases
                     # they are from s_grid_0x_u_tc[np.argmax(abs(s_grid_0x_u_yc))]
-                    # but then need to caclulate backwards
+                    # but then need to calculate backwards
                     xT = self.l_calc.find_real_env_start()
 
                     s_grid_0x_u_tc[i].append(self.l_calc.find_t_points(n, self.l_calc.lngt, self.l_calc.stu_ex, T_arr[0]))
@@ -438,7 +438,7 @@ class deriv_grid:
         # outputs at every time given by our modeled k, allowing for the difference between the 
         # actual and modeled k values to be observed.
         # To get a good angle offset and amplitude, I fit my data to a sine curve, but discard
-        # the wavefunction data, since I want to see how this differs from the expected value.
+        # the wave function data, since I want to see how this differs from the expected value.
         if 'er' in to_plot: 
             M_pred = self.s_grid_M_pred[i][j]
             #A_pred = find_amp(self.s_grid_er_u[i][j])
@@ -510,9 +510,9 @@ class deriv_grid:
         # Plots the values for points triggered by the absolute value reaching a maximum,
         # thus showing the envelope of psi.
         fig, ax = plt.subplots()
-        ax.set_ylabel('Real Part of \u03A8')
+        ax.set_ylabel('Real Part of ψ')
         ax.set_xlabel('x (m)')
-        plt.title(f"\u03A8 envelope, abs triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
+        plt.title(f"ψ envelope, abs triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
 
         # I form my label based on a list which is appended, so that only the plots which exist will
         # be plotted.
@@ -555,9 +555,9 @@ class deriv_grid:
 
         # This curve is determined by plotting cases when the derivative of the real part is zero.
         fig, ax = plt.subplots()
-        ax.set_ylabel('Real Part of \u03A8')
+        ax.set_ylabel('Real Part of ψ')
         ax.set_xlabel('x (m)')
-        plt.title(f"\u03A8 envelope, triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
+        plt.title(f"ψ envelope, triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
 
         h_list = []
 
@@ -596,9 +596,9 @@ class deriv_grid:
         # the points at which to calculate the exact solution. This will ensure that the exact solution also
         # produces an envelope rather than a sinusoid.
         fig, ax = plt.subplots()
-        ax.set_ylabel('Real Part of \u03A8')
+        ax.set_ylabel('Real Part of ψ')
         ax.set_xlabel('x (m)')
-        plt.title(f"\u03A8 envelope, triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
+        plt.title(f"ψ envelope, triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
 
         h_list = []
 
@@ -689,9 +689,9 @@ class deriv_grid:
         # ------ PLOTTING ------
         # --- calculated ---
         fig, ax = plt.subplots()
-        ax.set_ylabel('Absolute value of \u03A8')
+        ax.set_ylabel('Absolute value of ψ')
         ax.set_xlabel('x (m)')
-        plt.title(f"\u03A8 envelope, calculated, dk={k}, R={R}, B={B}, \u03BC={mu}")
+        plt.title(f"ψ envelope, calculated, dk={k}, R={R}, B={B}, \u03BC={mu}")
         
         h_list = []
 
@@ -717,9 +717,9 @@ class deriv_grid:
         
         # --- abs triggered envelope ---
         fig, ax = plt.subplots()
-        ax.set_ylabel('Absolute value of \u03A8')
+        ax.set_ylabel('Absolute value of ψ')
         ax.set_xlabel('x (m)')
-        plt.title(f"\u03A8 envelope, triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
+        plt.title(f"ψ envelope, triggered, dk={k}, R={R}, B={B}, \u03BC={mu}")
 
         h_list = []
 

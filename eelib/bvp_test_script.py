@@ -9,11 +9,11 @@
 #    -- Note that R2 and B2 here are percents, as is effectively dk, like those used to create a loop object.
 
 # This is my full script for creating graphs of the solution to the BVP. The shown graphs will be for
-# the real part of the wavefunction, where it follows maxima of the absolute value of the fast oscillations.
+# the real part of the wave function, where it follows maxima of the absolute value of the fast oscillations.
 # Therefore, the plotted function will be for the slow oscillation graph. There are two possible graphical 
 # solutions to the linear case and four for the nonlinear case. For both cases, 
-#  - Psi_slow(0) = Psi_slow(2*pi*R) or
-#  - Psi_slow(0) = - Psi_slow(2*pi*R).
+#  - psi_slow(0) = psi_slow(2*pi*R) or
+#  - psi_slow(0) = - psi_slow(2*pi*R).
 # The second case occurs if the matching of the fast oscillation switches sign, since this matching only 
 # requires equal amplitude. 
 # For the linear case, the derivatives of the absolute value at the beginning and end must have opposite signs.
@@ -94,7 +94,7 @@ def test_match(dk, R2, B2, mu):
     solu = l_calc.solu
 
     # All this code below is a copy of that from our derivative grid plotting script.
-    # We are retrieving our x and Psi data from our loop for everything we wish to plot.
+    # We are retrieving our x and psi data from our loop for everything we wish to plot.
 
     # Initial parameters
     T_arr = l_calc.find_period_shift_exact() # fast, slow, pos, neg
@@ -107,10 +107,10 @@ def test_match(dk, R2, B2, mu):
     suyc = l_calc.psij0(sutc)
     slyc = l_calc.psij0(sltc)
 
-    # Find our modelled wavenumber.
+    # Find our modelled wave number.
     M_pred = 2*pi / l_calc.T_slow_mod
 
-    # Fit all parameters except the wavenumber to a sine.
+    # Fit all parameters except the wave number to a sine.
     sol_t = np.real(solu['t']) 
     t_pred = sol_t
     fit_func = fit_sin(solu)
@@ -139,8 +139,8 @@ def test_match(dk, R2, B2, mu):
 
     # First plot
     fig, ax = plt.subplots()
-    plt.title(f"Re(\u03A8(x)), for maxima of |\u03A8(x)|, dk={dk}, R={R2}, B={B2}, \u03BC={mu}")
-    ax.set_ylabel('Re(\u03A8) (ratio of \u03A8(0))')
+    plt.title(f"Re(ψ(x)), for maxima of |ψ(x)|, dk={dk}, R={R2}, B={B2}, \u03BC={mu}")
+    ax.set_ylabel('Re(ψ) (ratio of ψ(0))')
     ax.set_xlabel('x (m)')
 
 
@@ -166,8 +166,8 @@ def test_match(dk, R2, B2, mu):
 
     # Second plot of only the predicted value.
     fig, ax = plt.subplots()
-    plt.title(f"Plot of modelled slow oscillations of Re(\u03A8(x)), dk={dk}, R={R2}, B={B2}, \u03BC={mu}")
-    ax.set_ylabel('Re(\u03A8) (ratio of \u03A8(0))')
+    plt.title(f"Plot of modelled slow oscillations of Re(ψ(x)), dk={dk}, R={R2}, B={B2}, \u03BC={mu}")
+    ax.set_ylabel('Re(ψ) (ratio of ψ(0))')
     ax.set_xlabel('x (m)')
 
 
@@ -179,8 +179,8 @@ def test_match(dk, R2, B2, mu):
     # Third plot
     # real triggered envelope
     fig, ax = plt.subplots()
-    plt.title(f"Re(\u03A8(x)) envelope, dk={dk}, R={R2}, B={B2}, \u03BC={mu}")
-    ax.set_ylabel('Re(\u03A8) (ratio of \u03A8(0))')
+    plt.title(f"Re(ψ(x)) envelope, dk={dk}, R={R2}, B={B2}, \u03BC={mu}")
+    ax.set_ylabel('Re(ψ) (ratio of \u03A8(0))')
     ax.set_xlabel('x (m)')
 
 

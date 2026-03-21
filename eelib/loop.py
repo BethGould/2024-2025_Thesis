@@ -1,9 +1,9 @@
 # class loop 
 # 
 # Author: Elizabeth Gould
-# Date Last Modified: 08/03/2026
+# Date Last Modified: 17.03.2026
 #
-# This class is the core of the IVP and BVP solver for the nonlinear Schrodinger equation for this 
+# This class is the core of the IVP and BVP solver for the nonlinear Schrödinger equation for this 
 # model. The class can solve either the IVP or the BVP on a single ring for a given set of parameters. 
 #
 # It can solve the equations for both the linear and nonlinear cases. There is no need to set the 
@@ -24,14 +24,14 @@
 # Input parameters are:
 # - ring radius (R) as a percent of the maximum expected ring radius, 
 # - magnetic field strength (B) as a percent of the maximum expected field strength,
-# - electron wavenumber (k and dk), where k defaults to the Fermi wavenumber for gold and dk is a
+# - electron wave number (k and dk), where k defaults to the Fermi wave number for gold and dk is a
 #        percent of the period of a sine function in a ring of the maximum length,
-# - nonlinear coupling strength (mu) as a dimensionless coefficent,
-# - initial wavefunction (A), which defaults to 1. + 0.j,
-# - and the initial derivative of the wavefuction, which is to be found by solving the BVP.
+# - nonlinear coupling strength (mu) as a dimensionless coefficient,
+# - initial wave function (A), which defaults to 1. + 0.j,
+# - and the initial derivative of the wave function, which is to be found by solving the BVP.
 #
 # The solutions to the BVP are modeled assuming the loop material is gold, and will not be valid for 
-# other materials. The initial wavefunction is assumed to be 1, and changes to this will correspond 
+# other materials. The initial wave function is assumed to be 1, and changes to this will correspond 
 # to a change in mu. (mu_eff = mu * |A|^2 with mu and A being the inputs, and mu_eff being what our 
 # solutions correspond to.) dk values of 0 will cause problems for the BVP solution for the linear 
 # case, but are assumed to not be physical, but rather just a relic of our imprecision.
@@ -42,7 +42,7 @@ The code and documentation of this file are split into the following sections:
 2. Default values -- This is where I set the default values used by the code. Default values can 
    be changed either directly in the code, or by changing the variable in your loop class instance 
    which stores this default value. You can also just call the relevant methods with your 
-   prefered value and ignore the default. 
+   preferred value and ignore the default. 
    There are a few exceptions, where the default values are stored in the consts.py file and these 
    values can't be modified within the class structure, but can be ignored by providing your own
    value.
@@ -135,7 +135,7 @@ default_number_fast_oscillations_between_recoveries = 4
 #    find_real_env_start()
 #    find_t_points(n_points, t_max, t_start, T)
 
-# 6 ----- BVP matching routines
+# 6 ----- BVP matching methods
 #    find_root_rand(method = None, tol = None, ratio = 1.0)
 #    find_root_many(tol_root_finder = None, tol_bvp_matching = None)
 #    check_solution_for_boundary_matching(deriv_psi = None, tol = None)
@@ -162,7 +162,7 @@ default_number_fast_oscillations_between_recoveries = 4
 #   B (T)
 #   mu 
 #   amp
-# Saved inputs for when we require k0 and dk seperately
+# Saved inputs for when we require k0 and dk separately
 #   k0 -- saves our input
 #   dk -- saves our input
 # Calculated initially, but can be set with setDeriv
@@ -186,12 +186,12 @@ default_number_fast_oscillations_between_recoveries = 4
 #
 # These are calculated with find_fast_oscillations.
 #   T_fast   -- estimated half period of fast oscillations
-#   A_max    -- maximum absolute value of the wavefunction of the first n fast oscillations
+#   A_max    -- maximum absolute value of the wave function of the first n fast oscillations
 #   T_fast0  -- known, error-free period of fast oscillations for the linear case
 #   T_fast_ex -- known, error-free period of fast oscillations for the linear case
 #   T_fast_0_calc -- estimated half period of fast oscillations for the linear case
 # Starting values for our nonlinear, linear, and linear exact solutions for our integrator.
-# They should be the first maxima and minima of our absolute value of our wavefunction.
+# They should be the first maxima and minima of our absolute value of our wave function.
 #   stl
 #   sth
 #   stl0
@@ -200,8 +200,8 @@ default_number_fast_oscillations_between_recoveries = 4
 #   stu_ex
 
 # -- State indicators
-#   k_ee_estimated -- Have we estimated our fast oscillation wavenumber for the nonlinear case from solving for the first n oscillations?
-#   k_0_estimated  -- Have we estimated our fast oscillation wavenumber for the linear case from solving for the first n oscillations?
+#   k_ee_estimated -- Have we estimated our fast oscillation wave number for the nonlinear case from solving for the first n oscillations?
+#   k_0_estimated  -- Have we estimated our fast oscillation wave number for the linear case from solving for the first n oscillations?
 #   bvp_solved     -- Is our initial psi derivative that which has been determined by solving the BVP?
 #   deriv_set      -- Has our derivative been changed from the solution to the linear BVP?
 
@@ -226,9 +226,9 @@ default_number_fast_oscillations_between_recoveries = 4
 
 # -- Defaults
 # These may be altered by hand if needed. 
-#   k_model_bvp -- function handle of model for fast oscillation wavenumber without error
-#   k_model_ivp -- function handle of model for fast oscillation wavenumber with error
-#   M_model     -- function handle of model for slow oscillation wavenumber
+#   k_model_bvp -- function handle of model for fast oscillation wave number without error
+#   k_model_ivp -- function handle of model for fast oscillation wave number with error
+#   M_model     -- function handle of model for slow oscillation wave number
 #   tol_root_finder
 #   tol_bvp_matching
 #   default_rootfinder         -- string of name of SciPy root finder algorithm
@@ -238,7 +238,7 @@ default_number_fast_oscillations_between_recoveries = 4
 #   default_recovery_rate
 #
 #   solve_mu_0 -- This is a boolean which determines if the estimation for the fast 
-#                 oscillation wavenumber should include and estimation for the linear case.
+#                 oscillation wave number should include and estimation for the linear case.
 #                 It defaults to True. It is required for accurate envelope following of the 
 #                 linear case (mu = 0) for the IVP solutions due to the error in period.
 #                 If you want to solve the nonlinear IVP without solving the linear IVP, 
@@ -285,7 +285,7 @@ default_number_fast_oscillations_between_recoveries = 4
 #                                 exact case. I don't remember it ever working. Eventually I declared it unnecessary.
 #    find_real_env_start() -- Gives the time to start following the envelope created by the fast oscillations.
 #    find_t_points(n_points, t_max, t_start, T) -- Creates a numpy array of points for which to integrate or plot, 
-#                                                  for which the spacing is guarenteed to be a multiple of T. Used
+#                                                  for which the spacing is guaranteed to be a multiple of T. Used
 #                                                  to keep the evaluation at the same point on the fast oscillations. 
 
 # 6 ----- BVP matching
@@ -324,7 +324,7 @@ class loop:
     # On creation, it takes R, B, dk, mu, k, and amp as parameters.
     # R is radius as a percentage of R_max.
     # B is the magnetic field as a percentage of B_max.
-    # The wavefunction of the electron is k_el = k + dk/R_max /2.0.
+    # The wave function of the electron is k_el = k + dk/R_max /2.0.
     # k defaults to kFAu (assuming gold as the conductor).
     # psi(0) = amp
     # psi'(0) is initially defined based on the known solution for mu = 0.
@@ -361,7 +361,7 @@ class loop:
         self.bvp_deriv  = None  # This has not yet been calculated.
         self.clear_solution()  # Initializes variables to be unset.
 
-        self.calcInit() # Calulate many derived quantities.
+        self.calcInit() # Calculate many derived quantities.
 
     def ivp_solved(self, ivp_type = "er"):
         if self.ivp[ivp_type] is None: 
@@ -550,9 +550,9 @@ class loop:
     def amp_max_0(self):
         return np.sqrt(np.abs(self.aj0)**2 + np.abs(self.bj0)**2 + 2*np.abs(self.aj0*np.conj(self.bj0)))
     
-    # 3 ---- ODE routines
+    # 3 ---- ODE methods
 
-    # Translates the intuitive plot_code systen into the unintuitive integer code system for solve in solve_ivp.
+    # Translates the intuitive plot_code system into the unintuitive integer code system for solve in solve_ivp.
     def get_solve_code(solve_arr):
         code = -1
         if "er" in solve_arr: code = code * -1
@@ -994,7 +994,7 @@ class loop:
         return x1
 
     
-    # 6 -- BVP routines
+    # 6 -- BVP methods
 
     # This will find a random solution to our BVP. Changing method and prep will change which solution
     # the root finder converges to. I can set this up more intelligently, but I want to have a solution

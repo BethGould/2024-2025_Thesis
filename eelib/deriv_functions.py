@@ -13,12 +13,12 @@ from scipy.special import ellipj
 
 from eelib.consts import pppterm, phi0inv
 
-#--DERIVITIVE FUNCTIONS FOR ODE SOLVERS--
+#--DERIVATIVE FUNCTIONS FOR ODE SOLVERS--
 # x
 # y  = [psi, dpsi/dx]
-# k  -- electron wavenumber
+# k  -- electron wave number
 # B  -- magnetic field strength
-# R  -- radius -- note that here only B * R is relevent, not B and R independently
+# R  -- radius -- note that here only B * R is relevant, not B and R independently
 # mu -- ee coupling strength
 # mA -- maximum amplitude -- used by events, not derivative solvers, but must be included
 

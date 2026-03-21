@@ -24,12 +24,12 @@ import numpy as np
 # deriv_phase -- triggers when arg(psi)' = 0
 # deriv_real -- triggers when real(psi)' = 0
 
-#This event returns 0 when the absolute value of the wavefunction crosses a defined value
+#This event returns 0 when the absolute value of the wave function crosses a defined value
 #all the input parameters are the same as all the derivative calculations, but 
 #used is mA (the maximum amplitude) and not the other parameters
 def event1(x, y, k, B, R, mu, mA):
     return np.abs(y[0]) - mA
-#event 2 returns the real value of the wavefunction: it triggers for 0 values
+#event 2 returns the real value of the wave function: it triggers for 0 values
 #typical oscillations are just phase oscillations, so I need to find roots on the real axis
 def event2(x, y, k, B, R, mu, mA):
     return np.real(y[0])

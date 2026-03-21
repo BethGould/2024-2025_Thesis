@@ -19,7 +19,7 @@
 # These are the Jacobian elliptic functions as implemented in scipy.special.
 # Parameters are:
 #   x -- independent variable
-#   k -- wavenumber (multiplies x values), the period is larger than expected for a trigonometric number
+#   k -- wave number (multiplies x values), the period is larger than expected for a trigonometric number
 #   x0 -- coordinate of the x-axis for the elliptic function
 #   m -- elliptic parameter
 #   A -- amplitude (multiplies the result of the function)
@@ -62,7 +62,7 @@
 # fit_sin(sol) -- Takes a solution object returned by the SciPy ODE solver, as called by our loop class,
 #                 takes the real part of the points triggered by maxima of the absolute value of our solution,
 #                 fits this data to a sine curve, and returns the solution outputted by the SciPy nonlinear 
-#                 regressor. The returned values are an array of parameters: amplitude, wavefunction, angle offset.
+#                 regressor. The returned values are an array of parameters: amplitude, wave function, angle offset.
 
 # -- Helper functions for fit_sin
 #    Estimates the parameters before attempting regression.
@@ -86,7 +86,7 @@ from eelib.consts import pi
 
 # 1: Basic Trigonometry
 #    Fitting function wrappers for trigonometric functions.
-# Parameters are amp (amplitude), k (wavenumber), 
+# Parameters are amp (amplitude), k (wave number), 
 # and theta (angle at x = 0) or x0 (x coordinate for the start of the sine function).
 
 def sin_fit(x, amp, k, theta):
@@ -98,7 +98,7 @@ def sin_fit_2(x, amp, k, x0):
 # 2: Jacobian Elliptical (unused)
 #    Fitting function wrappers for elliptical functions.
 #    Note that x0 for cn must move the function to a maximum, while sn starts at zero, like sine.
-# Parameters are k (multiples x, like a wavenumber), 
+# Parameters are k (multiples x, like a wave number), 
 #                x0 (x coordinate for the start of the function),
 #                m (Jacobian elliptical parameter),
 #                A (amplitude of oscillations), 
@@ -244,7 +244,7 @@ def fit_sin(sol):
     if rt_st is None:
         return None
     
-    MM = 2 * pi / TT # Switch from period to wavenumber.
+    MM = 2 * pi / TT # Switch from period to wave number.
     theta = - MM * xdata[rt_st] # Rescale our x_0 to be an angle shift.
 
     # Prevent our function fitter from deviating too far from our expected values.
@@ -285,7 +285,7 @@ def find_root_dif(y_points):
 # This is used to estimate the values for which the curve crosses the zero axis.
 # It is used for both x_0 estimation and period estimation.
 # y_points = y1_list_0 = np.real(sol['y'][0])
-# Given the y points, find the indicies of the roots.
+# Given the y points, find the indexes of the roots.
 def find_root_points(y_points):
     y_mult = np.array(y_points[:-1])*np.array(y_points[1:])
     zero_index = np.nonzero(y_mult == 0)

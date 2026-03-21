@@ -19,7 +19,7 @@ e_e = scipy.constants.e     # C
 c_l = scipy.constants.c     # m/s
 pi = scipy.constants.pi
 
-# Fermi wavenumbers
+# Fermi wave numbers
 kFAu = 1.20 * 10**10        # m-1
                             # Other materials can also be added as desired.
                             # Number used has low precision.

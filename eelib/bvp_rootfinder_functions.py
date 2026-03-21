@@ -29,17 +29,17 @@
 #                  check_solution = False, model_k=pred_fast_k_true, model_M = pred_slow_k_v3)
 #   -- This is a function which will find one solution of our nonlinear BVP as well as the solution to
 #      the linear BVP. If check_solution is false, it will only return a nonlinear BVP solution as an array
-#      of two real numbers with the real and imaginary components of the initial derivative of Psi. 
+#      of two real numbers with the real and imaginary components of the initial derivative of psi. 
 #      If check_solution is true, it will return 4 values:
-#          - A complex solution for the initial derivative of Psi for the linear case.
+#          - A complex solution for the initial derivative of psi for the linear case.
 #          - The value of our function for which to fit the roots for this (linear) derivative.
-#          - A complex solution for the initial derivative of Psi for the nonlinear case.
+#          - A complex solution for the initial derivative of psi for the nonlinear case.
 #          - The value of our function for which to fit the roots for this (nonlinear) derivative.
 #   -- Our inputs are:
 #       - dk, R, B, mu, in real units, as retrieved from our loop.
-#       - method - A root finder method from the list of available SciPy root finders.
-#       - tol - Our tolerance for this root finder method.
-#       - ratio - Our initial guess is in preportion to our linear solution as dphi0 / ratio.
+#       - method - A root finder algorithm from the list of available SciPy root finders.
+#       - tol - Our tolerance for this root finder algorithm.
+#       - ratio - Our initial guess is in proportion to our linear solution as dphi0 / ratio.
 #       - model_k and model_M are our models of k and M for our function for which to find the roots.
 
 # I have Jacobian code which is not used right now as it has not been checked and debugged.
@@ -67,7 +67,7 @@ def M_calc_0(dpsi0, mu, dk, B, R, A = 1., k0=kFAu):
 #    return [0.0, 0.0]
 
 # Here is the function for which we are finding the roots.
-# Note that this is the same as the linear case, but with shifted wavenumbers.
+# Note that this is the same as the linear case, but with shifted wave numbers.
 # This is an approximation of the solution, not the actual expected form, for
 # which the fast oscillations are not completely sinusoidal.
 # However, plots show that this is an acceptable approximation.
@@ -132,23 +132,23 @@ def jacobian_wrapper_bvp(x, mu, dk, B, R, A = 1.,
 
 #   -- This is a function which will find one solution of our nonlinear BVP as well as the solution to
 #      the linear BVP. If check_solution is false, it will only return a nonlinear BVP solution as an array
-#      of two real numbers with the real and imaginary components of the initial derivative of Psi. 
+#      of two real numbers with the real and imaginary components of the initial derivative of psi. 
 #      If check_solution is true, it will return 4 values:
-#          - A complex solution for the initial derivative of Psi for the linear case.
+#          - A complex solution for the initial derivative of psi for the linear case.
 #          - The value of our function for which to fit the roots for this (linear) derivative.
-#          - A complex solution for the initial derivative of Psi for the nonlinear case.
+#          - A complex solution for the initial derivative of psi for the nonlinear case.
 #          - The value of our function for which to fit the roots for this (nonlinear) derivative.
 #   -- Our inputs are:
 #       - dk, R, B, mu, in real units, as retrieved from our loop.
-#       - method - A root finder method from the list of available SciPy root finders.
-#       - tol - Our tolerance for this root finder method.
-#       - ratio - Our initial guess is in preportion to our linear solution as dphi0 / ratio.
+#       - method - A root finder algorithm from the list of available SciPy root finders.
+#       - tol - Our tolerance for this root finder algorithm.
+#       - ratio - Our initial guess is in proportion to our linear solution as dphi0 / ratio.
 #       - model_k and model_M are our models of k and M for our function for which to find the roots.
 
 def find_root_both(dk, R, B, mu, method = 'broyden2', tol = 1e-20, ratio = 1.0,
                    check_solution = False, model_k=pred_fast_k_true, model_M = pred_slow_k_v3):
 
-    # Find the root of the linear equation. There is only one, so method and initial guess are irrelevant.
+    # Find the root of the linear equation. There is only one, so algorithm and initial guess are irrelevant.
     yy = lambda x: function_wrapper_bvp(x, mu, dk, B, R, k_calc_f=k_calc_0, M_calc_f=M_calc_0)
     #jj = lambda x: jac(x, mu, dk, B, R, k_calc_f=k_calc_0, M_calc_f=M_calc_0, dk_calc_f=dk_calc_0, dM_calc_f=dM_calc_0)
 

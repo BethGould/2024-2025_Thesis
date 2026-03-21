@@ -3,11 +3,11 @@
 # Author: Elizabeth Gould
 # Date Last Edit: 03.03.2026
 
-# This code builds a grid of solutions to the BVP, in order to calculate Psi'(0), 
-# our initial derivative of Psi. Here we can vary R, B, k, dk, mu, and A and 
+# This code builds a grid of solutions to the BVP, in order to calculate psi'(0), 
+# our initial derivative of psi. Here we can vary R, B, k, dk, mu, and A and 
 # construct either a grid of values, or generate a set of random values. 
 #
-# The mu grid is spaced logrithmically. The other grids 
+# The mu grid is spaced logarithmically. The other grids 
 # are spaced linearly. Note that one of the results of this is that mu is taken as a exponent of 
 # powers of 10 for the grid, while it is taken as a raw number for Monte Carlo runs.
 
@@ -46,7 +46,7 @@
 #   For a grid, num must be a list of positive integers. A list size of one will set all dimensions of the grid to
 # this number, for num ^ n points. You can also provide a value for every parameter separately.
 
-# gridBVP(self) does the work of the calcuation if given a grid, with all of the time spent here.
+# gridBVP(self) does the work of the calculation if given a grid, with all of the time spent here.
 # mcBVP(self) does the work of the calculation if given a random assortment of points to run.
 # runCalc(self) does the work of the calculation for either case.
 
@@ -135,7 +135,7 @@ class grid_BVP:
                 str = f"Monte Carlo object to measure current:\n"
             else:
                 str = f"Uncalculated Monte Carlo object to measure current:\n"
-            # The following output is not eligant.
+            # The following output is not elegant.
             str = str + f"mu has points from {np.min(self.val_table[:,0])} to {np.max(self.val_table[:,0])}.\n"
             str = str + f"dk has points from {np.min(self.val_table[:,1])} to {np.max(self.val_table[:,1])}.\n"
             str = str + f"B has points from {np.min(self.val_table[:,2])} to {np.max(self.val_table[:,2])}.\n"
@@ -187,7 +187,7 @@ class grid_BVP:
                 str = f"Monte Carlo object to measure current:\n"
             else:
                 str = f"Uncalculated Monte Carlo object to measure current:\n"
-            # The following output is not eligant.
+            # The following output is not elegant.
             str = str + f"mu has points from {np.min(self.val_table[:,0])} to {np.max(self.val_table[:,0])}.\n"
             str = str + f"dk has points from {np.min(self.val_table[:,1])} to {np.max(self.val_table[:,1])}.\n"
             str = str + f"B has points from {np.min(self.val_table[:,2])} to {np.max(self.val_table[:,2])}.\n"
@@ -231,7 +231,7 @@ class grid_BVP:
         else: 
             self.nls = np.array([self.mu])
 
-        # electron wavenumber / k
+        # electron wave number / k
         if var_set[1]:
             self.ewd = np.linspace(dk[0], dk[1], num=self.num_dk)
         else:
@@ -242,7 +242,7 @@ class grid_BVP:
             self.ew = np.array([self.k])
 
 
-        # oscillations due to magnetic field, magnetic field strenth and ring radius
+        # oscillations due to magnetic field, magnetic field strength and ring radius
         if var_set[2]:
             self.mfs = np.linspace(B[0], B[1], num=self.num_b)
         else:
@@ -287,7 +287,7 @@ class grid_BVP:
             if var_set[3]: self.num_r  = num[0]
             if var_set[1]: self.num_dk = num[0]
             if var_set[5]: self.num_k0 = num[0]
-        # separating derivitive from other parameters
+        # separating derivative from other parameters
         else:
             if max(var_set) == False: 
                 raise ValueError("Expecting only one value for num, as only the grid will be built.")
@@ -369,7 +369,7 @@ class grid_BVP:
         else: 
             self.val_table[:,0] = self.mu
 
-        # electron wavenumber / k
+        # electron wave number / k
         if var_set[1]:
             for ii in range(num):
                 self.val_table[ii,1] = dk[0] + rng.random()*(dk[1]-dk[0])
@@ -412,7 +412,7 @@ class grid_BVP:
 
     # ------------- FIND VALUES ON GRID ---------------
 
-    # Wrapper for the two following functions to run the code.
+    # Wrapper for the two following methods to run the code.
     def runCalc(self):
         if self.is_grid: 
             self.gridBVP()
@@ -460,7 +460,7 @@ class grid_BVP:
         # saved data
         found_derivs_array = []
 
-        # Indicies for each parameter to vary.
+        # Indexes for each parameter to vary.
         ib = 0
         ir = 0
         im = 0
@@ -522,7 +522,7 @@ class grid_BVP:
         # Transfer our local variables to object variables, saving our data.
         self.derivs = found_derivs_array
 
-        # Indicate that this function has been run.
+        # Indicate that this method has been run.
         self.calculated = True
 
         # And end timing.
@@ -606,7 +606,7 @@ class grid_BVP:
         # Transfer our local variables to object variables, saving our data.
         self.derivs = found_derivs_array
 
-        # Indicate that this function has been run.
+        # Indicate that this method has been run.
         self.calculated = True
 
         # And end timing.

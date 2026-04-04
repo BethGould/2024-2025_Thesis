@@ -1,0 +1,2858 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Keep aspect ratio if custom image width or height is specified
+    \setkeys{Gin}{keepaspectratio}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \makeatletter
+    \newsavebox\pandoc@box
+    \newcommand*\pandocbounded[1]{%
+      \sbox\pandoc@box{#1}%
+      % scaling factors for width and height
+      \Gscale@div\@tempa\textheight{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+      \Gscale@div\@tempb\linewidth{\wd\pandoc@box}%
+      % select the smaller of both
+      \ifdim\@tempb\p@<\@tempa\p@
+        \let\@tempa\@tempb
+      \fi
+      % scaling accordingly (\@tempa < 1)
+      \ifdim\@tempa\p@<\p@
+        \scalebox{\@tempa}{\usebox\pandoc@box}%
+      % scaling not needed, use as it is
+      \else
+        \usebox{\pandoc@box}%
+      \fi
+    }
+    \makeatother
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Notebook\_BVP\_Plots}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+    \textbf{File:} Notebook\_BVP\_Plots.ipynb\\
+\textbf{Author:} Elizabeth Gould\\
+\textbf{Date:} 10.03.2026\\
+\textbf{Problem:} Find the value of \(\psi^\prime_0\) which produces
+equal initial and final values \(\psi\)
+
+    This is my Jupyter notebook for finding values of \(\psi^\prime_0\)
+which solve the BVP of the nonlinear Schrödinger equation for persistent
+current in a single micrometer scale gold loop (\(M_{\mu}\)).
+
+This file contains several plots and test scripts for solving the BVP of
+our nonlinear solution. Since our equation for \(\psi^\prime_0\) now
+depends on this value in a non-trivial way, we will proceed with a
+numerical root finding algorithm to find solutions of \(\psi^\prime_0\)
+which solve our BVP.
+
+For our observed approximate solution to the nonlinear Schrödinger
+equation \begin{equation}
+\psi = e^{i M_{\mu} x} \left( a e^{i k_{\mu} x} + b e^{- i k_{\mu} x} \right),
+\end{equation} we know that \(\psi(0) = \psi(2\pi R)\) when
+\begin{equation}
+\psi^\prime_0 = i M + k \left( \frac{e^{- 2 i M\pi R} - \cos\left( 2\pi k R \right)}{\sin\left(2\pi k R\right)}\right),
+\end{equation}
+
+where \(k\left(\mu, R, B, k, \psi^\prime_0 \right)\) and
+\(M\left(\mu, R, B, k, \psi^\prime_0 \right)\) are given by our
+previously solved model. Due to the \(\psi^\prime_0\) dependence of our
+\(k\) and \(M\), we will proceed by moving \(\psi^\prime_0\) to the
+right hand side and solving for the roots of the resulting expression.
+The resulting \begin{equation}
+F(\psi^\prime_0) =  \psi^\prime_0 - i M - k \left( \frac{e^{- 2 i M\pi R} - \cos\left( 2\pi k R \right)}{\sin\left(2\pi k R\right)}\right)
+\end{equation} can be split into real and imaginary components as
+follows: \begin{equation}
+\mathrm{Re}\left(F\left(\psi^\prime_0\right)\right) =  \mathrm{Re}\left(\psi^\prime_0\right) - k \left( \frac{\cos\left(2 M\pi R\right) - \cos\left( 2\pi k R \right)}{\sin\left(2\pi k R\right)}\right)
+\end{equation}
+
+\begin{equation}
+\mathrm{Im}\left(F\left(\psi^\prime_0\right)\right) = \mathrm{Im}\left(\psi^\prime_0\right) - M + k \left( \frac{\sin\left(2 M\pi R\right)}{\sin\left(2\pi k R\right)}\right)
+\end{equation}
+
+    Our BVP is solved when this function \(F(\psi^\prime_0) = 0\) (expressed
+either as \(0+0i\) or \(\left[0,0\right]\)).
+
+    \hypertarget{libraries}{%
+\section{Libraries}\label{libraries}}
+
+    This is the list of all the libraries which will be used in this
+notebook, separated, so that they can be run with any section.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}\PYZhy{}\PYZhy{}LIBRARIES\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{c+c1}{\PYZsh{} My code}
+\PY{k+kn}{import} \PY{n+nn}{eelib}
+\PY{k+kn}{from} \PY{n+nn}{eelib} \PY{k+kn}{import} \PY{n}{pi}\PY{p}{,} \PY{n}{R\PYZus{}max}\PY{p}{,} \PY{n}{B\PYZus{}max}\PY{p}{,} \PY{n}{kFAu}
+\PY{k+kn}{from} \PY{n+nn}{eelib}\PY{n+nn}{.}\PY{n+nn}{k\PYZus{}M\PYZus{}models\PYZus{}ivp} \PY{k+kn}{import} \PY{n}{pred\PYZus{}fast\PYZus{}k}\PY{p}{,} \PY{n}{pred\PYZus{}fast\PYZus{}k\PYZus{}true}
+\PY{k+kn}{from} \PY{n+nn}{eelib}\PY{n+nn}{.}\PY{n+nn}{bvp\PYZus{}rootfinder\PYZus{}functions} \PY{k+kn}{import} \PY{n}{function\PYZus{}wrapper\PYZus{}bvp}\PY{p}{,} \PY{n}{k\PYZus{}calc\PYZus{}0}\PY{p}{,} \PY{n}{M\PYZus{}calc\PYZus{}0}
+\PY{k+kn}{from} \PY{n+nn}{eelib} \PY{k+kn}{import} \PY{n}{loop}
+\PY{k+kn}{from} \PY{n+nn}{eelib}\PY{n+nn}{.}\PY{n+nn}{bvp\PYZus{}test\PYZus{}script} \PY{k+kn}{import} \PY{n}{test\PYZus{}match}
+
+\PY{k+kn}{import} \PY{n+nn}{warnings}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+
+\PY{c+c1}{\PYZsh{}plotting}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{k+kn}{from} \PY{n+nn}{matplotlib} \PY{k+kn}{import} \PY{n}{cm}
+\PY{k+kn}{from} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{ticker} \PY{k+kn}{import} \PY{n}{LinearLocator}
+
+\PY{c+c1}{\PYZsh{}scipy}
+\PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{optimize} \PY{k+kn}{import} \PY{n}{root}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{sample-runs-for-bvp-matching}{%
+\section{Sample Runs for BVP
+matching}\label{sample-runs-for-bvp-matching}}
+
+    This runs the BVP test script to show that we have found a solution to
+our BVP. Included are solutions for several choices of parameters.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{1.0}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}7}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{test\PYZus{}match}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Root of linear solution: (11090221838.444138+4588929289.663735j)
+Value of matching function at this root (should be 0): [0.0, 0.0]
+Root of nonlinear solution: (2813770933.8187084+3950334103.5101666j)
+Value of matching function at this root (should be 0): [8.58306884765625e-06,
+-5.2928924560546875e-05]
+
+aj, bj for the calculated linear solution:
+(0.6909956738575822-0.46208294987771187j)
+(0.30900432614241774+0.46208294987771187j)
+aj, bj for the fit linear solution:  (0.6909956738592167-0.4620829498737167j)
+(0.3090043261407833+0.4620829498737167j)
+
+Exact solution endpoint: (1.0000000000061355-3.7603808955566365e-12j)
+New solution endpoint: (0.999998286563053-4.959918605274005e-07j) Absolute value
+= 0.999998286563176
+aj, bj: (0.6643880954273687-0.11723801311717291j)
+(0.33561190457263135+0.11723801311717291j)
+aj0, bj0 (linear solution): (0.6909956738575822-0.46208294987771187j)
+(0.30900432614241774+0.46208294987771187j)
+
+Nonlinear current estimate: 0.3287761908547373
+Linear current estimate: 0.3819913477151644
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_10_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_10_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_10_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}test\PYZus{}match(dk, R2, B2, mu):}
+\PY{n}{test\PYZus{}match}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{1.0}\PY{p}{,} \PY{l+m+mf}{0.7}\PY{p}{,} \PY{l+m+mf}{1.0e\PYZhy{}7}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Root of linear solution: (10238464266.95363+6266293587.9679985j)
+Value of matching function at this root (should be 0): [0.0, 0.0]
+Root of nonlinear solution: (1858718817.3163993+6013060083.386743j)
+Value of matching function at this root (should be 0): [0.0, 0.0]
+
+aj, bj for the calculated linear solution:
+(0.7608021050029372-0.42659379042132894j)
+(0.2391978949970627+0.42659379042132894j)
+aj, bj for the fit linear solution:  (0.7608021050011521-0.4265937904191009j)
+(0.23919789499884792+0.4265937904191009j)
+
+Exact solution endpoint: (1.0000000000056644+1.0557110741160614e-12j)
+New solution endpoint: (0.9999988379286661-1.0063433728696447e-06j) Absolute
+value = 0.9999988379291723
+aj, bj: (0.7502509287931041-0.077445003950601j)
+(0.24974907120689593+0.077445003950601j)
+aj0, bj0 (linear solution): (0.7608021050029372-0.42659379042132894j)
+(0.2391978949970627+0.42659379042132894j)
+
+Nonlinear current estimate: 0.5005018575862081
+Linear current estimate: 0.5216042100058744
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_11_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_11_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_11_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}test\PYZus{}match(dk, R2, B2, mu):}
+\PY{n}{test\PYZus{}match}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{1.0}\PY{p}{,} \PY{l+m+mf}{0.7}\PY{p}{,} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Root of linear solution: (10238464266.95363+6266293587.9679985j)
+Value of matching function at this root (should be 0): [0.0, 0.0]
+Root of nonlinear solution: (-8088409808.137615+1082558052.4000263j)
+Value of matching function at this root (should be 0): [0.015622138977050781,
+0.0008838176727294922]
+
+aj, bj for the calculated linear solution:
+(0.7608021050029372-0.42659379042132894j)
+(0.2391978949970627+0.42659379042132894j)
+aj, bj for the fit linear solution:  (0.7608021050011521-0.4265937904191009j)
+(0.23919789499884792+0.4265937904191009j)
+
+Exact solution endpoint: (1.0000000000056644+1.0557110741160614e-12j)
+New solution endpoint: (0.9998723684749223-1.4915947837979004e-06j) Absolute
+value = 0.9998723684760349
+aj, bj: (0.5448176240291736+0.33701005429626946j)
+(0.4551823759708265-0.33701005429626946j)
+aj0, bj0 (linear solution): (0.7608021050029372-0.42659379042132894j)
+(0.2391978949970627+0.42659379042132894j)
+
+Nonlinear current estimate: 0.08963524805834705
+Linear current estimate: 0.5216042100058744
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_12_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_12_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_12_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}test\PYZus{}match(dk, R2, B2, mu):}
+\PY{n}{test\PYZus{}match}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{1.0}\PY{p}{,} \PY{l+m+mf}{1.0}\PY{p}{,} \PY{l+m+mf}{1.0e\PYZhy{}7}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Root of linear solution: (8498159687.663579+8482612811.599436j)
+Value of matching function at this root (should be 0): [0.0, 0.0]
+Root of nonlinear solution: (-1455542875.1017988+16387197308.563007j)
+Value of matching function at this root (should be 0): [7055694378.098959,
+14211434496.501966]
+
+aj, bj for the calculated linear solution:
+(0.8530233775640189-0.35408261026671756j)
+(0.1469766224359812+0.35408261026671756j)
+aj, bj for the fit linear solution:  (0.8530233775624768-0.35408261026493526j)
+(0.14697662243752319+0.35408261026493526j)
+
+Exact solution endpoint: (1.0000000000047018+4.2928438581668615e-12j)
+New solution endpoint: (0.6425216555133109-1.2046736926602433j) Absolute value =
+1.365310508123054
+aj, bj: (1.1823742034604194+0.060646356330151405j)
+(-0.18237420346041944-0.060646356330151405j)
+aj0, bj0 (linear solution): (0.8530233775640189-0.35408261026671756j)
+(0.1469766224359812+0.35408261026671756j)
+
+Nonlinear current estimate: 1.3647484069208389
+Linear current estimate: 0.7060467551280378
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_13_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_13_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_13_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}test\PYZus{}match(dk, R2, B2, mu):}
+\PY{n}{test\PYZus{}match}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{1.0}\PY{p}{,} \PY{l+m+mf}{1.0}\PY{p}{,} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Root of linear solution: (8498159687.663579+8482612811.599436j)
+Value of matching function at this root (should be 0): [0.0, 0.0]
+Root of nonlinear solution: (-8011477085.170609+1546490060.2394931j)
+Value of matching function at this root (should be 0): [-0.14850139617919922,
+-0.010480165481567383]
+
+aj, bj for the calculated linear solution:
+(0.8530233775640189-0.35408261026671756j)
+(0.1469766224359812+0.35408261026671756j)
+aj, bj for the fit linear solution:  (0.8530233775624768-0.35408261026493526j)
+(0.14697662243752319+0.35408261026493526j)
+
+Exact solution endpoint: (1.0000000000047018+4.2928438581668615e-12j)
+New solution endpoint: (0.9998734441324076-2.012269912310405e-06j) Absolute
+value = 0.9998734441344325
+aj, bj: (0.5640242837369339+0.33380459095313053j)
+(0.4359757162630661-0.33380459095313053j)
+aj0, bj0 (linear solution): (0.8530233775640189-0.35408261026671756j)
+(0.1469766224359812+0.35408261026671756j)
+
+Nonlinear current estimate: 0.12804856747386784
+Linear current estimate: 0.7060467551280378
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_14_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_14_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_14_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}test\PYZus{}match(dk, R2, B2, mu):}
+\PY{n}{test\PYZus{}match}\PY{p}{(}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{1.0}\PY{p}{,} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Root of linear solution: (-28646313639.333405-3299690263.752948j)
+Value of matching function at this root (should be 0): [0.0, 0.0]
+Root of nonlinear solution: (-13436110640.290878+934005807.6639937j)
+Value of matching function at this root (should be 0): [-0.038604736328125,
+0.00021886825561523438]
+
+aj, bj for the calculated linear solution:
+(0.3623100400859088+1.193571535559856j) (0.637689959914091-1.193571535559856j)
+aj, bj for the fit linear solution:  (0.3623100400842252+1.1935715355652343j)
+(0.6376899599157748-1.1935715355652343j)
+
+Exact solution endpoint: (0.9999999999920761+3.0175861809311755e-13j)
+New solution endpoint: (0.9996486577703045-9.973846145983067e-06j) Absolute
+value = 0.9996486578200607
+aj, bj: (0.5387103680530984+0.559826280297947j)
+(0.4612896319469016-0.559826280297947j)
+aj0, bj0 (linear solution): (0.3623100400859088+1.193571535559856j)
+(0.637689959914091-1.193571535559856j)
+
+Nonlinear current estimate: 0.07742073610619671
+Linear current estimate: -0.2753799198281821
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_15_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_15_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_15_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{graphs-of-solutions-to-the-bvp}{%
+\section{Graphs of Solutions to the
+BVP}\label{graphs-of-solutions-to-the-bvp}}
+
+    Now for some visualization of my function for BVP matching. We are
+looking for roots of this function, which takes a complex number and
+returns a complex number. To do this, we separate the real and imaginary
+components of both the independent and dependent variables, and solve
+with a multidimensional root finder. I will then hold either the real or
+imaginary component of the independent variable (my \(\psi^\prime_0\))
+constant, and plot both components of the dependent variable as separate
+curves. Our roots occur when the intersection of both functions reaches
+zero on both graphs. The fact that there are many solutions is visible
+from the graphs, despite the fact that technically typically only one of
+them is visible here. This is due to the fact that moving in the fixed
+dimension moves the graph structure up or down, so any intersection
+could become a root by adjusting the constant independent variable.
+Calculating this effect is not straight forward, since the graphs don't
+necessarily move together, but many (but not all) of the intersections
+correspond to a root.
+
+    Lets start with defining some functions, to reduce the amount of text
+copied.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Display the numerical results of solving for a root of the given functions numerically.}
+\PY{c+c1}{\PYZsh{} \PYZhy{} sol0 = the root of the linear BVP matching equation (as a list of two components)}
+\PY{c+c1}{\PYZsh{} \PYZhy{} fun0 = the linear BVP matching equation which takes only sol0 as an argument and returns something close to [0.0,0.0]}
+\PY{c+c1}{\PYZsh{} \PYZhy{} sol = the root of the nonlinear BVP matching equation (as a list of two components)}
+\PY{c+c1}{\PYZsh{} \PYZhy{} fun = the nonlinear BVP matching equation which takes only sol as an argument and returns something close to [0.0,0.0]}
+\PY{k}{def} \PY{n+nf}{print\PYZus{}results}\PY{p}{(}\PY{n}{sol0}\PY{p}{,} \PY{n}{fun0}\PY{p}{,} \PY{n}{sol}\PY{p}{,} \PY{n}{fun}\PY{p}{)}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Linear initial derivative:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{sol0}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Function value at this derivative:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{fun0}\PY{p}{(}\PY{n}{sol0}\PY{p}{)}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Nonlinear initial derivative (for model with error):}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{sol}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Function value at this derivative:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{fun}\PY{p}{(}\PY{n}{sol}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Plots the nonlinear BVP matching equation as a function of the imaginary component of the derivative,}
+\PY{c+c1}{\PYZsh{} keeping the real component fixed to the given solution.}
+\PY{c+c1}{\PYZsh{} \PYZhy{} sol = the root of the nonlinear BVP matching equation (as a list of two components)}
+\PY{c+c1}{\PYZsh{} \PYZhy{} fun = the nonlinear BVP matching equation which takes only sol as an argument and returns something close to [0.0,0.0]}
+\PY{c+c1}{\PYZsh{} optional:}
+\PY{c+c1}{\PYZsh{} \PYZhy{} nn = the number of points to plot}
+\PY{c+c1}{\PYZsh{} \PYZhy{} [dgmin, dgmax] is the plot range for x}
+\PY{c+c1}{\PYZsh{} \PYZhy{} [\PYZhy{}lim, lim] is the plot range for y}
+\PY{k}{def} \PY{n+nf}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{fun}\PY{p}{,} \PY{n}{nn} \PY{o}{=} \PY{l+m+mi}{2000}\PY{p}{,} \PY{n}{dgmax} \PY{o}{=} \PY{l+m+mf}{1e11}\PY{p}{,} \PY{n}{dgmin} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mf}{1e11}\PY{p}{,} \PY{n}{lim} \PY{o}{=} \PY{l+m+mf}{1.5e10}\PY{p}{)}\PY{p}{:}
+    \PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Plot of the boundary matching criteria vs Im(ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0))}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Value of BVP matching function}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Im(ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0))}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    
+    \PY{n}{drline} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{n}{dgmin}\PY{p}{,}\PY{n}{dgmax}\PY{p}{,}\PY{n}{nn}\PY{p}{)}
+    \PY{n}{funline} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{nn}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{nn}\PY{p}{)}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} keep the real term of the derivative constant, plot for imag}
+        \PY{n}{ret1} \PY{o}{=} \PY{n}{fun}\PY{p}{(}\PY{p}{[}\PY{n}{sol}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}\PY{n}{drline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+        \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{ret1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+        \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{ret1}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{l+m+mi}{10}
+
+        \PY{c+c1}{\PYZsh{} remove points outside of our desired range}
+        \PY{k}{if} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{n}{lim}\PY{p}{:} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+        \PY{k}{if} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{o}{\PYZhy{}}\PY{n}{lim}\PY{p}{:} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+        \PY{k}{if} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{n}{lim}\PY{p}{:} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+        \PY{k}{if} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{o}{\PYZhy{}}\PY{n}{lim}\PY{p}{:} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+
+    \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{drline}\PY{p}{,} \PY{n}{funline}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Plots the nonlinear BVP matching equation as a function of the real component of the derivative,}
+\PY{c+c1}{\PYZsh{} keeping the imaginary component fixed to the given solution.}
+\PY{c+c1}{\PYZsh{} \PYZhy{} sol = the root of the nonlinear BVP matching equation (as a list of two components)}
+\PY{c+c1}{\PYZsh{} \PYZhy{} fun = the nonlinear BVP matching equation which takes only sol as an argument and returns something close to [0.0,0.0]}
+\PY{c+c1}{\PYZsh{} optional:}
+\PY{c+c1}{\PYZsh{} \PYZhy{} nn = the number of points to plot}
+\PY{c+c1}{\PYZsh{} \PYZhy{} [dgmin, dgmax] is the plot range for x}
+\PY{c+c1}{\PYZsh{} \PYZhy{} [\PYZhy{}lim, lim] is the plot range for y}
+\PY{k}{def} \PY{n+nf}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{sol}\PY{p}{,} \PY{n}{fun}\PY{p}{,} \PY{n}{nn} \PY{o}{=} \PY{l+m+mi}{2000}\PY{p}{,} \PY{n}{dgmax} \PY{o}{=} \PY{l+m+mf}{1e11}\PY{p}{,} \PY{n}{dgmin} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mf}{1e11}\PY{p}{,} \PY{n}{lim} \PY{o}{=} \PY{l+m+mf}{1.5e10}\PY{p}{)}\PY{p}{:}
+    \PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Plot of the boundary matching criteria vs Re(ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0))}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Value of BVP matching function}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Re(ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0))}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    
+    \PY{n}{drline} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{n}{dgmin}\PY{p}{,}\PY{n}{dgmax}\PY{p}{,}\PY{n}{nn}\PY{p}{)}
+    \PY{n}{funline} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{nn}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{nn}\PY{p}{)}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} keep the real term of the derivative constant, plot for imag}
+        \PY{n}{ret1} \PY{o}{=} \PY{n}{fun}\PY{p}{(}\PY{p}{[}\PY{n}{drline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,}\PY{n}{sol}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+        \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{ret1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+        \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{ret1}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{l+m+mi}{10}
+
+        \PY{c+c1}{\PYZsh{} remove points outside of our desired range}
+        \PY{k}{if} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{n}{lim}\PY{p}{:} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+        \PY{k}{if} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{o}{\PYZhy{}}\PY{n}{lim}\PY{p}{:} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+        \PY{k}{if} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{n}{lim}\PY{p}{:} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+        \PY{k}{if} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{o}{\PYZhy{}}\PY{n}{lim}\PY{p}{:} \PY{n}{funline}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{k+kc}{None}
+
+    \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{drline}\PY{p}{,} \PY{n}{funline}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} These return the appropriate function handles for the BVP matching equation for the}
+\PY{c+c1}{\PYZsh{}  \PYZhy{}\PYZhy{} linear model}
+\PY{c+c1}{\PYZsh{}  \PYZhy{}\PYZhy{} nonlinear model without error}
+\PY{c+c1}{\PYZsh{}  \PYZhy{}\PYZhy{} nonlinear model with error}
+\PY{c+c1}{\PYZsh{} dk, R2, B2, and mu are the parameters as they are passed to the loop class,}
+\PY{c+c1}{\PYZsh{} meaning that R2 and B2 are R and B as a percent of their maximum value.}
+\PY{k}{def} \PY{n+nf}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}\PY{p}{:}
+    \PY{n}{R}  \PY{o}{=} \PY{n}{R2} \PY{o}{*} \PY{n}{R\PYZus{}max}
+    \PY{n}{B}  \PY{o}{=} \PY{n}{B2} \PY{o}{*} \PY{n}{B\PYZus{}max}
+    \PY{k}{return} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{function\PYZus{}wrapper\PYZus{}bvp}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{mu}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{B}\PY{p}{,} \PY{n}{R}\PY{p}{,} \PY{n}{k\PYZus{}calc\PYZus{}f}\PY{o}{=}\PY{n}{k\PYZus{}calc\PYZus{}0}\PY{p}{,} \PY{n}{M\PYZus{}calc\PYZus{}f}\PY{o}{=}\PY{n}{M\PYZus{}calc\PYZus{}0}\PY{p}{)}
+\PY{k}{def} \PY{n+nf}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}\PY{p}{:}
+    \PY{n}{R}  \PY{o}{=} \PY{n}{R2} \PY{o}{*} \PY{n}{R\PYZus{}max}
+    \PY{n}{B}  \PY{o}{=} \PY{n}{B2} \PY{o}{*} \PY{n}{B\PYZus{}max}
+    \PY{k}{return} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{function\PYZus{}wrapper\PYZus{}bvp}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{mu}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{B}\PY{p}{,} \PY{n}{R}\PY{p}{,} \PY{n}{k\PYZus{}calc\PYZus{}f}\PY{o}{=}\PY{n}{pred\PYZus{}fast\PYZus{}k\PYZus{}true}\PY{p}{)}
+\PY{k}{def} \PY{n+nf}{get\PYZus{}fun}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}\PY{p}{:}
+    \PY{n}{R}  \PY{o}{=} \PY{n}{R2} \PY{o}{*} \PY{n}{R\PYZus{}max}
+    \PY{n}{B}  \PY{o}{=} \PY{n}{B2} \PY{o}{*} \PY{n}{B\PYZus{}max}
+    \PY{k}{return} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{function\PYZus{}wrapper\PYZus{}bvp}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{mu}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{B}\PY{p}{,} \PY{n}{R}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Now for my analysis. I will start this analysis with my model for \(k\)
+and \(M\) which I got from previous analysis. I know that the \(k\)
+model includes an error term, but I will start by trying this analysis
+without removing the error term. I found that the error term prevents
+convergence to the linear solution, producing visual results which
+obviously differ from the correct results.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}8}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 3.48037137e+09
+-1.02802940e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_22_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_22_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Here is a second set of parameters with the erroneous \(k\) model, with
+a smaller \(\mu\). As can be seen, I don't get results closer to the
+linear solution.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}9}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 4.54979681e+09
+-1.02418301e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_24_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_24_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Ok. I want to clear out these erroneous plots, and look at the real
+function. Here I will show the convergence to the linear solution for
+small \(\mu\). I will start with the linear, and increase \(\mu\) in
+powers of 10, until errors start to occur.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mi}{0}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 2.85673526e+09
+-1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_26_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_26_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}12}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 2.85661526e+09
+-1.06528790e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_27_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_27_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}11}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 2.85553531e+09
+-1.06530637e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_28_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_28_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}10}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 2.84473930e+09
+-1.06549202e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_29_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_29_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Nonlinearity has begun to emerge.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}9}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 2.73710338e+09
+-1.06745263e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_31_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_31_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Both plots clearly show that my functions are now curved.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}8}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 1.66747303e+09
+-1.09878710e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_33_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_33_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Multiple solutions are now visible. Only one of the points of
+intersection is a solution here, but if I change the other
+\(\psi^\prime\) component, I can often move the seen curves up or down
+until I find another match. This is not guaranteed, but the rings grow
+in radius as I move away from the origin, providing an infinite number
+of high energy solutions.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}7}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [-1.47301450e+10
+-3.49138575e+10]
+Function value at this derivative: [-2641412636.18095, -27755462019.65997]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_35_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_35_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    As \(\mu\) increases, my curves become more and more compact.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}6}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+c:\textbackslash{}Users\textbackslash{}beth\textbackslash{}anaconda3\textbackslash{}Lib\textbackslash{}site-packages\textbackslash{}scipy\textbackslash{}optimize\textbackslash{}\_nonlin.py:1010:
+RuntimeWarning: invalid value encountered in divide
+  d = v / df\_norm**2
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [-1.04354805e+10
+-2.62137731e+09]
+Function value at this derivative: [-0.018033981323242188,
+-0.003498554229736328]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_37_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_37_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    And problems have started to occur. This is a good stopping point for
+these graphs.
+
+    Now I want to try a few times with \(\mu = 10^{-7}\), which shows the
+nonlinear solution pattern clearly, with a few different values of my
+other initial parameters, to see how this changes the solution. These
+graphs don't show everything, but they do show that the structure for
+the solutions do in fact change.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.512}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.9000215}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.50055}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}7}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 3.29250014e+11 -4.20325207e+09]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 1.02794849e+10
+-1.86461603e+08]
+Function value at this derivative: [0.3028087615966797, 0.0008063614368438721]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_40_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_40_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5099}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.9000265}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5005}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}7}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [-7.98732383e+10  9.55626243e+08]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [-2.67941001e+10
+2.54722300e+09]
+Function value at this derivative: [-0.3312416076660156, 0.020049095153808594]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_41_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_41_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}7}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [ 2.85673526e+09 -1.06528585e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [-1.47301450e+10
+-3.49138575e+10]
+Function value at this derivative: [-2641412636.18095, -27755462019.65997]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_42_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_42_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.8}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.3}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}7}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [6.12150784e+09 7.67023704e+09]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [ 5.01188163e+09
+-1.43346919e+10]
+Function value at this derivative: [0.0, 0.0]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_43_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_43_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}7}
+
+\PY{c+c1}{\PYZsh{} linear function}
+\PY{n}{yy0} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}0}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy0}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1e12}\PY{p}{,} \PY{l+m+mf}{1e12}\PY{p}{]}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{hybr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{xs} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} nonlinear function}
+\PY{n}{yy} \PY{o}{=} \PY{n}{get\PYZus{}fun\PYZus{}true}\PY{p}{(}\PY{n}{dk}\PY{p}{,} \PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+\PY{n}{sol} \PY{o}{=} \PY{n}{root}\PY{p}{(}\PY{n}{yy}\PY{p}{,} \PY{n}{xs}\PY{o}{/}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{method}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{broyden2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{tol}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}20}\PY{p}{)}
+\PY{n}{dphi0c} \PY{o}{=} \PY{n}{sol}\PY{o}{.}\PY{n}{x}
+
+\PY{c+c1}{\PYZsh{} routines for outputting the results}
+\PY{n}{print\PYZus{}results}\PY{p}{(}\PY{n}{xs}\PY{p}{,} \PY{n}{yy0}\PY{p}{,} \PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}imag}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\PY{n}{plot\PYZus{}fun\PYZus{}vs\PYZus{}real}\PY{p}{(}\PY{n}{dphi0c}\PY{p}{,} \PY{n}{yy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Linear initial derivative: [-1.03399718e+10 -1.68870391e+10]
+Function value at this derivative: [0.0, 0.0]
+Nonlinear initial derivative (for model with error): [3.75394597e+10
+2.23232250e+10]
+Function value at this derivative: [0.11065673828125, 0.055023193359375]
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_44_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_44_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{d-graphs-of-solutions}{%
+\section{3D Graphs of Solutions}\label{d-graphs-of-solutions}}
+
+    These are my attempts at trying to produce a 3D plot of the solutions.
+Something is visible, but they are not the greatest of quality. I
+stopped trying to improve these as they are unnecessary for further
+analysis. These plotting scripts tend to run slowly due to the large
+number of points. I had tried to produce plots with plotly and seaborn
+instead of matplotlib, but stopped due to time considerations, as better
+graphics here were unnecessary.
+
+    The plots use my function wrapper for the equation, whose roots give the
+solution to the BVP. I will then wrap this function in another function,
+which cuts off the values at a given limit. This is done because the
+values rapidly increase, and if I don't limit them, the relevant part of
+the function would not be visible on the graphs.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{30}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Parameters}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.9}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.0e\PYZhy{}7}
+
+\PY{n}{B} \PY{o}{=} \PY{n}{B2} \PY{o}{*} \PY{n}{B\PYZus{}max}
+\PY{n}{R} \PY{o}{=} \PY{n}{R2} \PY{o}{*} \PY{n}{R\PYZus{}max}
+
+\PY{n}{lim} \PY{o}{=} \PY{l+m+mf}{1e11}
+
+\PY{c+c1}{\PYZsh{} Boundary matching function}
+\PY{n}{yy} \PY{o}{=} \PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{function\PYZus{}wrapper\PYZus{}bvp}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{mu}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{B}\PY{p}{,} \PY{n}{R}\PY{p}{)}\PY{c+c1}{\PYZsh{}, k\PYZus{}calc\PYZus{}f=pred\PYZus{}fast\PYZus{}k\PYZus{}true)}
+
+\PY{c+c1}{\PYZsh{} Functions to cut off values}
+\PY{k}{def} \PY{n+nf}{yf2}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{lim}\PY{p}{)}\PY{p}{:}
+    \PY{n}{val} \PY{o}{=} \PY{n}{yy}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{o}{*}\PY{n}{kFAu}\PY{p}{,} \PY{n}{y}\PY{o}{*}\PY{n}{kFAu}\PY{p}{]}\PY{p}{)}
+    \PY{k}{if} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{n}{lim}\PY{p}{:} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{lim}
+    \PY{k}{if} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{\PYZlt{}} \PY{o}{\PYZhy{}}\PY{n}{lim}\PY{p}{:} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{n}{lim}
+    \PY{k}{if} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{l+m+mi}{10} \PY{o}{\PYZgt{}} \PY{n}{lim}\PY{p}{:} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{lim}
+    \PY{k}{if} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{l+m+mi}{10} \PY{o}{\PYZlt{}} \PY{o}{\PYZhy{}}\PY{n}{lim}\PY{p}{:} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{n}{lim}
+    \PY{k}{return} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e10}\PY{p}{,} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e11}
+
+\PY{k}{def} \PY{n+nf}{yf3}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{lim}\PY{p}{)}\PY{p}{:}
+    \PY{n}{val} \PY{o}{=} \PY{n}{yy}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{o}{*}\PY{n}{kFAu}\PY{p}{,} \PY{n}{y}\PY{o}{*}\PY{n}{kFAu}\PY{p}{]}\PY{p}{)}
+    \PY{n}{valr} \PY{o}{=} \PY{n}{val}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{n}{val}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{l+m+mi}{10}
+    \PY{k}{if} \PY{n}{valr} \PY{o}{\PYZgt{}} \PY{n}{lim}\PY{p}{:} \PY{n}{valr} \PY{o}{=} \PY{n}{lim}
+    \PY{k}{if} \PY{n}{valr} \PY{o}{\PYZlt{}} \PY{o}{\PYZhy{}}\PY{n}{lim}\PY{p}{:} \PY{n}{valr} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{n}{lim}
+    \PY{k}{return} \PY{n}{valr}\PY{o}{/}\PY{n}{lim}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} This code mostly comes from the example for plotting a 3d surface using }
+\PY{c+c1}{\PYZsh{} MatPlotLib. }
+\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{subplot\PYZus{}kw}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{projection}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3d}\PY{l+s+s2}{\PYZdq{}}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3D plot of the real boundary matching criteria vs ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0),}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{ rescaled to order 1}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Make data.}
+\PY{n}{sz} \PY{o}{=} \PY{l+m+mi}{1000} \PY{c+c1}{\PYZsh{} number of points in each direction}
+\PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.5}\PY{p}{,} \PY{l+m+mf}{1.5}\PY{p}{,} \PY{l+m+mi}{3} \PY{o}{/} \PY{n}{sz}\PY{p}{)}
+\PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.5}\PY{p}{,} \PY{l+m+mf}{1.5}\PY{p}{,} \PY{l+m+mi}{3} \PY{o}{/} \PY{n}{sz}\PY{p}{)}
+\PY{n}{X}\PY{p}{,} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{)}
+
+\PY{n}{lim} \PY{o}{=} \PY{l+m+mf}{1e10} \PY{c+c1}{\PYZsh{} for which value of our BVP matching function should we cut off}
+\PY{n}{Z1}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{sz}\PY{p}{,} \PY{n}{sz}\PY{p}{)}\PY{p}{)}
+\PY{n}{Z2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{sz}\PY{p}{,}\PY{n}{sz}\PY{p}{)}\PY{p}{)}
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{sz}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{sz}\PY{p}{)}\PY{p}{:}
+        \PY{n}{Z1}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{Z2}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{n}{yf2}\PY{p}{(}\PY{n}{X}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{Y}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{lim}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Plot the surface.}
+\PY{n}{surf} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{plot\PYZus{}surface}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{Z1}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{n}{cm}\PY{o}{.}\PY{n}{coolwarm}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{antialiased}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Customize the z axis.}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}locator}\PY{p}{(}\PY{n}{LinearLocator}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} A StrMethodFormatter is used automatically}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}formatter}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}x:.02f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add a color bar which maps values to colors.}
+\PY{n}{fig}\PY{o}{.}\PY{n}{colorbar}\PY{p}{(}\PY{n}{surf}\PY{p}{,} \PY{n}{shrink}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{aspect}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_49_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} And again}
+\PY{c+c1}{\PYZsh{} Plot 1}
+\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{subplot\PYZus{}kw}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{projection}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3d}\PY{l+s+s2}{\PYZdq{}}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3D plot of the real boundary matching criteria vs ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0),}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{ rescaled to order 1}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Make data.}
+\PY{n}{sz} \PY{o}{=} \PY{l+m+mi}{1000} \PY{c+c1}{\PYZsh{} number of points in each direction}
+\PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.5}\PY{p}{,} \PY{l+m+mf}{1.5}\PY{p}{,} \PY{l+m+mi}{3} \PY{o}{/} \PY{n}{sz}\PY{p}{)}
+\PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{1.5}\PY{p}{,} \PY{l+m+mf}{1.5}\PY{p}{,} \PY{l+m+mi}{3} \PY{o}{/} \PY{n}{sz}\PY{p}{)}
+\PY{n}{X}\PY{p}{,} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{)}
+
+\PY{n}{lim} \PY{o}{=} \PY{l+m+mf}{1e10} \PY{c+c1}{\PYZsh{} for which value of our BVP matching function should we cut off}
+\PY{n}{Z1}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{sz}\PY{p}{,} \PY{n}{sz}\PY{p}{)}\PY{p}{)}
+\PY{n}{Z2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{sz}\PY{p}{,}\PY{n}{sz}\PY{p}{)}\PY{p}{)}
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{sz}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{sz}\PY{p}{)}\PY{p}{:}
+        \PY{n}{Z1}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{Z2}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{n}{yf2}\PY{p}{(}\PY{n}{X}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{Y}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{lim}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Plot the surface.}
+\PY{n}{surf} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{plot\PYZus{}surface}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{Z1}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{n}{cm}\PY{o}{.}\PY{n}{coolwarm}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{antialiased}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Customize the z axis.}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}locator}\PY{p}{(}\PY{n}{LinearLocator}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} A StrMethodFormatter is used automatically}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}formatter}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}x:.02f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add a color bar which maps values to colors.}
+\PY{n}{fig}\PY{o}{.}\PY{n}{colorbar}\PY{p}{(}\PY{n}{surf}\PY{p}{,} \PY{n}{shrink}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{aspect}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} \PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{c+c1}{\PYZsh{} Plot 2}
+
+\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{subplot\PYZus{}kw}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{projection}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3d}\PY{l+s+s2}{\PYZdq{}}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3D plot of the imaginary boundary matching criteria vs ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0),}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{ rescaled to order 1}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+
+\PY{n}{surf} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{plot\PYZus{}surface}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{Z2}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{n}{cm}\PY{o}{.}\PY{n}{coolwarm}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{antialiased}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Customize the z axis.}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}locator}\PY{p}{(}\PY{n}{LinearLocator}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} A StrMethodFormatter is used automatically}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}formatter}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}x:.02f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add a color bar which maps values to colors.}
+\PY{n}{fig}\PY{o}{.}\PY{n}{colorbar}\PY{p}{(}\PY{n}{surf}\PY{p}{,} \PY{n}{shrink}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{aspect}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} \PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{c+c1}{\PYZsh{} Plot 3}
+
+\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{subplot\PYZus{}kw}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{projection}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3d}\PY{l+s+s2}{\PYZdq{}}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3D plot of the boundary matching criteria difference vs ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0),}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{ rescaled to order 1}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+
+\PY{n}{surf} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{plot\PYZus{}surface}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{Z1}\PY{o}{\PYZhy{}}\PY{n}{Z2}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{n}{cm}\PY{o}{.}\PY{n}{coolwarm}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{antialiased}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Customize the z axis.}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}locator}\PY{p}{(}\PY{n}{LinearLocator}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} A StrMethodFormatter is used automatically}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}formatter}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}x:.02f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add a color bar which maps values to colors.}
+\PY{n}{fig}\PY{o}{.}\PY{n}{colorbar}\PY{p}{(}\PY{n}{surf}\PY{p}{,} \PY{n}{shrink}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{aspect}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_50_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_50_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_50_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Lets now zoom in}
+\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{subplot\PYZus{}kw}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{projection}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3d}\PY{l+s+s2}{\PYZdq{}}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{3D plot of the real boundary matching criteria vs ψ}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{(0),}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{ rescaled to order 1}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Make data.}
+\PY{n}{sz} \PY{o}{=} \PY{l+m+mi}{2000} \PY{c+c1}{\PYZsh{} number of data points in each direction}
+\PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2} \PY{o}{/} \PY{n}{sz}\PY{p}{)}
+\PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2} \PY{o}{/} \PY{n}{sz}\PY{p}{)}
+\PY{n}{X}\PY{p}{,} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{)}
+
+\PY{n}{lim} \PY{o}{=} \PY{l+m+mf}{1e10} \PY{c+c1}{\PYZsh{} again, our limit}
+\PY{n}{Z1}\PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{sz}\PY{p}{,} \PY{n}{sz}\PY{p}{)}\PY{p}{)}
+\PY{n}{Z2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{sz}\PY{p}{,}\PY{n}{sz}\PY{p}{)}\PY{p}{)}
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{sz}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{sz}\PY{p}{)}\PY{p}{:}
+        \PY{n}{Z1}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{Z2}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{n}{yf2}\PY{p}{(}\PY{n}{X}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{Y}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{lim}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Plot the surface.}
+\PY{n}{surf} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{plot\PYZus{}surface}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{Z1}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{n}{cm}\PY{o}{.}\PY{n}{coolwarm}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{antialiased}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Customize the z axis.}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlim}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}locator}\PY{p}{(}\PY{n}{LinearLocator}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} A StrMethodFormatter is used automatically}
+\PY{n}{ax}\PY{o}{.}\PY{n}{zaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}formatter}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}x:.02f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add a color bar which maps values to colors.}
+\PY{n}{fig}\PY{o}{.}\PY{n}{colorbar}\PY{p}{(}\PY{n}{surf}\PY{p}{,} \PY{n}{shrink}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{aspect}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/bvp_match_en/output_51_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{runs-of-bvp-matching-from-the-loop-class}{%
+\section{Runs of BVP matching from the loop
+class}\label{runs-of-bvp-matching-from-the-loop-class}}
+
+    From the graphs above, it can be seen that we have a slight problem.
+There are many solutions to the BVP and they have different current. I
+have 4 solutions to the problem. 1. Add all the solutions together and
+calculate the current from this. Strictly speaking the nonlinearity of
+the solution means that this doesn't quite work (just like adding
+solutions with different k values or considering that the overall
+amplitude doesn't matter), but since it is weakly non-linear, this
+difference may not be relevant. Finding all of the solutions, however,
+is not such a simple task. There are also likely infinite solutions with
+rapidly increasing current and amplitude. 2. Use the lowest energy
+solution. This is most likely the correct solution, and the one we will
+be using as it is the easiest to find. The solutions with the lowest
+initial derivative are rare and easy to find as a unique solution. As I
+increase my initial derivative, the current and amplitude rapidly
+increase, as does the number of solutions. 3. Use the solution closest
+to the linear solution. This has the logical benefit of considering
+continuous diffeomorphism from the linear case. I will need to use low
+\(\mu\) values for this to work, however. For greater \(\mu\) values,
+figuring out which of the solutions is closest to the linear solution is
+difficult. 4. Varying \(\mu\) based on \(|A_{max}|^2\). When I started
+modeling the dependence of \(k\) on the parameters, I had thought that
+something like this might be happening, i.e.~\(\mu\) is equal between
+rings when \(|A_{max}|^2\) are equal, not when \(|A_0|^2\) are equal. I
+still think this is logical, but \(\Delta k\) has a good Taylor
+expansion for \(|A_0|^2\), not \(|A_{max}|^2\). This is what I found
+when fitting the data. Adding this complication also most likely doesn't
+help fix the problem with multiple solutions. Since it is still unclear
+as to which variant of \(\mu\) matching is correct, I will use the
+easier of the two variants for my analysis. The more difficult one just
+adds another lengthy root-finding exercise.
+
+    My analysis has shown that \(\mu\) of \(10^{-8}\) gives a stable
+solution as long as the initial values don't grow too much, while still
+showing a difference in current with the linear solution.
+
+    The code below uses my find\_root\_many method within the loop class to
+find multiple solutions to the BVP.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Here is my script}
+\PY{k}{def} \PY{n+nf}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{} Create a loop}
+    \PY{n}{l\PYZus{}calc} \PY{o}{=} \PY{n}{loop}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Here I suppress warnings, since I know they will occur. Not all of the solutions will work,}
+    \PY{c+c1}{\PYZsh{} but I just ignore those and try again with another algorithm or initial guess.}
+    \PY{k}{with} \PY{n}{warnings}\PY{o}{.}\PY{n}{catch\PYZus{}warnings}\PY{p}{(}\PY{n}{action}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ignore}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{:}
+        \PY{n}{deriv\PYZus{}found} \PY{o}{=} \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{find\PYZus{}root\PYZus{}many}\PY{p}{(}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Now I want to print out all of the solutions which I found. I have already thrown away duplicate solutions}
+    \PY{c+c1}{\PYZsh{} and any solution which has not converged. Lack of convergence is due to the finding a local minimum, which }
+    \PY{c+c1}{\PYZsh{} has already moved away from the possibility of a root for our values.}
+    \PY{c+c1}{\PYZsh{} This structure can be seen in the graphs above, where you can see rings of cases where both functions are }
+    \PY{c+c1}{\PYZsh{} equal. These rings don\PYZsq{}t always cross zero for all rings and values of parameters.}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Exact solution:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{psi\PYZus{}prime\PYZus{}0}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Exact solution endpoint:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{psij0}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{pi}\PY{o}{*}\PY{n}{R2} \PY{o}{*} \PY{n}{R\PYZus{}max}\PY{p}{)}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Number of found nonlinear solutions:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{deriv\PYZus{}found}\PY{p}{)}\PY{p}{)}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{deriv\PYZus{}found}\PY{p}{:}
+        \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{setDeriv}\PY{p}{(}\PY{n}{i}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Solution:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{i}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{New solution endpoint:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{psij\PYZus{}pred\PYZus{}true}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{pi}\PY{o}{*}\PY{n}{R2} \PY{o}{*} \PY{n}{R\PYZus{}max}\PY{p}{)}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Absolute value:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{psij\PYZus{}pred\PYZus{}true}\PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{pi}\PY{o}{*}\PY{n}{R2} \PY{o}{*} \PY{n}{R\PYZus{}max}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{New and old current estimates:  }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{current\PYZus{}alt}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{  }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{current\PYZus{}old}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{New and old solution amplitude:  }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{amp\PYZus{}max}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{  }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{amp\PYZus{}max\PYZus{}0}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Loop parameters}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{1.0}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.7}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.e\PYZhy{}8}
+
+\PY{c+c1}{\PYZsh{} run code}
+\PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Exact solution: (22427146937.18943+5671110148.872855j)
+Exact solution endpoint: (1.0000000000158762+2.0409229861684253e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (15837456909.257889+4527713571.802493j)
+New solution endpoint: (0.9999948706901708+7.703815795290225e-07j) Absolute
+value: 0.9999948706904674
+New and old current estimates:   0.3768870035121381    0.4721672725934869
+New and old solution amplitude:   1.683346477160763    2.1605259859613737
+
+Solution: (202400631313.41425+21948637838.083126j)
+New solution endpoint: (0.999200717801851+8.632980249423383e-05j) Absolute
+value: 0.9992007215312493
+New and old current estimates:   1.82858835107956    0.4721672725934869
+New and old solution amplitude:   16.994169065713585    2.1605259859613737
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Loop parameters}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.9}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.7}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.e\PYZhy{}8}
+
+\PY{c+c1}{\PYZsh{} run code}
+\PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Exact solution: (18268714830.16105+47859369.36508274j)
+Exact solution endpoint: (0.9999999999948727-2.7986502004750946e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (14339269124.457989+42214053.99925044j)
+New solution endpoint: (0.9999959914888902+5.08113950914435e-09j) Absolute
+value: 0.9999959914888902
+New and old current estimates:   0.0031474245929664635    0.0036178538192667142
+New and old solution amplitude:   1.5581405502304704    1.8214154114477181
+
+Solution: (-213033621320.88416-1456311515.0298324j)
+New solution endpoint: (1.0077595102018644-0.0005721943620695669j) Absolute
+value: 1.0077596726445692
+New and old current estimates:   -0.12172606401604469    0.0036178538192667142
+New and old solution amplitude:   17.780842433596437    1.8214154114477181
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Loop parameters}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{1.0}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.7}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.e\PYZhy{}8}
+
+\PY{c+c1}{\PYZsh{} run code}
+\PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Exact solution: (22427146937.18943+5671110148.872855j)
+Exact solution endpoint: (1.0000000000158762+2.0409229861684253e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (15837456909.257889+4527713571.802493j)
+New solution endpoint: (0.9999948706901708+7.703815795290225e-07j) Absolute
+value: 0.9999948706904674
+New and old current estimates:   0.3768870035121381    0.4721672725934869
+New and old solution amplitude:   1.683346477160763    2.1605259859613737
+
+Solution: (202400631313.41425+21948637838.083126j)
+New solution endpoint: (0.999200717801851+8.632980249423383e-05j) Absolute
+value: 0.9992007215312493
+New and old current estimates:   1.82858835107956    0.4721672725934869
+New and old solution amplitude:   16.994169065713585    2.1605259859613737
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Loop parameters}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{1.0}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.9}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.7}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.e\PYZhy{}8}
+
+\PY{c+c1}{\PYZsh{} run code}
+\PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Exact solution: (20011032533.768967+9627096603.17827j)
+Exact solution endpoint: (1.000000000014166-1.52522439123004e-11j)
+Number of found nonlinear solutions: 2
+
+Solution: (14146820134.853575+7788343175.860873j)
+New solution endpoint: (0.9999953933848791+1.2368898772985304e-06j) Absolute
+value: 0.999995393385644
+New and old current estimates:   0.6482690472603534    0.8014940304747927
+New and old solution amplitude:   1.6283376941354206    2.067057433943216
+
+Solution: (238335591320.8514+41028918768.291374j)
+New solution endpoint: (0.9988912666512586+0.0001903605208948278j) Absolute
+value: 0.9988912847899334
+New and old current estimates:   3.418236222586941    0.8014940304747927
+New and old solution amplitude:   20.176814339553996    2.067057433943216
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Loop parameters}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{1.0}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.9}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.7}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.e\PYZhy{}9}
+
+\PY{c+c1}{\PYZsh{} run code}
+\PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Exact solution: (20011032533.768967+9627096603.17827j)
+Exact solution endpoint: (1.000000000014166-1.52522439123004e-11j)
+Number of found nonlinear solutions: 1
+
+Solution: (18956742936.827732+9282533918.97465j)
+New solution endpoint: (0.9999992216640496+2.503362025452205e-07j) Absolute
+value: 0.999999221664081
+New and old current estimates:   0.7727813109121452    0.8014940304747927
+New and old solution amplitude:   1.9852095899140012    2.067057433943216
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Loop parameters}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{1.0}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.9}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.e\PYZhy{}10}
+
+\PY{c+c1}{\PYZsh{} run code}
+\PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Exact solution: (9135560514.327053+7790117318.660209j)
+Exact solution endpoint: (1.0000000000050544-5.4722892883773966e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (9113756336.465704+7785979860.410682j)
+New solution endpoint: (0.9999999759239251+4.5584477303961535e-09j) Absolute
+value: 0.9999999759239251
+New and old current estimates:   0.6480775105385796    0.6484222915431027
+New and old solution amplitude:   1.3258433110085446    1.3271325666675338
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.9}
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.5}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1e\PYZhy{}8}
+
+\PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Exact solution: (10249114773.217915+44784978.43648434j)
+Exact solution endpoint: (1.0000000000058127-2.833788759204481e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (8814490632.866417+43335442.44306095j)
+New solution endpoint: (0.9999984851869952+1.2048615438686738e-09j) Absolute
+value: 0.9999984851869952
+New and old current estimates:   0.0032408979111282488    0.0033616900607435496
+New and old solution amplitude:   1.2407785917289467    1.3150851876292171
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{16}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{karr} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{l+m+mf}{0.15}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{l+m+mf}{0.25}\PY{p}{,} \PY{l+m+mf}{0.3}\PY{p}{,} \PY{l+m+mf}{0.35}\PY{p}{,} \PY{l+m+mf}{0.4}\PY{p}{,} \PY{l+m+mf}{0.45}\PY{p}{,} \PY{l+m+mf}{0.5}\PY{p}{,} \PY{l+m+mf}{0.55}\PY{p}{,} \PY{l+m+mf}{0.6}\PY{p}{,} \PY{l+m+mf}{0.65}\PY{p}{,} \PY{l+m+mf}{0.7}\PY{p}{,} \PY{l+m+mf}{0.75}\PY{p}{,} \PY{l+m+mf}{0.8}\PY{p}{,} \PY{l+m+mf}{0.85}\PY{p}{,} \PY{l+m+mf}{0.9}\PY{p}{]}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.9}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.7}
+\PY{n}{mu} \PY{o}{=} \PY{l+m+mf}{1.e\PYZhy{}9}
+
+\PY{k}{for} \PY{n}{dk} \PY{o+ow}{in} \PY{n}{karr}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{dk =}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{dk}\PY{p}{)}
+    \PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+dk = 0.1
+Exact solution: (-76219272408.78792+25126191585.546867j)
+Exact solution endpoint: (0.9999999999727143-1.3552270416994361e-11j)
+Number of found nonlinear solutions: 2
+
+Solution: (85113659621.35178-27198680851.637432j)
+New solution endpoint: (0.999985819042795-4.428515174126346e-06j) Absolute
+value: 0.9999858190526011
+New and old current estimates:   -2.2670657415457853    2.0933221266034554
+New and old solution amplitude:   7.5070534398225375    6.754888909943462
+
+Solution: (-399302364242.8913+184030872559.1757j)
+New solution endpoint: (0.9996890486160277-0.0001432682229385307j) Absolute
+value: 0.9996890588821117
+New and old current estimates:   15.335323699399282    2.0933221266034554
+New and old solution amplitude:   36.65005569896855    6.754888909943462
+
+dk = 0.15
+Exact solution: (-50248197673.564835+17036642622.884226j)
+Exact solution endpoint: (0.9999999999893934-8.1548101604767e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (94149692924.46214-29897929948.84896j)
+New solution endpoint: (0.9999826620304305-5.403930629199749e-06j) Absolute
+value: 0.999982662045032
+New and old current estimates:   -2.4919970374391855    1.419192898601481
+New and old solution amplitude:   8.287071438472086    4.5220896610227665
+
+Solution: (-466062972648.70337+270753181816.6697j)
+New solution endpoint: (0.9995763367932309-0.0002461150515493671j) Absolute
+value: 0.9995763670923764
+New and old current estimates:   22.562105688212    1.419192898601481
+New and old solution amplitude:   44.92452457961146    4.5220896610227665
+
+dk = 0.2
+Exact solution: (-37088453171.97664+13085592443.730146j)
+Exact solution endpoint: (0.9999999999847847-2.6501023597802487e-12j)
+Number of found nonlinear solutions: 3
+
+Solution: (160984238235.62463+354034691095.9982j)
+New solution endpoint: (0.999949374532644+0.0001112079607548111j) Absolute
+value: 0.9999493807165623
+New and old current estimates:   29.502126623594734    1.089938504140056
+New and old solution amplitude:   32.41165924169786    3.4114785325047263
+
+Solution: (102738564140.14659-32452021226.440853j)
+New solution endpoint: (0.9999793665687805-6.416831697997338e-06j) Absolute
+value: 0.9999793665893687
+New and old current estimates:   -2.7048310119615593    1.089938504140056
+New and old solution amplitude:   9.029132623925257    3.4114785325047263
+
+Solution: (-403022272900.0087+187520381546.56583j)
+New solution endpoint: (0.9996832284819792-0.00014734747702505047j) Absolute
+value: 0.9996832393410585
+New and old current estimates:   15.626049795115591    1.089938504140056
+New and old solution amplitude:   37.053228384468625    3.4114785325047263
+
+dk = 0.25
+Exact solution: (-29049212535.458717+10797372570.981056j)
+Exact solution endpoint: (1.000000000009962-8.595346656647962e-13j)
+Number of found nonlinear solutions: 4
+
+Solution: (-34060001720.755157+12341485009.700722j)
+New solution endpoint: (0.999997673747271-7.300554096811851e-07j) Absolute
+value: 0.9999976737475375
+New and old current estimates:   1.0279279265425703    0.8992532303440164
+New and old solution amplitude:   3.1633866989106485    2.749856297336076
+
+Solution: (-301509400553.9243+116484882797.60689j)
+New solution endpoint: (0.9998227075934034-6.841769117471586e-05j) Absolute
+value: 0.9998227099343086
+New and old current estimates:   9.706454007554754    0.8992532303440164
+New and old solution amplitude:   26.951389244410674    2.749856297336076
+
+Solution: (110896871788.43889-34865109549.74499j)
+New solution endpoint: (0.9999759695030053-7.45559312509414e-06j) Absolute
+value: 0.9999759695307988
+New and old current estimates:   -2.9059139758914228    0.8992532303440164
+New and old solution amplitude:   9.734322045245914    2.749856297336076
+
+Solution: (-74574355935.01866+25192797100.28224j)
+New solution endpoint: (0.9999890943340745-3.5738221999537245e-06j) Absolute
+value: 0.9999890943404606
+New and old current estimates:   2.098859445221045    0.8992532303440164
+New and old solution amplitude:   6.627555716114495    2.749856297336076
+
+dk = 0.3
+Exact solution: (-23565642927.3216+9349246655.063473j)
+Exact solution endpoint: (0.9999999999890995-8.881451130093865e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (-25594754696.281002+9955705935.359526j)
+New solution endpoint: (0.9999986581917563-4.0735317674567284e-07j) Absolute
+value: 0.9999986581918391
+New and old current estimates:   0.8291133473465302    0.7785757057090461
+New and old solution amplitude:   2.474735477081655    2.312852878910009
+
+Solution: (90431409605.44212+229221629771.2471j)
+New solution endpoint: (0.9999839731342082+4.0498947051936796e-05j) Absolute
+value: 0.9999839739543037
+New and old current estimates:   19.101045267854815    0.7785757057090461
+New and old solution amplitude:   20.537137788703152    2.312852878910009
+
+dk = 0.35
+Exact solution: (-19537274957.652596+8391312979.820307j)
+Exact solution endpoint: (0.9999999999938328-7.2061245859345036e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-20596917481.02465+8695485168.175476j)
+New solution endpoint: (0.9999991082724788-2.597588460995226e-07j) Absolute
+value: 0.9999991082725126
+New and old current estimates:   0.7240947542828678    0.6987474415682476
+New and old solution amplitude:   2.08560571249715    2.004336867567641
+
+dk = 0.4
+Exact solution: (-16412512472.159092+7751719116.3928995j)
+Exact solution endpoint: (0.9999999999915499-1.2720935416155044e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-17044557994.462622+7923347275.951032j)
+New solution endpoint: (0.9999993689506963-1.739148015600378e-07j) Absolute
+value: 0.9999993689507114
+New and old current estimates:   0.6597494938211004    0.645447385559727
+New and old solution amplitude:   1.8225368388590262    1.7762683350876725
+
+dk = 0.45
+Exact solution: (-13883360496.592026+7338719504.273405j)
+Exact solution endpoint: (1.0000000000033091-2.812527988282909e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (-14296149846.212425+7442298095.940406j)
+New solution endpoint: (0.9999995368820718-1.1807392674700878e-07j) Absolute
+value: 0.9999995368820787
+New and old current estimates:   0.6196614393264577    0.6110300518593896
+New and old solution amplitude:   1.6305870284306785    1.6019835492238157
+
+Solution: (139923174986.01544-43320230014.20162j)
+New solution endpoint: (0.9999617803428591-1.1738305012443107e-05j) Absolute
+value: 0.9999617804117555
+New and old current estimates:   -3.6104699215556906    0.6110300518593896
+New and old solution amplitude:   12.2435781745686    1.6019835492238157
+
+dk = 0.5
+Exact solution: (-11763165998.529606+7101946621.6988735j)
+Exact solution endpoint: (0.9999999999933287-8.584133404099248e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (-129558943440.61717+44025049996.04833j)
+New solution endpoint: (0.9999672156002675-1.1033653924741316e-05j) Absolute
+value: 0.9999672156611401
+New and old current estimates:   3.668159296335432    0.5912981164142257
+New and old solution amplitude:   11.441759709591924    1.4655093220465207
+
+Solution: (-12052199227.01056+7166422812.055094j)
+New solution endpoint: (0.999999652146089-7.904680465742331e-08j) Absolute
+value: 0.9999996521460921
+New and old current estimates:   0.5966710203417454    0.5912981164142257
+New and old solution amplitude:   1.4842825883073223    1.4655093220465207
+
+dk = 0.55
+Exact solution: (-9930826778.425928+7015465783.085505j)
+Exact solution endpoint: (0.9999999999958271-7.505440713373446e-12j)
+Number of found nonlinear solutions: 4
+
+Solution: (-10145242183.884184+7055077222.670992j)
+New solution endpoint: (0.9999997346611067-5.021570520513663e-08j) Absolute
+value: 0.9999997346611078
+New and old current estimates:   0.5873911908245377    0.58409031317086
+New and old solution amplitude:   1.3696075658447082    1.356706391263655
+
+Solution: (-137174814279.40422+46736105343.167915j)
+New solution endpoint: (0.999963256136057-1.2412785278748117e-05j) Absolute
+value: 0.9999632562130983
+New and old current estimates:   3.8940677561946586    0.58409031317086
+New and old solution amplitude:   12.1131148364314    1.356706391263655
+
+Solution: (152734772410.18008-46974328812.31874j)
+New solution endpoint: (0.9999544726505041-1.3910062892641406e-05j) Absolute
+value: 0.9999544727472534
+New and old current estimates:   -3.914956133298425    0.58409031317086
+New and old solution amplitude:   13.350387376605005    1.356706391263655
+
+Solution: (9489618523677368+295535809535121.06j)
+New solution endpoint: (0.999968759730109+0.00790440128184855j) Absolute value:
+0.9999999999978986
+New and old current estimates:   24627.419219970703    0.58409031317086
+New and old solution amplitude:   791166.8152351907    1.356706391263655
+
+dk = 0.6
+Exact solution: (-8302561578.44492+7070318183.528888j)
+Exact solution endpoint: (1.0000000000077982+2.07511785532688e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-8469992002.510088+7092212325.749755j)
+New solution endpoint: (0.9999997954464007-2.7783795097935382e-08j) Absolute
+value: 0.9999997954464009
+New and old current estimates:   0.5904844816838487    0.588660015443766
+New and old solution amplitude:   1.2780376754783205    1.2688416523257144
+
+dk = 0.65
+Exact solution: (-6816170414.113228+7272153667.781622j)
+Exact solution endpoint: (1.0000000000009117-3.588018770983581e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-6953472063.00429+7279403785.2738495j)
+New solution endpoint: (0.9999998410181719-9.363374464665952e-09j) Absolute
+value: 0.9999998410181719
+New and old current estimates:   0.6060821173655535    0.6054779572705371
+New and old solution amplitude:   1.204034547540894    1.1972815014777702
+
+dk = 0.7
+Exact solution: (-5421118632.0127125+7642710800.535368j)
+Exact solution endpoint: (1.0000000000015217-2.4164559242478845e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-5539617200.027338+7635267715.55377j)
+New solution endpoint: (0.9999998754057273+6.856516659992096e-09j) Absolute
+value: 0.9999998754057273
+New and old current estimates:   0.6357353173328034    0.6363555563242993
+New and old solution amplitude:   1.1438289450845986    1.138745855813638
+
+dk = 0.75
+Exact solution: (-4070898973.924534+8225911680.595388j)
+Exact solution endpoint: (0.9999999999978637-8.873596302194642e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-4179449700.7916155+8200047952.597963j)
+New solution endpoint: (0.9999999011253881+2.2522471665453736e-08j) Absolute
+value: 0.9999999011253883
+New and old current estimates:   0.6827975419433892    0.684952785258488
+New and old solution amplitude:   1.0947686451782483    1.0908613464121846
+
+dk = 0.8
+Exact solution: (-2714902242.544032+9102045174.479584j)
+Exact solution endpoint: (1.000000000002266+3.0320052024634947e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-2822486277.957964+9047464614.24302j)
+New solution endpoint: (0.9999999195626488+3.9564890794152596e-08j) Absolute
+value: 0.9999999195626494
+New and old current estimates:   0.7534118207763039    0.757960049188404
+New and old solution amplitude:   1.0549432451718126    1.051882971913642
+
+dk = 0.85
+Exact solution: (-1285776668.992793+10419797866.966476j)
+Exact solution endpoint: (1.0000000000000375-4.255984453749306e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-1405601054.283525+10310569237.55557j)
+New solution endpoint: (0.999999931121332+6.1127254896709e-08j) Absolute value:
+0.9999999311213338
+New and old current estimates:   0.8586652420523864    0.8677673054718824
+New and old solution amplitude:   1.022956794447014    1.020515060378708
+
+dk = 0.9
+Exact solution: (327509263.7243465+12474979860.37923j)
+Exact solution endpoint: (0.9999999999999423-2.3645373853353746e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (166841673.1834591+12238790021.568998j)
+New solution endpoint: (0.9999999347356996+9.340101592321404e-08j) Absolute
+value: 0.9999999347357038
+New and old current estimates:   1.0193424931040034    1.0390242416059539
+New and old solution amplitude:   1.0216055090119747    1.043413691493744
+
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{17}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dk} \PY{o}{=} \PY{l+m+mf}{0.7}
+\PY{n}{R2} \PY{o}{=} \PY{l+m+mf}{0.9}
+\PY{n}{Rarr} \PY{o}{=} \PY{p}{[}\PY{n}{R2} \PY{o}{+} \PY{n}{ii} \PY{o}{*} \PY{l+m+mf}{0.1e\PYZhy{}1} \PY{k}{for} \PY{n}{ii} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{20}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{)}\PY{p}{]}
+\PY{n}{B2} \PY{o}{=} \PY{l+m+mf}{0.7}
+
+\PY{k}{for} \PY{n}{R2} \PY{o+ow}{in} \PY{n}{Rarr}\PY{p}{:}
+    \PY{n}{test\PYZus{}loop\PYZus{}find\PYZus{}many}\PY{p}{(}\PY{n}{R2}\PY{p}{,} \PY{n}{B2}\PY{p}{,} \PY{n}{dk}\PY{p}{,} \PY{n}{mu}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Exact solution: (-9492387440.897179-7809419680.703227j)
+Exact solution endpoint: (1.0000000000004738-2.218447647805988e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (-9657560135.8343-7843326686.749115j)
+New solution endpoint: (0.9999997379985384+5.4851443498371566e-08j) Absolute
+value: 0.9999997379985399
+New and old current estimates:   -0.6539947212848465    -0.6511692198581475
+New and old solution amplitude:   1.3576964086103802    1.347686235623169
+
+Solution: (-153541656970.40802-59724838588.53133j)
+New solution endpoint: (0.9999539627955356+1.7780446418314e-05j) Absolute value:
+0.9999539629536149
+New and old current estimates:   -4.977327949214214    -0.6511692198581475
+New and old solution amplitude:   13.760412990446191    1.347686235623169
+Exact solution: (-12058398226.72786-1148841575.135724j)
+Exact solution endpoint: (0.9999999999966951+3.859135233597044e-13j)
+Number of found nonlinear solutions: 1
+
+Solution: (-12245987736.084223-1154870847.4944015j)
+New solution endpoint: (0.9999997058811794+9.596983097104328e-09j) Absolute
+value: 0.9999997058811794
+New and old current estimates:   -0.09664541792404169    -0.09614299321487252
+New and old solution amplitude:   1.4304310123712702    1.4192788622641082
+Exact solution: (-10235328585.3282+6018236964.689365j)
+Exact solution endpoint: (0.9999999999969822+3.0401792194822974e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-10402565748.239985+6044162998.831319j)
+New solution endpoint: (0.9999997414988819-4.083863369697127e-08j) Absolute
+value: 0.9999997414988828
+New and old current estimates:   0.5032508117406633    0.5010903719083291
+New and old solution amplitude:   1.367189831413169    1.3573016825905277
+Exact solution: (-4439593190.426583+10987519861.192041j)
+Exact solution endpoint: (0.9999999999974435-8.988892963301964e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-4570278683.611588+11005620710.955801j)
+New solution endpoint: (0.99999980151548-2.9168895132603012e-08j) Absolute
+value: 0.9999998015154804
+New and old current estimates:   0.9166878019497492    0.915179441796607
+New and old solution amplitude:   1.1720049839238376    1.165069308596868
+Exact solution: (3329047732.580079+11728974483.872454j)
+Exact solution endpoint: (0.9999999999989587+7.80023268198704e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (3195723613.5063844+11706405501.055313j)
+New solution endpoint: (0.9999998018077816+3.1664176697310253e-08j) Absolute
+value: 0.999999801807782
+New and old current estimates:   0.9750790708236267    0.9769597645381549
+New and old solution amplitude:   1.1302086153227306    1.1373481200924829
+Exact solution: (10140650084.853008+7772439479.916369j)
+Exact solution endpoint: (1.0000000000062617+1.1888268147686176e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (9954782527.745037+7732171035.576j)
+New solution endpoint: (0.9999997292765267+5.751603543435735e-08j) Absolute
+value: 0.9999997292765282
+New and old current estimates:   0.6438967642952176    0.6472523701184119
+New and old solution amplitude:   1.3720425538202512    1.3835273008381046
+Exact solution: (13259244635.386105+554006655.6738195j)
+Exact solution endpoint: (1.0000000000078935+6.717182365889585e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (13027656791.999674+550181723.3983139j)
+New solution endpoint: (0.9999996687514511+5.389844237591035e-09j) Absolute
+value: 0.9999996687514511
+New and old current estimates:   0.045409350274246085    0.04572808533409911
+New and old solution amplitude:   1.4763662302175975    1.4906255896285348
+Exact solution: (11325181249.447102-7010326601.969877j)
+Exact solution endpoint: (0.999999999989325-7.0928818374227376e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (11109577321.715431-6965201150.162043j)
+New solution endpoint: (0.9999996966920005-6.239692207365977e-08j) Absolute
+value: 0.9999996966920025
+New and old current estimates:   -0.5808600502206756    -0.5846203948612767
+New and old solution amplitude:   1.42410944822096    1.4377331137569416
+Exact solution: (5080842121.929516-11653923929.20935j)
+Exact solution endpoint: (0.9999999999999375+6.126849028120773e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (4921925385.537464-11608521745.529041j)
+New solution endpoint: (0.9999997796113167-6.092980098237888e-08j) Absolute
+value: 0.9999997796113185
+New and old current estimates:   -0.9677979080361458    -0.971581312993527
+New and old solution amplitude:   1.2107489243258407    1.2204368853949672
+Exact solution: (-2759447060.5218906-11186654004.794518j)
+Exact solution endpoint: (0.9999999999991402+4.287528665436469e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (-2887859108.454882-11182283239.306435j)
+New solution endpoint: (0.999999824078198-4.170440465189884e-09j) Absolute
+value: 0.999999824078198
+New and old current estimates:   -0.9322848288714773    -0.9326490487057393
+New and old solution amplitude:   1.0986029522486644    1.092944159638071
+
+Solution: (-136340750556.33978-95695292377.49368j)
+New solution endpoint: (0.9999636126806264+2.5379225883526146e-05j) Absolute
+value: 0.9999636130026905
+New and old current estimates:   -7.974830182814259    -0.9326490487057393
+New and old solution amplitude:   13.905047699038288    1.092944159638071
+Exact solution: (-8564710213.034687-5601755749.547146j)
+Exact solution endpoint: (1.0000000000053104-5.3015369871900475e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-8703981221.670248-5614974030.530022j)
+New solution endpoint: (0.999999812315675+1.8461298378902313e-08j) Absolute
+value: 0.9999998123156753
+New and old current estimates:   -0.4683616864541699    -0.4672601951657597
+New and old solution amplitude:   1.2685081550040358    1.2611217835333082
+Exact solution: (-9404984507.35625+2712620568.4073j)
+Exact solution endpoint: (1.0000000000056355+3.655464819729559e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-9546560083.500439+2719928520.692099j)
+New solution endpoint: (0.9999998130850227-9.92968907098657e-09j) Absolute
+value: 0.9999998130850227
+New and old current estimates:   0.22618750790709785    0.2255785296452305
+New and old solution amplitude:   1.2857174711671737    1.2782681712777046
+Exact solution: (-4527442629.495243+9894250244.191696j)
+Exact solution endpoint: (0.9999999999971287-1.1713130465551558e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-4654505948.8970785+9893107943.078905j)
+New solution endpoint: (0.9999998361587518+9.157674618620604e-13j) Absolute
+value: 0.9999998361587518
+New and old current estimates:   0.8239292650823409    0.8240244540653947
+New and old solution amplitude:   1.1453353655735425    1.1394658571906506
+Exact solution: (4065992943.4251165+12369359746.153307j)
+Exact solution endpoint: (0.9999999999963255+1.439381946966023e-11j)
+Number of found nonlinear solutions: 1
+
+Solution: (3893390139.2561965+12305132313.27073j)
+New solution endpoint: (0.9999997839043956+7.797972206846637e-08j) Absolute
+value: 0.9999997839043985
+New and old current estimates:   1.0249196731556844    1.0302718031254416
+New and old solution amplitude:   1.1880708654582992    1.1992612150633668
+Exact solution: (12366967214.190266+8682257556.169237j)
+Exact solution endpoint: (0.9999999999965792+2.9490854203118033e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (12059904062.089106+8591926614.16837j)
+New solution endpoint: (0.999999626454759+1.0810300843377973e-07j) Absolute
+value: 0.9999996264547648
+New and old current estimates:   0.7154891293989407    0.7230164883510435
+New and old solution amplitude:   1.5163190945485037    1.5374072915888235
+Exact solution: (16239409276.901329+447412385.553113j)
+Exact solution endpoint: (1.0000000000000715+4.359623773098065e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (15827273272.38132+441486569.71074003j)
+New solution endpoint: (0.9999995114192815+6.927971085701756e-09j) Absolute
+value: 0.9999995114192815
+New and old current estimates:   0.03629984149262888    0.03679364507688876
+New and old solution amplitude:   1.6553962079868594    1.6828983383156892
+Exact solution: (13591641349.799814-8212209779.021312j)
+Exact solution endpoint: (1.0000000000003424-6.963318810448982e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (13229092306.295656-8109852385.466762j)
+New solution endpoint: (0.9999995802329769-1.1668148092169872e-07j) Absolute
+value: 0.9999995802329835
+New and old current estimates:   -0.6762967145950168    -0.6848262486131538
+New and old solution amplitude:   1.5776176102038502    1.602884577753324
+Exact solution: (5699932123.142435-12654401377.389359j)
+Exact solution endpoint: (0.9999999999948336-9.142658852212548e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (5484803925.885464-12552921679.101728j)
+New solution endpoint: (0.9999997560781125-1.1228130430973593e-07j) Absolute
+value: 0.9999997560781188
+New and old current estimates:   -1.046547450640536    -1.0550038455196544
+New and old solution amplitude:   1.278190483519517    1.2936681647767543
+Exact solution: (-3177119273.087734-10232402365.143595j)
+Exact solution endpoint: (0.999999999997998+2.4286406219431456e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-3304536515.1326666-10209010758.43519j)
+New solution endpoint: (0.9999998583442438-2.437453794357225e-08j) Absolute
+value: 0.999999858344244
+New and old current estimates:   -0.8512329978122718    -0.8531822415183641
+New and old solution amplitude:   1.0922937830146133    1.0873673065283198
+Exact solution: (-7920115517.901555-1978457891.853383j)
+Exact solution endpoint: (1.0000000000020477-4.408085008122953e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-8040713488.43766-1980583286.2142227j)
+New solution endpoint: (0.9999998694846202+2.4788719410473448e-09j) Absolute
+value: 0.9999998694846202
+New and old current estimates:   -0.16555646791505302    -0.16537935688405486
+New and old solution amplitude:   1.2072935539641352    1.2016642275399179
+Exact solution: (-5421118632.0127125+7642710800.535368j)
+Exact solution endpoint: (1.0000000000015217-2.4164559242478845e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-5539617200.027338+7635267715.55377j)
+New solution endpoint: (0.9999998754057273+6.856516659992096e-09j) Absolute
+value: 0.9999998754057273
+New and old current estimates:   0.6357353173328034    0.6363555563242993
+New and old solution amplitude:   1.1438289450845986    1.138745855813638
+Exact solution: (3392904974.792711+13040181717.142601j)
+Exact solution endpoint: (0.9999999999980898+8.597678124999675e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (3192642048.818143+12929929479.359577j)
+New solution endpoint: (0.9999997967431766+1.0892732438261277e-07j) Absolute
+value: 0.9999997967431824
+New and old current estimates:   1.0769385020013278    1.0861259205168734
+New and old solution amplitude:   1.1854280860674995    1.2003794606310363
+Exact solution: (13734430836.90023+10757110694.232882j)
+Exact solution endpoint: (0.9999999999967161-2.5728308372663378e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (13260629734.74701+10566846976.698574j)
+New solution endpoint: (0.9999995363785524+1.8315230387866421e-07j) Absolute
+value: 0.9999995363785691
+New and old current estimates:   0.8800149431609708    0.8958697905224482
+New and old solution amplitude:   1.6461160475170402    1.6818872541315457
+Exact solution: (19532127434.308224+1800921596.4387865j)
+Exact solution endpoint: (0.9999999999830549+7.924105815959592e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (18800548656.668087+1758374323.725151j)
+New solution endpoint: (0.9999993076773688+3.9707681032119524e-08j) Absolute
+value: 0.9999993076773694
+New and old current estimates:   0.14599120388317444    0.14953670653215023
+New and old solution amplitude:   1.8626902801459786    1.9145337497093007
+Exact solution: (17121607397.171127-8562001496.02764j)
+Exact solution endpoint: (1.0000000000010743+6.194045276686211e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (16465447496.813622-8365776362.241224j)
+New solution endpoint: (0.9999993983501296-1.7719238531999082e-07j) Absolute
+value: 0.9999993983501452
+New and old current estimates:   -0.6976691737420826    -0.7140207913021052
+New and old solution amplitude:   1.7939051878496897    1.8426370051790204
+Exact solution: (7826506722.143501-13773751265.2406j)
+Exact solution endpoint: (1.0000000000030262+9.4814156526013e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (7493742548.8674345-13563200182.167515j)
+New solution endpoint: (0.9999997038229103-1.8353160741169106e-07j) Absolute
+value: 0.9999997038229271
+New and old current estimates:   -1.1307809535314364    -1.1483263653796814
+New and old solution amplitude:   1.4292042885493432    1.4569924814517259
+Exact solution: (-2426165459.4824486-10151587682.143047j)
+Exact solution endpoint: (0.9999999999991156-5.8692356530443135e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-2556683318.286437-10099403581.228182j)
+New solution endpoint: (0.9999998871663215-4.339645094664224e-08j) Absolute
+value: 0.9999998871663224
+New and old current estimates:   -0.8421454158787465    -0.8464939641223281
+New and old solution amplitude:   1.0597911888826461    1.055688420985089
+Exact solution: (-6617045070.232811+374596711.8416853j)
+Exact solution endpoint: (0.9999999999954446+1.638689184346731e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-6723069400.370659+374508164.67197484j)
+New solution endpoint: (0.9999999117465167+4.6577686152460274e-11j) Absolute
+value: 0.9999999117465167
+New and old current estimates:   0.030649345876642142    0.030656724592238727
+New and old solution amplitude:   1.1463388519632371    1.1420446557046173
+Exact solution: (-1308786586.6058955+11030395845.496803j)
+Exact solution endpoint: (0.9999999999991279-6.2109692389178406e-12j)
+Number of found nonlinear solutions: 2
+
+Solution: (-1452708680.1531627+10951460187.593706j)
+New solution endpoint: (0.9999998844696767+6.124166095078376e-08j) Absolute
+value: 0.9999998844696785
+New and old current estimates:   0.9120305469460153    0.9186083265860341
+New and old solution amplitude:   1.0327510033846463    1.028895454862578
+
+Solution: (2.3232789401099224e+16+2380214098131939j)
+New solution endpoint: (0.9999723357032053+0.007438268163241446j) Absolute
+value: 1.0000000000024962
+New and old current estimates:   198345.38928222656    0.9186083265860341
+New and old solution amplitude:   1946143.100325081    1.028895454862578
+Exact solution: (10615821868.331158+14429014109.956005j)
+Exact solution endpoint: (1.00000000000775-1.0944356532149868e-11j)
+Number of found nonlinear solutions: 2
+
+Solution: (119670823716.08563-129346277589.60121j)
+New solution endpoint: (0.999971908762407-3.0188113944618067e-05j) Absolute
+value: 0.9999719092180809
+New and old current estimates:   -10.779112370040892    1.2018124946136601
+New and old solution amplitude:   14.700269323634963    1.6401151543732655
+
+Solution: (10118612542.132704+14100800314.47997j)
+New solution endpoint: (0.9999996177988248+2.474484501191476e-07j) Absolute
+value: 0.9999996177988555
+New and old current estimates:   1.1744621427092543    1.2018124946136601
+New and old solution amplitude:   1.596637411993663    1.6401151543732655
+Exact solution: (21374307905.020153+7743997456.300064j)
+Exact solution endpoint: (1.0000000000280909-5.6494808831075716e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (20225931277.527054+7454197287.870955j)
+New solution endpoint: (0.9999991522785033+2.1060863109045869e-07j) Absolute
+value: 0.9999991522785255
+New and old current estimates:   0.6205889512375148    0.6447382609184081
+New and old solution amplitude:   2.032895476861247    2.1203030002165653
+Exact solution: (23420494073.52034-4797262194.522593j)
+Exact solution endpoint: (1.0000000000079559-1.1364242880063102e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (22057020210.86678-4594493230.712286j)
+New solution endpoint: (0.9999990328473715-1.4160766470538988e-07j) Absolute
+value: 0.9999990328473815
+New and old current estimates:   -0.38344506820792823    -0.40034198903192997
+New and old solution amplitude:   2.1195902571273306    2.2218797391394056
+Exact solution: (15024539639.042332-14321624863.593302j)
+Exact solution endpoint: (0.9999999999969517+4.94948526608141e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (14207163972.849344-13842971027.701996j)
+New solution endpoint: (0.9999994437244529-3.1987218129803097e-07j) Absolute
+value: 0.999999443724504
+New and old current estimates:   -1.1541348333946595    -1.1940214896914596
+New and old solution amplitude:   1.8259580926608654    1.8965337698212
+Exact solution: (2156898557.103965-13500517970.110867j)
+Exact solution endpoint: (1.0000000000008225+1.1410650202492434e-11j)
+Number of found nonlinear solutions: 1
+
+Solution: (1928289417.292798-13294545287.383451j)
+New solution endpoint: (0.9999998508377507-1.3079089887513273e-07j) Absolute
+value: 0.9999998508377591
+New and old current estimates:   -1.108439781696195    -1.1256036713100328
+New and old solution amplitude:   1.154203753739988    1.1762319743951242
+Exact solution: (-5294212923.870451-2309730019.7879143j)
+Exact solution endpoint: (1.0000000000026865+9.972245251788081e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-5392085987.09426-2304514865.4574037j)
+New solution endpoint: (0.9999999392453884-3.0516503490840563e-09j) Absolute
+value: 0.9999999392453884
+New and old current estimates:   -0.19263638469051036    -0.19307096820936687
+New and old solution amplitude:   1.0992234186634025    1.095841002898768
+Exact solution: (-822725778.0153115+11203867153.002064j)
+Exact solution endpoint: (1.0000000000004357+9.74350461424578e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (-978346750.9541537+11077716301.709593j)
+New solution endpoint: (0.9999999074201765+7.274743212687396e-08j) Absolute
+value: 0.9999999074201792
+New and old current estimates:   0.9225112602113567    0.9330235245446861
+New and old solution amplitude:   1.018358055985546    1.0150415694808035
+Exact solution: (13184810827.461634+16472271604.165768j)
+Exact solution endpoint: (1.0000000000098463-5.17941245448128e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (12336931159.22205+15828111816.773163j)
+New solution endpoint: (0.999999518192054+3.587006794925074e-07j) Absolute
+value: 0.9999995181921182
+New and old current estimates:   1.3183602469821336    1.3720386636443642
+New and old solution amplitude:   1.806144139279335    1.8870598815653088
+Exact solution: (26449865518.858795+8682194412.670998j)
+Exact solution endpoint: (1.0000000000191671-8.08775268978934e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (24254003891.88705+8118518602.74713j)
+New solution endpoint: (0.9999988048699834+3.0151455598925736e-07j) Absolute
+value: 0.9999988048700287
+New and old current estimates:   0.6759071234736598    0.7228787376285692
+New and old solution amplitude:   2.336241778643125    2.5095009200210487
+Exact solution: (28426671975.10224-6656665514.475239j)
+Exact solution endpoint: (0.999999999995338+1.9459989175629744e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (25860723292.067192-6174889377.613622j)
+New solution endpoint: (0.9999986690115108-2.4557088784682435e-07j) Absolute
+value: 0.999998669011541
+New and old current estimates:   -0.5151812287018711    -0.5553280691574929
+New and old solution amplitude:   2.42160394254756    2.621991788485197
+Exact solution: (17109367773.681446-17223384985.49477j)
+Exact solution endpoint: (1.0000000000071885+7.051914607814069e-12j)
+Number of found nonlinear solutions: 1
+
+Solution: (15759734267.774624-16272633595.120066j)
+New solution endpoint: (0.9999993390315544-4.562885732584121e-07j) Absolute
+value: 0.9999993390316585
+New and old current estimates:   -1.356641131469317    -1.4358681032138665
+New and old solution amplitude:   2.029348217048685    2.1566598453720194
+    \end{Verbatim}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}

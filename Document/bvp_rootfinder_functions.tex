@@ -1,0 +1,110 @@
+% document class
+\documentclass[A4,12pt,oneside]{report}
+%A4,12pt,titlepage,oneside,final
+
+% list of packages
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry} % document size
+
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc} %russian language encoding
+
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{dcolumn}   % needed for some tables
+\usepackage{bm}        
+\usepackage{amssymb} 
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+%\usepackage{minted}
+
+%\setcounter{secnumdepth}{3}
+%\setcounter{tocdepth}{3}
+%\usepackage{eso-pic}
+\usepackage{array}
+%\usepackage{rotating}
+\usepackage{multicol}
+\usepackage{setspace}
+
+%russian language support
+\usepackage[english,russian]{babel}
+%starts at the last language on the list
+%select language switches the language
+
+
+\lstset{breaklines=true}
+
+% The following is a list of styles for use with listings
+
+\lstdefinestyle{codepy}{
+    backgroundcolor=\color{white},   
+    commentstyle=\color{green!50!black},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{gray},
+    stringstyle=\color{red!50!black},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+
+\makeatletter
+
+
+\graphicspath{{figs/}} % Directory in which figures are stored
+
+
+%
+% list of custom commands
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bea}{\begin{eqnarray}}
+\newcommand{\eea}{\end{eqnarray}}
+\renewcommand{\(}{\left(}
+\renewcommand{\)}{\right)}
+
+\newcommand{\rut}{\selectlanguage{russian}}
+\newcommand{\ent}{\selectlanguage{english}}
+
+
+%\newcommand{\be}{\begin{equation}}
+%\rnc{\d}{\mathrm{d}}
+%\nc{\D}{\partial}
+%\nc{\nn}{\nonumber}
+%\rnc{\inf}{\infty}
+%\nc{\vphi}{\varphi}
+%\nc{\half}{\frac{1}{2}}
+
+
+% color commands are used to highlight text temporarily, for editing
+\newcommand{\nadd}[1]{\textcolor{magenta}{#1}}
+\newcommand{\ncomm}[1]{\textcolor{magenta}{\bf{[#1]}}}
+\renewcommand{\Re}{\mathrm{Re}}
+\renewcommand{\Im}{\mathrm{Im}}
+
+
+
+
+\makeatother
+
+\begin{document}
+
+\lstset{style=codepy}
+\begin{lstlisting}[language = Python]
+test
+\end{lstlisting}
+
+\end{document}

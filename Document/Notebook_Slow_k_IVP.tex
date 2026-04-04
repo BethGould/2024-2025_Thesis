@@ -1,0 +1,1688 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Keep aspect ratio if custom image width or height is specified
+    \setkeys{Gin}{keepaspectratio}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \makeatletter
+    \newsavebox\pandoc@box
+    \newcommand*\pandocbounded[1]{%
+      \sbox\pandoc@box{#1}%
+      % scaling factors for width and height
+      \Gscale@div\@tempa\textheight{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+      \Gscale@div\@tempb\linewidth{\wd\pandoc@box}%
+      % select the smaller of both
+      \ifdim\@tempb\p@<\@tempa\p@
+        \let\@tempa\@tempb
+      \fi
+      % scaling accordingly (\@tempa < 1)
+      \ifdim\@tempa\p@<\p@
+        \scalebox{\@tempa}{\usebox\pandoc@box}%
+      % scaling not needed, use as it is
+      \else
+        \usebox{\pandoc@box}%
+      \fi
+    }
+    \makeatother
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Notebook\_Slow\_k\_IVP}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+    \textbf{File:} Notebook\_Slow\_k\_IVP.ipynb\\
+\textbf{Author:} Elizabeth Gould\\
+\textbf{Date:} 10.03.2026\\
+\textbf{Problem:} Find
+\(M_{\mu}\left(BR, dk, \mu, \psi_0^\prime\right)\)
+
+    This is my Jupyter notebook for finding a model for the parameter
+dependence of the wave number of the slow oscillations of the solution
+to the IVP of the nonlinear Schrödinger equation for persistent current
+in a single micrometer scale gold loop (\(M_{\mu}\)).
+
+Our nonlinear time-independent Schrödinger equation is \begin{equation}
+H \psi = k^2 \psi = \left( i \frac{d}{dx} + \frac{\pi BR}{\Phi_0} \right)^2 \psi + \mu \frac{m_e}{\left|e\right|\hbar} \left|\psi\right|^2 \psi.
+\end{equation} Our observed approximate solution to the nonlinear
+Schrödinger equation is \begin{equation}
+\psi = e^{i M_{\mu} x} \left( a e^{i k_{\mu} x} + b e^{- i k_{\mu} x} \right),
+\end{equation} where \(k_{\mu}\) and \(M_{\mu}\) differ from the case of
+the linear Schrödinger equation, which has a solution of
+\begin{equation}
+\psi = e^{i M_0 x} \left( a e^{i k_0 x} + b e^{- i k_0 x} \right),
+\end{equation} with \(M_{0}\) = \(\frac{\pi BR}{\Phi_0}\), and \(k_{0}\)
+= \(k0 + \frac{dk}{2 R_{max} }\). This notebook calculates how
+\(M_{\mu}\) depends on \(B * R\), \(dk\), \(\mu\), and
+\(\psi^\prime_0\). \(k\) dependencies are not given, since we are
+assuming the loops are made of gold. \(R\) dependence can be rescaled as
+a \(B\) dependence for the IVP, as \(B\) and \(R\) only appear in our
+Schrödinger equation as \(\frac{\pi BR}{\Phi_0}\). \(A_0\) dependence
+can removed from our Schrödinger equation by appropriate rescaling of
+\(\mu\) and \(\psi_0^\prime\).
+
+In this analysis, I have two grids built on another computer and
+combined here. This is done due to the amount of time required for
+solving a sufficient number of IVPs for analysis. The data is gathered
+with the following code:
+
+    Grid 1 (grid010)
+
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+# Output
+
+# Grid object to measure slow oscillations:
+# mu has 5 points from 3.162277660168379e-08 to 3.162277660168379e-06.
+# dk is: 0.5
+# B has 4 points from 0.7 to 1.0.
+# R is: 1.0
+# A is: [1.]
+# k0 is: 12000000000.0
+# Grid size: 11
+# Total number of parameters: 2420
+\end{Verbatim}
+\end{tcolorbox}
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+#--PARAMETERS--------
+
+# note that k, B, and R are percents here, mu is not as its scale is unknown
+dk = 0.5
+R  = 1.0
+B  = 0.5
+mu = 1.0e-6
+
+n_B = 4
+n_g = 11
+n_m = 5
+
+b_r  = (0.7, 1.0)   # B here is B*R 
+mu_r = (-7.5, -5.5) # 3.16e-8 to 3.16e-6
+
+num_l = [n_m, n_B, n_g]
+\end{Verbatim}
+\end{tcolorbox}
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+#--CODE--
+
+# Make the grid object
+gridl = eelib.grid_slow_osc(R, B, dk, mu)
+
+# Make the grid
+gridl.makeGridPoints(mu=mu_r, B=b_r, num = num_l)
+
+# Run the grid
+gridl.gridSlowOsc()
+\end{Verbatim}
+\end{tcolorbox}
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+filename = 'grid010'
+
+# Save the grid
+file = open(filename, 'ab')
+pickle.dump(gridl, file)
+file.close()
+\end{Verbatim}
+\end{tcolorbox}
+    Grid 2 (grid011)
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Grid object to measure slow oscillations:
+mu has 4 points from 3.162277660168379e-08 to 1e-06.
+dk is: 0.5
+B has 3 points from 0.4 to 0.6.
+R is: 1.0
+A is: [1.]
+k0 is: 12000000000.0
+Grid size: 11
+Total number of parameters: 1452
+\end{Verbatim}
+\end{tcolorbox}
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+#--PARAMETERS--------
+
+# note that k, B, and R are percents here, mu is not as its scale is unknown
+dk = 0.5
+R  = 1.0
+B  = 0.5
+mu = 1.0e-6
+
+n_B = 3
+n_g = 11
+n_m = 4
+
+b_r  = (0.4, 0.6)  # B here is B*R 
+mu_r = (-7.5, -6)  # 3.16e-8 to 1e-6
+
+pr = 200
+
+num_l = [n_m, n_B, n_g]
+\end{Verbatim}
+\end{tcolorbox}
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+#--CODE--
+
+# Make the grid object
+gridl = eelib.grid_slow_osc(R, B, dk, mu)
+
+# Run the ODE solver for twice our expected range, based on our length
+gridl.setIntegratorParameters(R_max = 2.0)
+
+# Make the grid
+gridl.makeGridPoints(mu=mu_r, B=b_r, num = num_l)
+
+# Run the grid
+gridl.gridSlowOsc()filename = 'grid011'
+
+# Save the grid
+\end{Verbatim}
+\end{tcolorbox}
+\begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+file = open(filename, 'ab')
+pickle.dump(gridl, file)
+file.close()
+\end{Verbatim}
+\end{tcolorbox}
+
+    Both of these pickled grid objects are then transferred to another
+computer for analysis. The code used begins in the next section. Note
+that pickled objects in Python can be dangerous, but here I know what
+the objects are and which version of Python they use.
+
+Due to the long time of these runs, we don't have dk included here as a
+potential parameter to fit. From previous analysis, we have found that
+dk doesn't affect our results in any significant way which can't be
+accounted for by rescaling \(\psi_0^\prime\).
+
+    \hypertarget{building-grid}{%
+\section{Building Grid}\label{building-grid}}
+
+    Here we: 1) Import our code and libraries for use. 2) Load our pickled
+grid objects for analysis. 3) Output a description of the loaded objects
+for verification.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} \PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{} LIBRARIES \PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{c+c1}{\PYZsh{} My code}
+\PY{k+kn}{import} \PY{n+nn}{eelib}
+\PY{k+kn}{from} \PY{n+nn}{eelib} \PY{k+kn}{import} \PY{n}{pi}\PY{p}{,} \PY{n}{B\PYZus{}max}\PY{p}{,} \PY{n}{R\PYZus{}max} \PY{c+c1}{\PYZsh{} constants}
+\PY{k+kn}{from} \PY{n+nn}{eelib} \PY{k+kn}{import} \PY{n}{pred\PYZus{}slow\PYZus{}k\PYZus{}v2}\PY{p}{,} \PY{n}{pred\PYZus{}slow\PYZus{}k\PYZus{}v3} \PY{c+c1}{\PYZsh{} function handles}
+
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pickle}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{linear\PYZus{}model} \PY{k+kn}{import} \PY{n}{LinearRegression}
+
+\PY{c+c1}{\PYZsh{} plotting}
+\PY{c+c1}{\PYZsh{}import matplotlib.pyplot as plt \PYZsh{} All my plots are triangle plots, so this is not needed.}
+\PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns} \PY{c+c1}{\PYZsh{} statistical data visualization}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{filename} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{grid210}\PY{l+s+s1}{\PYZsq{}}
+
+\PY{c+c1}{\PYZsh{} loading script; be careful of python version}
+\PY{n}{file} \PY{o}{=} \PY{n+nb}{open}\PY{p}{(}\PY{n}{filename}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rb}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}    
+\PY{n}{gridl\PYZus{}1} \PY{o}{=} \PY{n}{pickle}\PY{o}{.}\PY{n}{load}\PY{p}{(}\PY{n}{file}\PY{p}{)}
+\PY{n}{file}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{filename} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{grid211}\PY{l+s+s1}{\PYZsq{}}
+
+\PY{c+c1}{\PYZsh{} loading script; be careful of python version}
+\PY{n}{file} \PY{o}{=} \PY{n+nb}{open}\PY{p}{(}\PY{n}{filename}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rb}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}    
+\PY{n}{gridl\PYZus{}2} \PY{o}{=} \PY{n}{pickle}\PY{o}{.}\PY{n}{load}\PY{p}{(}\PY{n}{file}\PY{p}{)}
+\PY{n}{file}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{gridl\PYZus{}1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Grid object to measure slow oscillations:
+mu has 5 points from 3.162277660168379e-08 to 3.162277660168379e-06.
+dk is: 0.5
+B has 4 points from 0.7 to 1.0.
+R is: 1.0
+A is: [1.]
+k0 is: 12000000000.0
+Grid size: 11
+Total number of parameters: 2420
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{gridl\PYZus{}2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Grid object to measure slow oscillations:
+mu has 4 points from 3.162277660168379e-08 to 1e-06.
+dk is: 0.5
+B has 3 points from 0.4 to 0.6.
+R is: 1.0
+A is: [1.]
+k0 is: 12000000000.0
+Grid size: 11
+Total number of parameters: 1452
+    \end{Verbatim}
+
+    \hypertarget{defining-variables-for-analysis}{%
+\section{Defining variables for
+analysis}\label{defining-variables-for-analysis}}
+
+    Here we retrieve our parameters and results from our grid object and
+pack them into a format convenient for analysis. At the end of this
+section, we include the plots of our raw data, before modeling. dk has
+already been removed, as it has been previously found to only require a
+rescaling of \(\psi_0^\prime\) to account for.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Pull the grids of values from our first grid object.}
+
+\PY{c+c1}{\PYZsh{} independent variables}
+\PY{n}{B\PYZus{}g} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{mfs}  \PY{c+c1}{\PYZsh{} B (for B * R)}
+\PY{n}{mu\PYZus{}g} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{nls}   \PY{c+c1}{\PYZsh{} mu}
+\PY{n}{dgrid} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{d0\PYZus{}grid}
+
+\PY{c+c1}{\PYZsh{} dependent variables}
+\PY{n}{fot} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{slow\PYZus{}osc\PYZus{}k}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{p}{:}\PY{p}{,}\PY{p}{:}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Pull the grids of values from our second grid object.}
+
+\PY{c+c1}{\PYZsh{} independent variables}
+\PY{n}{B\PYZus{}g2} \PY{o}{=} \PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{mfs}  \PY{c+c1}{\PYZsh{} B (for B * R)}
+\PY{n}{mu\PYZus{}g2} \PY{o}{=} \PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{nls}   \PY{c+c1}{\PYZsh{} mu}
+\PY{n}{dgrid2} \PY{o}{=} \PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{d0\PYZus{}grid}
+
+\PY{c+c1}{\PYZsh{} dependent variables}
+\PY{n}{fot2} \PY{o}{=} \PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{slow\PYZus{}osc\PYZus{}k}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{p}{:}\PY{p}{,}\PY{p}{:}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} The older grids flipped the real and imaginary part of dgrid, so the real part here is varying}
+\PY{c+c1}{\PYZsh{} when the first index is fixed. I need to check this. Fixed!}
+
+\PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+array([-1.65697176e+10, -1.53759635e+10, -1.28612984e+10, -9.24175106e+09,
+       -4.82826779e+09,  1.01969682e-06,  4.82826779e+09,  9.24175106e+09,
+        1.28612984e+10,  1.53759635e+10,  1.65697176e+10])
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} This should get our counts. }
+
+\PY{c+c1}{\PYZsh{} Counts from the first grid.}
+\PY{n}{n\PYZus{}m} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{num\PYZus{}mu}
+\PY{n}{n\PYZus{}b} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{num\PYZus{}b}
+\PY{n}{n\PYZus{}g} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{grid\PYZus{}size}
+
+\PY{c+c1}{\PYZsh{} Counts from the second grid.}
+\PY{n}{n\PYZus{}b2} \PY{o}{=} \PY{n}{B\PYZus{}g2}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+\PY{n}{n\PYZus{}m2} \PY{o}{=} \PY{n}{mu\PYZus{}g2}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{} Combined counts and grids.}
+\PY{n}{n\PYZus{}bf} \PY{o}{=} \PY{n}{B\PYZus{}g}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{+}\PY{n}{B\PYZus{}g2}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+\PY{n}{n\PYZus{}gf} \PY{o}{=} \PY{n}{n\PYZus{}g}
+\PY{n}{B\PYZus{}gf} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{union1d}\PY{p}{(}\PY{n}{B\PYZus{}g2}\PY{p}{,} \PY{n}{B\PYZus{}g}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Remove the case with zero initial psi derivatives, since it is erroneous.}
+\PY{c+c1}{\PYZsh{} This was found to be the case. I purposely included the zero initial}
+\PY{c+c1}{\PYZsh{} derivatives as I originally didn\PYZsq{}t know this.}
+\PY{k}{if} \PY{n}{n\PYZus{}g} \PY{o}{\PYZpc{}} \PY{l+m+mi}{2} \PY{o}{==} \PY{l+m+mi}{1}\PY{p}{:} \PY{n}{n\PYZus{}gf} \PY{o}{\PYZhy{}}\PY{o}{=}\PY{l+m+mi}{1} 
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{List of B values:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{B\PYZus{}gf}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+List of B values: [0.4 0.5 0.6 0.7 0.8 0.9 1. ]
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Rescale our derivatives based on our inputted k value. }
+\PY{c+c1}{\PYZsh{} The dk term was found to be significant, but the shift in k due to }
+\PY{c+c1}{\PYZsh{} non\PYZhy{}linearity is not required for this rescaling.}
+\PY{n}{dgridk} \PY{o}{=} \PY{n}{dgrid} \PY{o}{/} \PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k} \PY{c+c1}{\PYZsh{} loop.k has the calculated k + dk term saved}
+\PY{c+c1}{\PYZsh{}dgridk0 = np.real(dgridk[0])      \PYZsh{} One dimension. For the old grid structure.}
+\PY{n}{dgridk0} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgridk}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}    \PY{c+c1}{\PYZsh{} For the new grid structure.}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Here we are changing the format of variable storage.}
+\PY{c+c1}{\PYZsh{} This is intended for use with pandas.}
+\PY{c+c1}{\PYZsh{} Columns are parameter / variable values here.}
+
+\PY{c+c1}{\PYZsh{} The idr / idi here are correct, but all the results will show the flipped version.}
+
+\PY{n}{size1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{shape}\PY{p}{(}\PY{n}{fot}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{*} \PY{l+m+mi}{4} \PY{o}{/}\PY{o}{/} \PY{l+m+mi}{5}
+\PY{n}{size2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{shape}\PY{p}{(}\PY{n}{fot2}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{size1}\PY{o}{+}\PY{n}{size2}\PY{p}{)}
+\PY{n}{npaf} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{size1}\PY{o}{+}\PY{n}{size2}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{sz1} \PY{o}{=} \PY{p}{[}\PY{n}{n\PYZus{}b}\PY{o}{*}\PY{n}{n\PYZus{}g}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g} \PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}
+\PY{n}{sz2} \PY{o}{=} \PY{p}{[}\PY{n}{n\PYZus{}b2}\PY{o}{*}\PY{n}{n\PYZus{}g}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g} \PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}
+
+\PY{k}{for} \PY{n}{imu} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}m2}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{ib} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}b}\PY{p}{)}\PY{p}{:}
+            \PY{k}{for} \PY{n}{idr} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                \PY{k}{for} \PY{n}{idi} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{ind} \PY{o}{=} \PY{n}{imu}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{+}\PY{n}{ib}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{idr}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{+}\PY{n}{idi}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 0] = mfp[im]}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 1] = ew[ik]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{mu\PYZus{}g}\PY{p}{[}\PY{n}{imu}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{B\PYZus{}g}\PY{p}{[}\PY{n}{ib}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{imag}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{fot}\PY{p}{[}\PY{n}{imu}\PY{p}{,} \PY{n}{ib}\PY{p}{,} \PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}  \PY{o}{\PYZhy{}} \PY{p}{(}\PY{n}{B\PYZus{}g}\PY{p}{[}\PY{n}{ib}\PY{p}{]}\PY{o}{*}\PY{n}{eelib}\PY{o}{.}\PY{n}{R\PYZus{}max}\PY{o}{*}\PY{n}{eelib}\PY{o}{.}\PY{n}{phi0inv}\PY{o}{*}\PY{n}{eelib}\PY{o}{.}\PY{n}{B\PYZus{}max}\PY{p}{)}\PY{p}{)}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 4] = np.power(fot[imu, ib, idr, idi]/(pi / (2*B\PYZus{}g[ib]*eelib.R\PYZus{}max*eelib.phi0inv*eelib.B\PYZus{}max)), \PYZhy{}1)}
+                    \PY{k}{if} \PY{n}{idi} \PY{o}{==} \PY{l+m+mi}{5}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{0.0} \PY{c+c1}{\PYZsh{} removes erroneous points}
+
+\PY{k}{for} \PY{n}{imu} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}m2}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{ib} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}b2}\PY{p}{)}\PY{p}{:}
+            \PY{k}{for} \PY{n}{idr} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                \PY{k}{for} \PY{n}{idi} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{ind} \PY{o}{=} \PY{n}{size1}\PY{o}{+}\PY{n}{imu}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{+}\PY{n}{ib}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{idr}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{+}\PY{n}{idi}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 0] = mfp[im]}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 1] = ew[ik]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{mu\PYZus{}g2}\PY{p}{[}\PY{n}{imu}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{B\PYZus{}g2}\PY{p}{[}\PY{n}{ib}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgrid2}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{imag}\PY{p}{(}\PY{n}{dgrid2}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{n}{fot2}\PY{p}{[}\PY{n}{imu}\PY{p}{,} \PY{n}{ib}\PY{p}{,} \PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{p}{(}\PY{n}{B\PYZus{}g2}\PY{p}{[}\PY{n}{ib}\PY{p}{]}\PY{o}{*}\PY{n}{eelib}\PY{o}{.}\PY{n}{R\PYZus{}max}\PY{o}{*}\PY{n}{eelib}\PY{o}{.}\PY{n}{phi0inv}\PY{o}{*}\PY{n}{eelib}\PY{o}{.}\PY{n}{B\PYZus{}max}\PY{p}{)}\PY{p}{)}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 4] = np.power(fot2[imu, ib, idr, idi]/(pi / (2*B\PYZus{}g2[ib]*eelib.R\PYZus{}max*eelib.phi0inv*eelib.B\PYZus{}max)),\PYZhy{}1)}
+                    \PY{k}{if} \PY{n}{idi} \PY{o}{==} \PY{l+m+mi}{5}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{0.0} \PY{c+c1}{\PYZsh{} removes erroneous points}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+3388
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Now as a pandas dataframe.}
+\PY{c+c1}{\PYZsh{} Flipping real and imaginary components is unneeded due to my use of}
+\PY{c+c1}{\PYZsh{} np.real and np.imag to extract these columns.}
+\PY{n}{dfa} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{npaf}\PY{p}{,} \PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mu}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{B}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D real}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D imag}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Delta M}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} And show it.}
+\PY{n}{dfa}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+                mu    B    D real    D imag       Delta M
+0     3.162278e-08  0.7 -1.380781 -1.380781 -4.913797e+04
+1     3.162278e-08  0.7 -1.380781 -1.281304 -4.540450e+04
+2     3.162278e-08  0.7 -1.380781 -1.071753 -3.811119e+04
+3     3.162278e-08  0.7 -1.380781 -0.770130 -2.761237e+04
+4     3.162278e-08  0.7 -1.380781 -0.402347 -1.440458e+04
+{\ldots}            {\ldots}  {\ldots}       {\ldots}       {\ldots}           {\ldots}
+3383  1.000000e-06  0.6  1.380781  0.402347  4.511452e+05
+3384  1.000000e-06  0.6  1.380781  0.770130  8.657741e+05
+3385  1.000000e-06  0.6  1.380781  1.071753  1.204966e+06
+3386  1.000000e-06  0.6  1.380781  1.281304  1.441303e+06
+3387  1.000000e-06  0.6  1.380781  1.380781  1.553086e+06
+
+[3388 rows x 5 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{g} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{PairGrid}\PY{p}{(}\PY{n}{dfa}\PY{p}{)}
+
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}diag}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}upper}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}lower}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<seaborn.axisgrid.PairGrid at 0x2b4fbbb9670>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/slow_k_ivp_en/output_30_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    After removing the erroneous points, I can see clear linear dependence
+here. Delta M here designated \(M_{\mu} - M_0\) where \(M_{\mu}\) is the
+new modeled slow wave number and \(M_0\) is the slow wave number for the
+linear model.
+
+    \hypertarget{mu-linear-regression-fitting}{%
+\section{\texorpdfstring{\(\mu\) linear regression
+fitting}{\textbackslash mu linear regression fitting}}\label{mu-linear-regression-fitting}}
+
+    Linear regression will proceed as in the fast oscillation \(k\)
+modelling. I will fit \(\mu^2\), \(\mu\), and the intercept terms. It
+will be seen that I only need a \(\mu\) term, as we don't need to be so
+precise with the data as for the fast oscillation modeling.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{27}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{slope} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{intercept} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{r\PYZus{}save} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{r} \PY{o}{=} \PY{l+m+mf}{1.1}    \PY{c+c1}{\PYZsh{} for finding the minimum r value}
+
+\PY{k}{for} \PY{n}{j}\PY{p}{,} \PY{n}{jj} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{B\PYZus{}gf}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{k1}\PY{p}{,} \PY{n}{kk1} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{dgridk0}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{k2}\PY{p}{,} \PY{n}{kk2} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{dgridk0}\PY{p}{)}\PY{p}{:}
+            \PY{n}{df\PYZus{}mu\PYZus{}sel} \PY{o}{=} \PY{n}{dfa}\PY{p}{[}\PY{p}{(}\PY{n}{dfa}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{B}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{jj}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{dfa}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D real}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{kk1}\PY{p}{)}\PY{o}{\PYZam{}}\PY{p}{(}\PY{n}{dfa}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D imag}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{kk2}\PY{p}{)}\PY{p}{]}
+
+            \PY{n}{x} \PY{o}{=} \PY{n}{df\PYZus{}mu\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}
+            \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{ndmin} \PY{o}{=} \PY{l+m+mi}{2}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+            \PY{n}{y} \PY{o}{=} \PY{n}{df\PYZus{}mu\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Delta M}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}
+
+            \PY{n}{reg} \PY{o}{=} \PY{n}{LinearRegression}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{slope}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,} \PY{n}{k2}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{coef\PYZus{}}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+            \PY{n}{intercept}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,} \PY{n}{k2}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{intercept\PYZus{}}
+            \PY{n}{r\PYZus{}save}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,}\PY{n}{k2}\PY{p}{]}\PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{r2} \PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+            \PY{n}{r} \PY{o}{=} \PY{n+nb}{min}\PY{p}{(}\PY{n}{r}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+            \PY{k}{if} \PY{n}{r2} \PY{o}{\PYZlt{}} \PY{l+m+mf}{0.98}\PY{p}{:} \PY{n+nb}{print}\PY{p}{(}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,}\PY{n}{k2}\PY{p}{,}\PY{n}{kk1}\PY{p}{,} \PY{n}{slope}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,} \PY{n}{k2}\PY{p}{]}\PY{p}{,} \PY{n}{intercept}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,}\PY{n}{k2}\PY{p}{]}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{r}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+0.9999983238179493
+    \end{Verbatim}
+
+    The fit is good for all of the cases.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{35}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{slope} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{intercept} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{r\PYZus{}save} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{r} \PY{o}{=} \PY{l+m+mf}{1.1}    \PY{c+c1}{\PYZsh{} for finding the minimum r value}
+
+\PY{k}{for} \PY{n}{j}\PY{p}{,} \PY{n}{jj} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{B\PYZus{}gf}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{k1}\PY{p}{,} \PY{n}{kk1} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{dgridk0}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{k2}\PY{p}{,} \PY{n}{kk2} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{dgridk0}\PY{p}{)}\PY{p}{:}
+            \PY{n}{df\PYZus{}mu\PYZus{}sel} \PY{o}{=} \PY{n}{dfa}\PY{p}{[}\PY{p}{(}\PY{n}{dfa}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{B}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{jj}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{dfa}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D real}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{kk1}\PY{p}{)}\PY{o}{\PYZam{}}\PY{p}{(}\PY{n}{dfa}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D imag}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{kk2}\PY{p}{)}\PY{p}{]}
+
+            \PY{n}{x} \PY{o}{=} \PY{n}{df\PYZus{}mu\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}
+            \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{ndmin} \PY{o}{=} \PY{l+m+mi}{2}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+            \PY{n}{y} \PY{o}{=} \PY{n}{df\PYZus{}mu\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Delta M}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}
+
+            \PY{n}{reg} \PY{o}{=} \PY{n}{LinearRegression}\PY{p}{(}\PY{n}{fit\PYZus{}intercept}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{slope}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,} \PY{n}{k2}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{coef\PYZus{}}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+            \PY{n}{intercept}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,} \PY{n}{k2}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{intercept\PYZus{}}
+            \PY{n}{r\PYZus{}save}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,}\PY{n}{k2}\PY{p}{]}\PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{r2} \PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+            \PY{n}{r} \PY{o}{=} \PY{n+nb}{min}\PY{p}{(}\PY{n}{r}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+            \PY{k}{if} \PY{n}{r2} \PY{o}{\PYZlt{}} \PY{l+m+mf}{0.98}\PY{p}{:} \PY{n+nb}{print}\PY{p}{(}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,}\PY{n}{k2}\PY{p}{,}\PY{n}{kk1}\PY{p}{,} \PY{n}{slope}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,} \PY{n}{k2}\PY{p}{]}\PY{p}{,} \PY{n}{intercept}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k1}\PY{p}{,}\PY{n}{k2}\PY{p}{]}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{r}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+0.9999889966619746
+    \end{Verbatim}
+
+    Only slightly worse. I will use this version which doesn't fit an
+intercept, as this is what I expect.
+
+Our regression with the new data is worse than that of the old data. I
+don't know why, but the data may not be exactly the same.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{36}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Number of slopes:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{slope}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Number of slopes: (7, 11, 11)
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{37}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{npaf\PYZus{}mu} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}gf}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}\PY{p}{)}
+\PY{n}{sz} \PY{o}{=} \PY{p}{[}\PY{p}{(}\PY{n}{n\PYZus{}b}\PY{o}{+}\PY{n}{n\PYZus{}b}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{,} \PY{p}{(}\PY{n}{n\PYZus{}gf}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{,} \PY{n}{n\PYZus{}gf}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Check that our array is the correct size:}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+si}{\PYZob{}}\PY{n}{n\PYZus{}g}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}gf}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}\PY{l+s+si}{\PYZcb{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+si}{\PYZob{}}\PY{n}{npaf\PYZus{}mu}\PY{o}{.}\PY{n}{shape}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Check that our array is the correct size:
+770
+(770, 4)
+    \end{Verbatim}
+
+    The size here should be 770, which is 7 * 10 * 11, as one of our two
+derivative parameters has lost a grid point due to error.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} This is intended for use with pandas.}
+\PY{c+c1}{\PYZsh{} Columns are parameter / variable values here.}
+
+\PY{k}{for} \PY{n}{ib} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{idr} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{idi} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}gf}\PY{p}{)}\PY{p}{:}
+            \PY{n}{ind} \PY{o}{=} \PY{n}{ib}\PY{o}{*}\PY{n}{sz}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{idr}\PY{o}{*}\PY{n}{sz}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{+}\PY{n}{idi}
+            \PY{c+c1}{\PYZsh{}print(ib, idr, idi, ind)}
+            \PY{n}{npaf\PYZus{}mu}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{B\PYZus{}gf}\PY{p}{[}\PY{n}{ib}\PY{p}{]}
+            \PY{n}{idr2} \PY{o}{=} \PY{n}{idr}
+            \PY{n}{idi2} \PY{o}{=} \PY{n}{idi}
+            \PY{c+c1}{\PYZsh{}if idr \PYZgt{} 4: idr2+=1}
+            \PY{k}{if} \PY{n}{idi} \PY{o}{\PYZgt{}} \PY{l+m+mi}{4}\PY{p}{:} \PY{n}{idi2}\PY{o}{+}\PY{o}{=}\PY{l+m+mi}{1}
+            \PY{n}{npaf\PYZus{}mu}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgridk}\PY{p}{[}\PY{n}{idr2}\PY{p}{,} \PY{n}{idi2}\PY{p}{]}\PY{p}{)}
+            \PY{n}{npaf\PYZus{}mu}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{imag}\PY{p}{(}\PY{n}{dgridk}\PY{p}{[}\PY{n}{idr2}\PY{p}{,} \PY{n}{idi2}\PY{p}{]}\PY{p}{)}
+            \PY{c+c1}{\PYZsh{}npaf\PYZus{}mu[ind, 1] = np.real(dgridk[idi2, idr2])}
+            \PY{c+c1}{\PYZsh{}npaf\PYZus{}mu[ind, 2] = np.imag(dgridk[idi2, idr2])}
+            \PY{n}{npaf\PYZus{}mu}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]} \PY{o}{=} \PY{n}{slope}\PY{p}{[}\PY{n}{ib}\PY{p}{,} \PY{n}{idr2}\PY{p}{,} \PY{n}{idi2}\PY{p}{]} \PY{c+c1}{\PYZsh{}* B\PYZus{}gf[ib]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{42}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} now as a pandas dataframe}
+\PY{n}{dfa\PYZus{}mu} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{npaf\PYZus{}mu}\PY{p}{,} \PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{B}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D real}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D imag}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{slope}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} and to show it}
+\PY{n}{dfa\PYZus{}mu}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{42}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+       B    D real    D imag         slope
+0    0.4 -1.380781 -1.380781 -1.556993e+12
+1    0.4 -1.380781 -1.281304 -1.444127e+12
+2    0.4 -1.380781 -1.071753 -1.208503e+12
+3    0.4 -1.380781 -0.770130 -8.687119e+11
+4    0.4 -1.380781 -0.402347 -4.544755e+11
+..   {\ldots}       {\ldots}       {\ldots}           {\ldots}
+765  1.0  1.380781  0.402347  4.508330e+11
+766  1.0  1.380781  0.770130  8.652148e+11
+767  1.0  1.380781  1.071753  1.204275e+12
+768  1.0  1.380781  1.281304  1.440392e+12
+769  1.0  1.380781  1.380781  1.551257e+12
+
+[770 rows x 4 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{visualization}{%
+\section{Visualization}\label{visualization}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{43}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{g} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{PairGrid}\PY{p}{(}\PY{n}{dfa\PYZus{}mu}\PY{p}{)}
+
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}diag}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}upper}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}lower}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{43}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<seaborn.axisgrid.PairGrid at 0x2b480c97620>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/slow_k_ivp_en/output_44_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    Linear dependence visible here.
+
+    \hypertarget{psiprime_0-regression}{%
+\section{\texorpdfstring{\(\psi^\prime_0\)
+Regression}{\textbackslash psi\^{}\textbackslash prime\_0 Regression}}\label{psiprime_0-regression}}
+
+    This is the regression for \(\mathrm{Im}(\psi_0^\prime)\)
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{44}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{slope2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{intercept2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{r\PYZus{}save} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{)}
+\PY{n}{r} \PY{o}{=} \PY{l+m+mf}{1.1}    \PY{c+c1}{\PYZsh{} for finding the minimum r value}
+
+\PY{n}{k1} \PY{o}{=} \PY{l+m+mi}{1}
+
+\PY{k}{for} \PY{n}{j}\PY{p}{,} \PY{n}{jj} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{B\PYZus{}gf}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{k2}\PY{p}{,} \PY{n}{kk2} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{dgridk0}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{n}{k1} \PY{o}{!=} \PY{l+m+mi}{5} \PY{o+ow}{and} \PY{n}{k2} \PY{o}{!=}\PY{l+m+mi}{5}\PY{p}{:}
+            \PY{n}{df\PYZus{}psi\PYZus{}sel} \PY{o}{=} \PY{n}{dfa\PYZus{}mu}\PY{p}{[}\PY{p}{(}\PY{n}{dfa\PYZus{}mu}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{B}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{jj}\PY{p}{)}\PY{o}{\PYZam{}}\PY{p}{(}\PY{n}{dfa\PYZus{}mu}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D real}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{kk2}\PY{p}{)}\PY{p}{]}
+
+            \PY{n}{x} \PY{o}{=} \PY{n}{df\PYZus{}psi\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D imag}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}
+            \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{ndmin} \PY{o}{=} \PY{l+m+mi}{2}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+            \PY{n}{y} \PY{o}{=} \PY{n}{df\PYZus{}psi\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{slope}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}
+
+            \PY{n}{reg} \PY{o}{=} \PY{n}{LinearRegression}\PY{p}{(}\PY{n}{fit\PYZus{}intercept}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{slope2}\PY{p}{[}\PY{n}{j}\PY{p}{,} \PY{n}{k2}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{coef\PYZus{}}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+            \PY{n}{intercept2}\PY{p}{[}\PY{n}{j}\PY{p}{,} \PY{n}{k2}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{intercept\PYZus{}}
+            \PY{n}{r\PYZus{}save}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{k2}\PY{p}{]}\PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{r2} \PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+            \PY{n}{r} \PY{o}{=} \PY{n+nb}{min}\PY{p}{(}\PY{n}{r}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{r}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+0.999996740229334
+    \end{Verbatim}
+
+    Great success!!!
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{45}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{np}\PY{o}{.}\PY{n}{shape}\PY{p}{(}\PY{n}{slope2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{45}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+(7, 11)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    Now to take the average of this dataset, in order to find the one term
+model, assuming no dependence on other parameters. This number has been
+saved in const\_dic\_003 as ``mdI''. For the new dataset, the constant
+has not been saved. The difference is sufficiently small when compared
+to our results.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{46}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{full\PYZus{}ave} \PY{o}{=} \PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{slope2}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{p}{:}\PY{l+m+mi}{5}\PY{p}{]}\PY{p}{)}\PY{o}{+}\PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{slope2}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{6}\PY{p}{:}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Average:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{full\PYZus{}ave}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Percent std left: }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{slope2}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{p}{:}\PY{l+m+mi}{5}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{n}{full\PYZus{}ave}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Percent std right:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{slope2}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{6}\PY{p}{:}\PY{p}{]}\PY{p}{)}\PY{o}{/}\PY{n}{full\PYZus{}ave}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Average: 1126214570932.732
+Percent std left:  0.0005449644346391447
+Percent std right: 0.0005405402309765848
+    \end{Verbatim}
+
+    70 slopes have been found. Lets make a new table.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{47}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{npaf\PYZus{}pi} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}gf}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)}\PY{p}{)}
+\PY{n}{sz} \PY{o}{=} \PY{p}{[}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{n\PYZus{}gf}\PY{p}{)}\PY{p}{,} \PY{n}{n\PYZus{}gf}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{48}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} This is intended for use with pandas}
+\PY{c+c1}{\PYZsh{} Columns are parameter / variable values here}
+
+\PY{k}{for} \PY{n}{ib} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{idi} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}gf}\PY{p}{)}\PY{p}{:}
+        \PY{n}{ind} \PY{o}{=} \PY{n}{ib}\PY{o}{*}\PY{n}{sz}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{idi}
+        
+        \PY{n}{npaf\PYZus{}pi}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{B\PYZus{}gf}\PY{p}{[}\PY{n}{ib}\PY{p}{]}
+        \PY{n}{idi2} \PY{o}{=} \PY{n}{idi}
+        \PY{k}{if} \PY{n}{idi} \PY{o}{\PYZgt{}} \PY{l+m+mi}{4}\PY{p}{:} \PY{n}{idi2}\PY{o}{+}\PY{o}{=}\PY{l+m+mi}{1}
+        \PY{n}{npaf\PYZus{}pi}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{dgridk0}\PY{p}{[}\PY{n}{idi2}\PY{p}{]}
+        \PY{n}{npaf\PYZus{}pi}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{slope2}\PY{p}{[}\PY{n}{ib}\PY{p}{,} \PY{n}{idi2}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{49}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} now as a pandas dataframe}
+\PY{n}{dfa\PYZus{}pi} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{npaf\PYZus{}pi}\PY{p}{,} \PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{B}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D real}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{slope}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} and to show it}
+\PY{n}{dfa\PYZus{}pi}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{49}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+      B    D real         slope
+0   0.4 -1.380781  1.126374e+12
+1   0.4 -1.281304  1.126472e+12
+2   0.4 -1.071753  1.126251e+12
+3   0.4 -0.770130  1.126685e+12
+4   0.4 -0.402347  1.127715e+12
+..  {\ldots}       {\ldots}           {\ldots}
+65  1.0  0.402347  1.126378e+12
+66  1.0  0.770130  1.125875e+12
+67  1.0  1.071753  1.125520e+12
+68  1.0  1.281304  1.125814e+12
+69  1.0  1.380781  1.125559e+12
+
+[70 rows x 3 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{50}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{g} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{PairGrid}\PY{p}{(}\PY{n}{dfa\PYZus{}pi}\PY{p}{)}
+
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}diag}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}upper}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}lower}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{50}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<seaborn.axisgrid.PairGrid at 0x2b482101f70>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/slow_k_ivp_en/output_57_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    I don't know how much of the remaining variation is real. \(B\)
+dependence appears chaotic, \(\mathrm{Re} (\psi_0^\prime)\) dependence
+appears to have a retrievable quadratic dependence, but it is unlikely
+to be needed.
+
+The new analysis shows a term linear in the absolute value of
+\(\mathrm{Re} (\psi_0^\prime)\).
+
+    \hypertarget{k-and-m-regression-for-mu-linear-term}{%
+\section{\texorpdfstring{\(k\) and \(M\) Regression for \(\mu\) Linear
+Term}{k and M Regression for \textbackslash mu Linear Term}}\label{k-and-m-regression-for-mu-linear-term}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{51}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dfa\PYZus{}pi}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{51}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+      B    D real         slope
+0   0.4 -1.380781  1.126374e+12
+1   0.4 -1.281304  1.126472e+12
+2   0.4 -1.071753  1.126251e+12
+3   0.4 -0.770130  1.126685e+12
+4   0.4 -0.402347  1.127715e+12
+..  {\ldots}       {\ldots}           {\ldots}
+65  1.0  0.402347  1.126378e+12
+66  1.0  0.770130  1.125875e+12
+67  1.0  1.071753  1.125520e+12
+68  1.0  1.281304  1.125814e+12
+69  1.0  1.380781  1.125559e+12
+
+[70 rows x 3 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{52}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{slope3} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}\PY{p}{)}
+\PY{n}{intercept3} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}
+\PY{n}{r\PYZus{}save} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}
+\PY{n}{r} \PY{o}{=} \PY{l+m+mf}{1.1}    \PY{c+c1}{\PYZsh{} for finding the minimum r value}
+
+\PY{k}{for} \PY{n}{j}\PY{p}{,} \PY{n}{jj} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{B\PYZus{}gf}\PY{p}{)}\PY{p}{:}
+\PY{c+c1}{\PYZsh{}for k1, kk1 in enumerate(np.real(dgrid[0]/(gridl\PYZus{}2.l\PYZus{}calc.k))):}
+    \PY{c+c1}{\PYZsh{}for k2, kk2 in enumerate(np.real(dgrid[0]/(gridl\PYZus{}1.l\PYZus{}calc.k))):}
+        \PY{c+c1}{\PYZsh{}if k1 != 5 and k2 !=5:}
+            \PY{n}{df\PYZus{}B\PYZus{}sel} \PY{o}{=} \PY{n}{dfa\PYZus{}pi}\PY{p}{[}\PY{p}{(}\PY{n}{dfa\PYZus{}pi}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{B}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{jj}\PY{p}{)}\PY{p}{]}
+
+            \PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{power}\PY{p}{(}\PY{n}{df\PYZus{}B\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D real}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{c+c1}{\PYZsh{}.T}
+            \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+            \PY{n}{y} \PY{o}{=} \PY{n}{df\PYZus{}B\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{slope}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}
+
+            \PY{n}{reg} \PY{o}{=} \PY{n}{LinearRegression}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{slope3}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{coef\PYZus{}}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+            \PY{n}{intercept3}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{intercept\PYZus{}}
+            \PY{n}{r\PYZus{}save}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{r2} \PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+            \PY{n}{r} \PY{o}{=} \PY{n+nb}{min}\PY{p}{(}\PY{n}{r}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+            \PY{k}{if} \PY{n}{r2} \PY{o}{\PYZlt{}} \PY{l+m+mf}{0.99}\PY{p}{:} \PY{n+nb}{print}\PY{p}{(}\PY{n}{j}\PY{p}{,} \PY{n}{slope3}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{intercept3}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{r}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+0 -672043781.0850109 1127458783422.556 0.704423316193812
+1 -609157187.0551006 1127350224072.1465 0.7824525802655298
+2 -747482802.1545452 1127599209729.3352 0.8677410579815538
+3 -467028284.28805465 1126395368421.57 0.642782306838636
+4 -473268776.01295227 1126379299008.9998 0.659397455094812
+5 -379292636.5592058 1126188255912.4094 0.6258380555850218
+6 -357884832.7384874 1126172000586.8135 0.5918197891018377
+0.5918197891018377
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{53}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{slope4} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+\PY{n}{intercept4} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}
+\PY{n}{r\PYZus{}save} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{n\PYZus{}bf}\PY{p}{)}
+\PY{n}{r} \PY{o}{=} \PY{l+m+mf}{1.1}    \PY{c+c1}{\PYZsh{} for finding the minimum r value}
+
+\PY{k}{for} \PY{n}{j}\PY{p}{,} \PY{n}{jj} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{B\PYZus{}gf}\PY{p}{)}\PY{p}{:}
+\PY{c+c1}{\PYZsh{}for k1, kk1 in enumerate(np.real(dgrid[0]/(gridl\PYZus{}2.l\PYZus{}calc.k))):}
+    \PY{c+c1}{\PYZsh{}for k2, kk2 in enumerate(np.real(dgrid[0]/(gridl\PYZus{}1.l\PYZus{}calc.k))):}
+        \PY{c+c1}{\PYZsh{}if k1 != 5 and k2 !=5:}
+            \PY{n}{df\PYZus{}B\PYZus{}sel} \PY{o}{=} \PY{n}{dfa\PYZus{}pi}\PY{p}{[}\PY{p}{(}\PY{n}{dfa\PYZus{}pi}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{B}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{jj}\PY{p}{)}\PY{p}{]}
+
+            \PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{power}\PY{p}{(}\PY{n}{df\PYZus{}B\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D real}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{power}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{df\PYZus{}B\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{D real}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{c+c1}{\PYZsh{}.T}
+            \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{o}{.}\PY{n}{T}
+            \PY{n}{y} \PY{o}{=} \PY{n}{df\PYZus{}B\PYZus{}sel}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{slope}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}
+
+            \PY{n}{reg} \PY{o}{=} \PY{n}{LinearRegression}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{slope4}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{coef\PYZus{}}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+            \PY{n}{intercept4}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{reg}\PY{o}{.}\PY{n}{intercept\PYZus{}}
+            \PY{n}{r\PYZus{}save}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+
+            \PY{n}{r2} \PY{o}{=} \PY{n}{reg}\PY{o}{.}\PY{n}{score}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+            \PY{n}{r} \PY{o}{=} \PY{n+nb}{min}\PY{p}{(}\PY{n}{r}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+            \PY{k}{if} \PY{n}{r2} \PY{o}{\PYZlt{}} \PY{l+m+mf}{0.99}\PY{p}{:} \PY{n+nb}{print}\PY{p}{(}\PY{n}{j}\PY{p}{,} \PY{n}{slope4}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{intercept4}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{r2}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{r}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+0 [1.9168653e+09 1.9168653e+09] 1129280393502.3281 0.9458511596943997
+1 [1.13643315e+09 1.13643315e+09] 1128578457604.9963 0.9308406914013116
+3 [1.64139041e+09 1.64139041e+09] 1127878895506.9856 0.9453387677377924
+4 [1.48515447e+09 1.48515447e+09] 1127757286184.8462 0.9201687821848877
+5 [1.1354031e+09 1.1354031e+09] 1127254027221.1736 0.8563424016679411
+6 [1.13357945e+09 1.13357945e+09] 1127221425759.0469 0.8291995976429469
+0.8291995976429469
+    \end{Verbatim}
+
+    In the old analysis, the quadratic term for
+\(\mathrm{Re}\left(\psi^\prime_0\right)\) was a better fit than both
+these terms together for the new run. The linear term didn't help at all
+for the old fit. Here I have two terms. I have kept my old statistics,
+so as to not rerun the models, as the difference is within my tolerance.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{50}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{intercept3}\PY{p}{[}\PY{l+m+mi}{4}\PY{p}{]}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{intercept3}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{intercept4}\PY{p}{[}\PY{l+m+mi}{4}\PY{p}{]}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{intercept4}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{slope3}\PY{p}{[}\PY{l+m+mi}{4}\PY{p}{]}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{slope3}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{slope4}\PY{p}{[}\PY{l+m+mi}{4}\PY{p}{]}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{slope4}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+1114237499154.8862 1114503328463.9722
+1114237499154.8862 1114503328463.9722
+1570409024.3666248 1487350163.9047058
+[1.57040902e+09 5.78521435e+06] [1.48735016e+09 8.42335915e+06]
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Slope with linear term relative std:        }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{slope4}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)} \PY{o}{/} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{slope4}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Intercept without linear term relative std: }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{intercept3}\PY{p}{)} \PY{o}{/} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{intercept3}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Slope without linear term relative std:     }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{slope3}\PY{p}{)} \PY{o}{/} \PY{n}{np}\PY{o}{.}\PY{n}{average}\PY{p}{(}\PY{n}{slope3}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Slope with linear term relative std:         [0.16510184 0.47860923]
+Intercept withour linear term relative std:  0.0004616326145078832
+Slope withour linear term relative std:      0.1651018353627821
+    \end{Verbatim}
+
+    \hypertarget{model-testing}{%
+\section{Model Testing}\label{model-testing}}
+
+    This tests the model for the grids. I use my saved model from my library
+for this, rather than trying to recreate it here.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{54}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Here we are changing the format of variable storage}
+\PY{c+c1}{\PYZsh{} This is intended for use with pandas}
+\PY{c+c1}{\PYZsh{} Columns are parameter / variable values here}
+
+\PY{n}{size1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{shape}\PY{p}{(}\PY{n}{fot}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{*} \PY{l+m+mi}{4} \PY{o}{/}\PY{o}{/} \PY{l+m+mi}{5}
+\PY{n}{size2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{shape}\PY{p}{(}\PY{n}{fot2}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{size1}\PY{o}{+}\PY{n}{size2}\PY{p}{)}
+\PY{n}{npaf} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{size1}\PY{o}{+}\PY{n}{size2}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{sz1} \PY{o}{=} \PY{p}{[}\PY{n}{n\PYZus{}b}\PY{o}{*}\PY{n}{n\PYZus{}g}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g} \PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}
+\PY{n}{sz2} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{3}\PY{o}{*}\PY{n}{n\PYZus{}g}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g} \PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}
+
+\PY{k}{for} \PY{n}{imu} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}m2}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{ib} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}b}\PY{p}{)}\PY{p}{:}
+            \PY{k}{for} \PY{n}{idr} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                \PY{k}{for} \PY{n}{idi} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{ind} \PY{o}{=} \PY{n}{imu}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{+}\PY{n}{ib}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{idr}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{+}\PY{n}{idi}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 0] = mfp[im]}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 1] = ew[ik]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{mu\PYZus{}g}\PY{p}{[}\PY{n}{imu}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{B\PYZus{}g}\PY{p}{[}\PY{n}{ib}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{imag}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{fot}\PY{p}{[}\PY{n}{imu}\PY{p}{,} \PY{n}{ib}\PY{p}{,} \PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{pred\PYZus{}slow\PYZus{}k\PYZus{}v2}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{,} \PY{n}{mu\PYZus{}g}\PY{p}{[}\PY{n}{imu}\PY{p}{]}\PY{p}{,} \PY{l+m+mf}{0.}\PY{p}{,} \PY{n}{B\PYZus{}g}\PY{p}{[}\PY{n}{ib}\PY{p}{]} \PY{o}{*} \PY{n}{B\PYZus{}max}\PY{p}{,} \PY{n}{R\PYZus{}max}\PY{p}{,} \PY{n}{k0} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 5] = fot[imu, ib, idr, idi]}
+                    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{nan} \PY{c+c1}{\PYZsh{} removes erroneous points}
+                    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{nan} \PY{c+c1}{\PYZsh{} removes erroneous points}
+
+
+\PY{k}{for} \PY{n}{imu} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}m2}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{ib} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}b2}\PY{p}{)}\PY{p}{:}
+            \PY{k}{for} \PY{n}{idr} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                \PY{k}{for} \PY{n}{idi} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{ind} \PY{o}{=} \PY{n}{size1}\PY{o}{+}\PY{n}{imu}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{+}\PY{n}{ib}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{idr}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{+}\PY{n}{idi}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 0] = mfp[im]}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 1] = ew[ik]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{mu\PYZus{}g2}\PY{p}{[}\PY{n}{imu}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{B\PYZus{}g2}\PY{p}{[}\PY{n}{ib}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgrid2}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{imag}\PY{p}{(}\PY{n}{dgrid2}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{fot2}\PY{p}{[}\PY{n}{imu}\PY{p}{,} \PY{n}{ib}\PY{p}{,} \PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{pred\PYZus{}slow\PYZus{}k\PYZus{}v2}\PY{p}{(}\PY{n}{dgrid2}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{,} \PY{n}{mu\PYZus{}g2}\PY{p}{[}\PY{n}{imu}\PY{p}{]}\PY{p}{,} \PY{l+m+mf}{0.}\PY{p}{,} \PY{n}{B\PYZus{}g2}\PY{p}{[}\PY{n}{ib}\PY{p}{]} \PY{o}{*} \PY{n}{B\PYZus{}max}\PY{p}{,} \PY{n}{R\PYZus{}max}\PY{p}{,} \PY{n}{k0} \PY{o}{=} \PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 5] = fot2[imu, ib, idr, idi]}
+                    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{nan} \PY{c+c1}{\PYZsh{} removes erroneous points}
+                    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{nan} \PY{c+c1}{\PYZsh{} removes erroneous points}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+3388
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{55}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} now as a pandas dataframe}
+\PY{n}{dfa} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{npaf}\PY{p}{,} \PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mu}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{B}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D real}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D imag}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{delta M new}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} and to show it}
+\PY{n}{dfa}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{55}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+                mu    B    D real    D imag   delta M new
+0     3.162278e-08  0.7 -1.380781 -1.380781   -403.342499
+1     3.162278e-08  0.7 -1.380781 -1.281304   -180.917571
+2     3.162278e-08  0.7 -1.380781 -1.071753   -283.707880
+3     3.162278e-08  0.7 -1.380781 -0.770130   -430.653956
+4     3.162278e-08  0.7 -1.380781 -0.402347   -203.748069
+{\ldots}            {\ldots}  {\ldots}       {\ldots}       {\ldots}           {\ldots}
+3383  1.000000e-06  0.6  1.380781  0.402347   2075.349938
+3384  1.000000e-06  0.6  1.380781  0.770130   6212.786641
+3385  1.000000e-06  0.6  1.380781  1.071753   8755.956381
+3386  1.000000e-06  0.6  1.380781  1.281304  11208.043244
+3387  1.000000e-06  0.6  1.380781  1.380781  11961.156049
+
+[3388 rows x 5 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{56}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{g} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{PairGrid}\PY{p}{(}\PY{n}{dfa}\PY{p}{)}
+
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}diag}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}upper}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}lower}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{56}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<seaborn.axisgrid.PairGrid at 0x2b4821009e0>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/slow_k_ivp_en/output_70_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{57}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Estimate for maximum error:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{nanmax}\PY{p}{(}\PY{n}{dfa}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{delta M new}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}\PY{p}{)} \PY{o}{/} \PY{n}{np}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{fot}\PY{p}{[}\PY{n}{imu}\PY{p}{,} \PY{n}{ib}\PY{p}{,} \PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Estimate for maximum error: 0.0015831693046329603
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{58}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Here we are changing the format of variable storage}
+\PY{c+c1}{\PYZsh{} This is intended for use with pandas}
+\PY{c+c1}{\PYZsh{} Columns are parameter / variable values here}
+
+\PY{n}{size1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{shape}\PY{p}{(}\PY{n}{fot}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{*} \PY{l+m+mi}{4} \PY{o}{/}\PY{o}{/} \PY{l+m+mi}{5}
+\PY{n}{size2} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{shape}\PY{p}{(}\PY{n}{fot2}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{size1}\PY{o}{+}\PY{n}{size2}\PY{p}{)}
+\PY{n}{npaf} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{size1}\PY{o}{+}\PY{n}{size2}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{sz1} \PY{o}{=} \PY{p}{[}\PY{n}{n\PYZus{}b}\PY{o}{*}\PY{n}{n\PYZus{}g}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g} \PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}
+\PY{n}{sz2} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{3}\PY{o}{*}\PY{n}{n\PYZus{}g}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g} \PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{n\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}
+
+\PY{k}{for} \PY{n}{imu} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}m2}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{ib} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}b}\PY{p}{)}\PY{p}{:}
+            \PY{k}{for} \PY{n}{idr} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                \PY{k}{for} \PY{n}{idi} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{ind} \PY{o}{=} \PY{n}{imu}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{+}\PY{n}{ib}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{idr}\PY{o}{*}\PY{n}{sz1}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{+}\PY{n}{idi}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 0] = mfp[im]}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 1] = ew[ik]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{mu\PYZus{}g}\PY{p}{[}\PY{n}{imu}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{B\PYZus{}g}\PY{p}{[}\PY{n}{ib}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{imag}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{fot}\PY{p}{[}\PY{n}{imu}\PY{p}{,} \PY{n}{ib}\PY{p}{,} \PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{pred\PYZus{}slow\PYZus{}k\PYZus{}v3}\PY{p}{(}\PY{n}{dgrid}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{,} \PY{n}{mu\PYZus{}g}\PY{p}{[}\PY{n}{imu}\PY{p}{]}\PY{p}{,} \PY{l+m+mf}{0.}\PY{p}{,} \PY{n}{B\PYZus{}g}\PY{p}{[}\PY{n}{ib}\PY{p}{]} \PY{o}{*} \PY{n}{B\PYZus{}max}\PY{p}{,} \PY{n}{R\PYZus{}max}\PY{p}{,} \PY{n}{k0} \PY{o}{=} \PY{n}{gridl\PYZus{}1}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{nan} \PY{c+c1}{\PYZsh{} removes erroneous points}
+                    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{nan} \PY{c+c1}{\PYZsh{} removes erroneous points}
+
+
+\PY{k}{for} \PY{n}{imu} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}m2}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{ib} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}b2}\PY{p}{)}\PY{p}{:}
+            \PY{k}{for} \PY{n}{idr} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                \PY{k}{for} \PY{n}{idi} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n\PYZus{}g}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{ind} \PY{o}{=} \PY{n}{size1}\PY{o}{+}\PY{n}{imu}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{+}\PY{n}{ib}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{+}\PY{n}{idr}\PY{o}{*}\PY{n}{sz2}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{+}\PY{n}{idi}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 0] = mfp[im]}
+                    \PY{c+c1}{\PYZsh{}npaf[ind, 1] = ew[ik]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{mu\PYZus{}g2}\PY{p}{[}\PY{n}{imu}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{B\PYZus{}g2}\PY{p}{[}\PY{n}{ib}\PY{p}{]}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{real}\PY{p}{(}\PY{n}{dgrid2}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{imag}\PY{p}{(}\PY{n}{dgrid2}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{fot2}\PY{p}{[}\PY{n}{imu}\PY{p}{,} \PY{n}{ib}\PY{p}{,} \PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{pred\PYZus{}slow\PYZus{}k\PYZus{}v3}\PY{p}{(}\PY{n}{dgrid2}\PY{p}{[}\PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{,} \PY{n}{mu\PYZus{}g2}\PY{p}{[}\PY{n}{imu}\PY{p}{]}\PY{p}{,} \PY{l+m+mf}{0.}\PY{p}{,} \PY{n}{B\PYZus{}g2}\PY{p}{[}\PY{n}{ib}\PY{p}{]} \PY{o}{*} \PY{n}{B\PYZus{}max}\PY{p}{,} \PY{n}{R\PYZus{}max}\PY{p}{,} \PY{n}{k0} \PY{o}{=} \PY{n}{gridl\PYZus{}2}\PY{o}{.}\PY{n}{l\PYZus{}calc}\PY{o}{.}\PY{n}{k}\PY{p}{)}
+                    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{nan} \PY{c+c1}{\PYZsh{} removes erroneous points}
+                    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mf}{1.0e\PYZhy{}6}\PY{p}{:} \PY{n}{npaf}\PY{p}{[}\PY{n}{ind}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{nan} \PY{c+c1}{\PYZsh{} removes erroneous points}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+3388
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{59}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} now as a pandas dataframe}
+\PY{n}{dfa} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{npaf}\PY{p}{,} \PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mu}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{B}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D real}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D imag}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{delta M new}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} and to show it}
+\PY{n}{dfa}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{59}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+                mu    B    D real    D imag   delta M new
+0     3.162278e-08  0.7 -1.380781 -1.380781   -350.337285
+1     3.162278e-08  0.7 -1.380781 -1.281304   -131.731082
+2     3.162278e-08  0.7 -1.380781 -1.071753   -242.565605
+3     3.162278e-08  0.7 -1.380781 -0.770130   -401.090326
+4     3.162278e-08  0.7 -1.380781 -0.402347   -188.302823
+{\ldots}            {\ldots}  {\ldots}       {\ldots}       {\ldots}           {\ldots}
+3383  1.000000e-06  0.6  1.380781  0.402347   1586.928367
+3384  1.000000e-06  0.6  1.380781  0.770130   5277.902587
+3385  1.000000e-06  0.6  1.380781  1.071753   7454.923415
+3386  1.000000e-06  0.6  1.380781  1.281304   9652.629883
+3387  1.000000e-06  0.6  1.380781  1.380781  10284.984001
+
+[3388 rows x 5 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{60}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{g} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{PairGrid}\PY{p}{(}\PY{n}{dfa}\PY{p}{)}
+
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}diag}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{kdeplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}upper}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{map\PYZus{}lower}\PY{p}{(}\PY{n}{sns}\PY{o}{.}\PY{n}{scatterplot}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{60}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<seaborn.axisgrid.PairGrid at 0x2b48504a570>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{figs/slow_k_ivp_en/output_74_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    I see an absolute value of the derivative term here. Dependence on
+\(\mu\) is still linear. \(B\) does something, but I don't know what.
+There is also a linear imaginary term and a linear absolute value real
+term.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{61}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Estimate for maximum error:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{nanmax}\PY{p}{(}\PY{n}{dfa}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{delta M new}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}numpy}\PY{p}{(}\PY{p}{)}\PY{p}{)} \PY{o}{/} \PY{n}{np}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{fot}\PY{p}{[}\PY{n}{imu}\PY{p}{,} \PY{n}{ib}\PY{p}{,} \PY{n}{idr}\PY{p}{,} \PY{n}{idi}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Estimate for maximum error: 0.0017658225138741375
+    \end{Verbatim}
+
+    The results are not as good as the results from the previous run, which
+is to be expected, as I am no longer fitting to the same dataset I
+trained the model on. I could in theory get more terms, but I don't need
+them.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}

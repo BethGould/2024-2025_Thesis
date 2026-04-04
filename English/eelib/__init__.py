@@ -1,18 +1,14 @@
 # __init__.py
 
-# Автор: Элизабет Гоулд
-# Дата последнего изменения: 19.03.2026
+# Author: Elizabeth Gould
+# Date Last Edit: 15.03.2026
 
-'''
-Создает библиотеку. Все функции, константы и классы добавляются дважды. 
-Сначала они импортируются, а затем назначаются.
+# Builds the library. Note that all functions, constants, and classes are added twice.
+# First they are imported, then assigned.
 
-Вспомогательные функции и функции, реализованные не полностью, здесь не 
-отображаются, поскольку они не предназначены для использования из библиотеки.
-Если они необходимы, они должны вызываться с помощью
-eelib.filename.function_name вместо eelib.function_name. 
-Формат eelib.filename.function_name всегда работает.
-'''
+# Helper functions and functions not fully implemented don't appear here, as they are not intended to be 
+# used from the library. If they are needed, they must be called by eelib.filename.function_name instead 
+# of eelib.function_name. Note that the format eelib.filename.function_name always works.
 
 from eelib.consts import h_pl, hbar, m_e, e_e, c_l, pi, rtol, atol, MU_min, MU_max, DK_min, DK_max
 from eelib.consts import kFAu, R_max, R_min, B_min, B_max, I_e, phi0inv, pppterm

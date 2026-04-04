@@ -2,7 +2,7 @@
 #
 # класс grid_slow_osc 
 # Автор: Элизабет Гоулд
-# Дата последнего изменения: 20.03.2026
+# Дата последнего изменения: 23.03.2026
 
 """
 Этот код создает сетку решений начальной задачи, чтобы вычислить 
@@ -275,7 +275,7 @@ class grid_slow_osc(grid_fast_osc):
         else: 
             print("Точки для вычисления еще не заданы.")
 
-    # Удалите унаследованный метод.
+    # Удалить унаследованный метод.
     def gridFastOsc(self):
         print("Неверный тип объекта. Попробуйте вместо этого gridSlowOsc.")
 
@@ -357,7 +357,7 @@ class grid_slow_osc(grid_fast_osc):
                                         self.l_calc.solve_ivp(n = self.n_lg, percent_range=pr, method = self.method,
                                                              rtol = self.rtol, atol = self.atol, solve = plot_code)
 
-                                        # Найти наше решение
+                                        # Найти решение
                                         sol_er_u = self.l_calc.solu
                                         # подогнать синусоиду к данным
                                         fit = fit_sin(sol_er_u)
@@ -379,7 +379,7 @@ class grid_slow_osc(grid_fast_osc):
         self.slow_osc_th = slow_oscillation_theta
         if self.save_solution:
             self.slow_osc_i  = slow_osc_sv_ind
-                # Индексы для наших разделителей, 
+                # Индексы для разделителей, 
                 # из-за альтернативного механизму хранения
             self.slow_osc_sol  = slow_osc_sv_data
                 # Сохранить полное решение.
@@ -390,7 +390,7 @@ class grid_slow_osc(grid_fast_osc):
         # И завершать синхронизацию.
         print("Построение сетки завершено: ", time.time() - start_time)
 
-    # Удалите унаследованный метод.
+    # Удалить унаследованный метод.
     def mcFastOsc(self):
         print("Неверный тип объекта. Попробуйте mcSlowOsc.")
 
@@ -442,15 +442,14 @@ class grid_slow_osc(grid_fast_osc):
         for ii in range(num):
             self.l_calc.update_params(R=self.val_table[ii,3], B=self.val_table[ii,2], dk=self.val_table[ii,1], 
                                       mu=self.val_table[ii,0], k = self.val_table[ii,5], amp=self.val_table[ii,4])
-            # Вычислить производную от параметров, если она не 
-            # соответствует заданным.
+            # Вычислить производную от параметров, если она не соответствует заданным.
             self.l_calc.setDeriv(self.val_table[ii,6]+ 1.j *self.val_table[ii,7])
             # Оценить k
             self.l_calc.find_fast_oscillations(self.n_sm, method = self.method, rtol = self.rtol, atol = self.atol)
             self.l_calc.solve_ivp(n = self.n_lg, percent_range=pr, method = self.method,
                                                              rtol = self.rtol, atol = self.atol, solve = plot_code)
 
-            # Найти наше решение.
+            # Найти решение.
             sol_er_u = self.l_calc.solu
 
             # подогнать синусоиду к данным.

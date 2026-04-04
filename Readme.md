@@ -5,6 +5,8 @@ The code is in the following folders
  - Russian -- for the Russian translation of the finalized library and Jupyter notebooks
  - Active -- for the most recent version of the library and notebooks
  - Objects -- Contains the pickled grid objects used in the code. 
+ - Document -- for the latex code for making the document.
+ - Save -- old code, most likely
 
 The Russian version is a translation of the english version. As such, the comments have been edited more extensively, and the code is unlikely to contain any changes made after the time of translation. 
 

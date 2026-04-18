@@ -30,6 +30,7 @@ from eelib.fitted_functions import fit_sin
 from eelib.bvp_rootfinder_functions import find_root_both
 from eelib.loop import loop
 import matplotlib.pyplot as plt
+#from scklearn.metrics import mean_squared_error
 #from eelib.bvp_rootfinder_functions import function_wrapper_bvp, k_calc_0, M_calc_0
 
 # This is a script to match the nonlinear solution at the boundary using the model for k and M
@@ -47,6 +48,7 @@ def test_match(dk, R2, B2, mu):
     print("Value of matching function at this root (should be 0):", xs_sol)
     print("Root of nonlinear solution:", deriv_psi)
     print("Value of matching function at this root (should be 0):", dpsi_sol)
+    print(f"Relative Error: {np.sqrt(dpsi_sol[0]**2/np.real(deriv_psi)**2 + dpsi_sol[1]**2/np.imag(deriv_psi)**2)}")
 
     # Our outputs separate the real and imaginary parts of our psi_0 derivative 
     # as if they were separate variables. We need to reunite them as a single complex number.
@@ -204,6 +206,34 @@ def test_match(dk, R2, B2, mu):
             
     plt.show()
 
+    fig, ax = plt.subplots()
+
+
+    plt.title(f"Re(ψ(x)) огибающая, dk={dk}, R={R2}, B={B2}, \u03BC={mu}")
+    ax.set_ylabel('Re(ψ) (ψ(0) = 1)')
+    ax.set_xlabel('x (м)')
+
+
+    h_list = []
+
+    line1, = ax.plot(tuerr, suerr, color = 'red', label = f'огибающая,\nнелинейное')
+    line1, = ax.plot(tlerr, slerr, color = 'red', label = f'огибающая,\nнелинейное')
+    line13, = ax.plot(t_pred, y_pred, color = 'goldenrod', label = f'медленные колебания,\nпредсказанное,\nнелинейное')
+
+    h_list.append(line1)
+    h_list.append(line13)
+
+    if np.max(su0xc) > np.max(sl0xc):
+        line9, = ax.plot(tu0xc, su0xc, color = 'purple', label = f'медленные колебания,\nточное решение\nлинейное')
+    else:
+        line9, = ax.plot(tl0xc, sl0xc, color = 'purple', label = f'медленные колебания,\nточное решение\nлинейное')
+    h_list.append(line9)
+
+    ax.legend(handles=h_list)
+    ax.set_box_aspect(2.0/3.5)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+            
+    plt.savefig(f"plot_bvp_{dk}_{R2}_{B2}.pdf", format='pdf', bbox_inches = "tight", pad_inches=0)
 
 # ---------------------------------------------------------------
 

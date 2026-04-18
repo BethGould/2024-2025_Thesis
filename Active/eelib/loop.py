@@ -459,6 +459,11 @@ class loop:
         self.T_fast_mod_true = pi / self.k_model_bvp(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_slow_mod      = 2 * pi / self.M_model(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
                 
+        self.ajj = self.ajN_calc_j()
+        self.bjj = self.bjN_calc_j()
+        self.aje = self.ajN_calc_je()
+        self.bje = self.bjN_calc_je()
+
 
     # 2 ----- Analytic calculations 
     # of the case without e-e interaction
@@ -509,6 +514,53 @@ class loop:
 
         return ret
     
+    # Used when setting psi prime with setDeriv.
+    def ajN_calc_j(self):
+        k_new = pi / self.T_fast_mod_true
+        M_new = 2 * pi / self.T_slow_mod
+        den = 1.0 / 2.0 / k_new
+        reA = den * (np.imag(self.psi0_deriv_0) - M_new + k_new)
+        imA = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*((self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new)+self.amp)
+
+        return ret
+    
+    def bjN_calc_j(self):
+        k_new = pi / self.T_fast_mod_true
+        M_new = 2 * pi / self.T_slow_mod
+
+        den = 1.0 / 2.0 / k_new
+        reB = den * (-np.imag(self.psi0_deriv_0) + M_new + k_new)
+        imB = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*(self.amp - (self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new))
+
+        return ret    
+
+    def ajN_calc_je(self):
+        k_new = pi / self.T_fast_mod
+        M_new = 2 * pi / self.T_slow_mod
+        den = 1.0 / 2.0 / k_new
+        reA = den * (np.imag(self.psi0_deriv_0) - M_new + k_new)
+        imA = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*((self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new)+self.amp)
+
+        return ret
+    
+    def bjN_calc_je(self):
+        k_new = pi / self.T_fast_mod
+        M_new = 2 * pi / self.T_slow_mod
+
+        den = 1.0 / 2.0 / k_new
+        reB = den * (-np.imag(self.psi0_deriv_0) + M_new + k_new)
+        imB = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*(self.amp - (self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new))
+
+        return ret    
+    
     # Exact solution with the current derivative
     def psij(self, x):
         return self.aj*np.exp(1j*x*(self.k+self.M)) + self.bj*np.exp(1j*x*(-self.k+self.M))
@@ -517,13 +569,13 @@ class loop:
     def psij_pred(self, x):
         kn = pi / self.T_fast_mod
         Mn = 2 * pi / self.T_slow_mod
-        return self.aj*np.exp(1j*x*(kn+Mn)) + self.bj*np.exp(1j*x*(-kn+Mn))
+        return self.aje*np.exp(1j*x*(kn+Mn)) + self.bje*np.exp(1j*x*(-kn+Mn))
 
     # Modelled solution with the current derivative, without error
     def psij_pred_true(self, x):
         kn = pi / self.T_fast_mod_true
         Mn = 2 * pi / self.T_slow_mod
-        return self.aj*np.exp(1j*x*(kn+Mn)) + self.bj*np.exp(1j*x*(-kn+Mn))
+        return self.ajj*np.exp(1j*x*(kn+Mn)) + self.bjj*np.exp(1j*x*(-kn+Mn))
     
     # Exact solution of the BVP
     def psij0(self, x):
@@ -637,7 +689,14 @@ class loop:
             #                                   method = method, rtol = rtol, atol = atol)  
             self.percent_R_solved["em"] = percent_range
             self.ivp["em"] = self.solu_m      
-
+        if abs(solve)%11 == 0: 
+            t0h2 = t0h + self.T_fast_mod/pi/2.0 * np.arccos(1.0/self.A_max**2)
+            self.solu_new = self.ivp_solver_steps(t0h2, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
+                                              method = method, rtol = rtol, atol = atol)
+            #self.soll = self.ivp_solver_steps(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
+            #                                   method = method, rtol = rtol, atol = atol)
+            self.percent_R_solved["enew"] = percent_range
+            self.ivp["enew"] = self.solu_new
     # This is designed to correct for the drop in power over continuous cycles by just adding it back in.
     # Calls the solver multiple times for shorter intervals.
     def ivp_solver_steps(self, t0, tf, y0, yp0, n=None, ee_int=True, m = None, method = None, rtol = rtol, atol = atol, fullSol = False, estimate_k = False):
@@ -657,6 +716,9 @@ class loop:
                 t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = 2*self.T_fast)
         else:
             t_eval_full = self.find_t_points(n,t_max = tf, t_start = t0, T = self.T_fast0)
+
+        t_eval_full_2 = np.append(t_eval_full, tf)
+        t_eval_full = t_eval_full_2
 
         # desired step size for our solver
         first_step = max_step = t_eval_full[1]-t_eval_full[0]

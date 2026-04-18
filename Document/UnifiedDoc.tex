@@ -1,0 +1,249 @@
+% document class
+\documentclass[A4,12pt,oneside]{report}
+%A4,12pt,titlepage,oneside,final
+
+% list of packages
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry} % document size
+
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc} %russian language encoding
+
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{dcolumn}   % needed for some tables
+\usepackage{bm}        
+\usepackage{amssymb} 
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+%\usepackage{minted}
+
+%\setcounter{secnumdepth}{3}
+%\setcounter{tocdepth}{3}
+%\usepackage{eso-pic}
+\usepackage{array}
+%\usepackage{rotating}
+\usepackage{multicol}
+\usepackage{setspace}
+
+%russian language support
+\usepackage[english,russian]{babel}
+%starts at the last language on the list
+%select language switches the language
+
+
+\lstset{breaklines=true}
+
+% The following is a list of styles for use with listings
+
+\lstdefinestyle{codepy}{
+    backgroundcolor=\color{white},   
+    commentstyle=\color{green!50!black},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{gray},
+    stringstyle=\color{purple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstdefinestyle{codejupytr}{
+    backgroundcolor=\color{gray!10},   
+    commentstyle=\color{green!50!black},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{gray},
+    stringstyle=\color{purple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstdefinestyle{output}{
+    backgroundcolor=\color{gray!10},   
+    commentstyle=\color{black},
+    keywordstyle=\color{black},
+    numberstyle=\tiny\color{gray},
+    stringstyle=\color{black},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+
+\makeatletter
+
+
+\graphicspath{{figs/}} % Directory in which figures are stored
+
+
+%
+% list of custom commands
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bea}{\begin{eqnarray}}
+\newcommand{\eea}{\end{eqnarray}}
+\renewcommand{\(}{\left(}
+\renewcommand{\)}{\right)}
+
+\newcommand{\rut}{\selectlanguage{russian}}
+\newcommand{\ent}{\selectlanguage{english}}
+
+
+%\newcommand{\be}{\begin{equation}}
+%\rnc{\d}{\mathrm{d}}
+%\nc{\D}{\partial}
+%\nc{\nn}{\nonumber}
+%\rnc{\inf}{\infty}
+%\nc{\vphi}{\varphi}
+%\nc{\half}{\frac{1}{2}}
+
+
+% color commands are used to highlight text temporarily, for editing
+\newcommand{\nadd}[1]{\textcolor{magenta}{#1}}
+\newcommand{\ncomm}[1]{\textcolor{magenta}{\bf{[#1]}}}
+\renewcommand{\Re}{\mathrm{Re}}
+\renewcommand{\Im}{\mathrm{Im}}
+
+
+
+
+\makeatother
+
+\begin{document}
+
+% title page
+\title{Исследование влияния электрон-электронного взаимодействия на
+незатухающий ток в квантовых проводах}
+
+\author{Гоулд Элизабет Сара\\
+Руководитель: Попов Игорь Юрьевич, д.ф.-м.н.
+}
+
+%\institute[ИТМО]{НОЦМ, Университет ИТМО}
+
+%\title{From Planck data to Planck era: \\ Observational tests of Holographic Cosmology} 
+
+%\author{Elizabeth Gould} \affiliation{Perimeter Institute for Theoretical Physics, 31 Caroline St. N., Waterloo, ON, N2L 2Y5, Canada} \affiliation{Department of Physics and Astronomy, University of Waterloo, Waterloo, ON, N2L 3G1, Canada}
+ 
+\date{\today}
+
+\maketitle
+%\makeindex
+
+%\input{frontpgs} 
+
+
+\chapter{Introduction}
+%input{Introduction}
+\chapter{Solving the Initial Value Problem}
+%input{Error}
+\chapter{Modeling the Change in Wave Number}
+%input{kMmodelsIVP}
+\chapter{Solving the Boundary Value Problem}
+%input{BVP}
+\chapter{Reexamining the Change in Wave Number}
+%input{kMstructureBVP}
+\chapter{Conclusion}
+%input{Conclusion}
+
+%input{}
+
+\lstset{style=codejupytr}
+
+\begin{lstlisting}
+test
+\end{lstlisting}
+
+
+%--------------------------------------------------
+% The \appendix statement indicates the beginning of the appendices.
+\appendix
+
+% Add a title page before the appendices and a line in the Table of Contents
+%\chapter*{APPENDICES}
+%\addcontentsline{toc}{chapter}{APPENDICES}
+
+
+%\lstinputlisting{FinalizedFiles/eelib/Translation/loop.py}
+\lstset{style=codepy}
+
+\input{test}
+%\input{initpy}
+
+%\input{consts}
+%\input{deriv_functions}
+%\input{events}
+%\input{fitted_functions}
+
+%\input{loop}
+
+%\input{deriv_grid}
+%\input{grid_fast_osc}
+%\input{grid_slow_osc}
+%\input{grid_bvp}
+
+%\input{k_M_models_ivp}
+%\input{bvp_rootfinder_functions}
+%\input{bvp_test_script}
+%\input{table_scripts}
+
+%input{Notebook_to_build_grid_objects} % Do!!!
+%input{Notebook_Fast_t_IVP}
+%input{Notebook_IVP_fast_t_MC_tests}
+%input{Notebook_Slow_k_IVP}
+%input{Notebook_to_build_graphics}
+%input{Notebook_BVP_Plots}
+%input{Notebook_BVP_to_end}
+%input{Notebook_mu_vs_I}
+%input{Notebook_BVP_k_M_structure}
+
+
+%--------------------------------------------------------------------
+
+% B I B L I O G R A P H Y
+% -----------------------
+
+%\bibliographystyle{utphys}
+%\cleardoublepage % Use \clearpage instead if the document class uses the "oneside" argument
+%\phantomsection  % With hyperref package, enables hyperlinking from the table of contents to bibliography             
+% The following statement causes the title "References" to be used for the bibliography section:
+%\renewcommand*{\bibname}{References}
+
+% Add the References to the Table of Contents
+%\addcontentsline{toc}{chapter}{\textbf{References}}
+
+%\bibliography{Intro,cosmomc,HC,PT,HBB,RE}
+%\bibliography{Intro,PT}
+%\nocite{*}
+
+
+\end{document}

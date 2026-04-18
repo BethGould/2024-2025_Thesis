@@ -1,0 +1,270 @@
+% This is added to allow editing only this part of the document
+\documentclass[A4,12pt,oneside]{article}
+%A4,12pt,titlepage,oneside,final
+
+% list of packages
+\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry} % document size
+
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc} %russian language encoding
+
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{dcolumn}   % needed for some tables
+\usepackage{bm}        
+\usepackage{amssymb} 
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{array}
+\usepackage{multicol}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+%russian language support
+\usepackage[english,russian]{babel}
+%starts at the last language on the list
+%select language switches the language
+
+
+\makeatletter
+
+
+%\graphicspath{{figs/error_en}} % Directory in which figures are stored
+
+
+%
+% list of custom commands
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bea}{\begin{eqnarray}}
+\newcommand{\eea}{\end{eqnarray}}
+\renewcommand{\(}{\left(}
+\renewcommand{\)}{\right)}
+
+\newcommand{\rut}{\selectlanguage{russian}}
+\newcommand{\ent}{\selectlanguage{english}}
+
+
+%\newcommand{\be}{\begin{equation}}
+%\rnc{\d}{\mathrm{d}}
+%\nc{\D}{\partial}
+%\nc{\nn}{\nonumber}
+%\rnc{\inf}{\infty}
+%\nc{\vphi}{\varphi}
+%\nc{\half}{\frac{1}{2}}
+
+
+% color commands are used to highlight text temporarily, for editing
+\newcommand{\nadd}[1]{\textcolor{magenta}{#1}}
+\newcommand{\ncomm}[1]{\textcolor{magenta}{\bf{[#1]}}}
+\renewcommand{\Re}{\mathrm{Re}}
+\renewcommand{\Im}{\mathrm{Im}}
+
+\newcommand{\refph}{\textcolor{red}{no }}
+\newcommand{\citeph}{\textcolor{red}{[ref] }}
+
+
+\makeatother
+
+\begin{document}
+
+
+\section{Modeling Changes to Wave Numbers $k$ and $M$}
+
+
+
+\subsection{Modeling changes to $k$}
+
+The full analysis presented in this subsection is in the Jupyter notebook\\ Notebook\_Fast\_k\_IVP.ipynb, in Appendix \refph or on GitHub. 
+The data is retrieved by estimating the period of the oscillations of $\left|\psi\right|^2$, which is equivalent to the half-period of the fast oscillations. This estimate was done for both the linear and nonlinear Schrodinger equations, so that the linear case could be compared to the exact solution and the error removed. 
+
+Due to the fact that this analysis was done with gathering the data for the half-period, the resulting analysis was done to model the half-period, not $k$. It turns out that this was most likely incorrect. The change in $k$ is small enough that a Taylor expansion for $\frac{1}{x}$ works well, so for all parameters except for $k$, this choice works quite well. But when one begins to analyze the dependence of the model on $k0$, and not just $dk$, this choice turns out to not be so useful, as the expected half-period, and therefore wave number, for solution to the linear Schrodinger equation is no longer just a correction to $k$, and thus the Taylor series approximation is no longer useful. So the $k$ analysis was put aside as a task for future analysis, since it was not required to solve the task at hand.
+
+\subsubsection{The Grid}
+Calculations are performed on a grid, in order to easily analyze the effects of changing one parameter with the other parameters kept fixed. Monte Carlo techniques are in principle valid, but the grid works well in this case.
+
+The parameters of the model are:
+\begin{itemize}
+\item $k0$ -- The wave number of the electron $k$, in units of $m^{-1}$.
+\item $dk$ -- The correction to the wave number of the electron, as defined in Equation \refph .
+\item $R$ -- The radius of the ring, as a fraction of the maximum radius $R_{max}$
+\item $B$ -- The strength of the magnetic field applied to the ring, as a fraction of the maximum analyzed magnetic field strength $B_{max}$
+\item $\mu$ -- The coefficient of the nonlinear term of the nonlinear Schrodinger equation, as defined in Equation \refph .
+\item $\psi\left(0\right)$ -- The initial value for the wave function. 
+\item $\psi^\prime\left(0\right)$ -- The initial value for the first derivative of the wave function, in units of $m^{-1}$.
+\end{itemize}
+
+$R$ is held constant on the grid. For the initial value problem, $R$ is only relevant in the Schrodinger equation, where $R$ appears in combination with $B$ as $\frac{\pi BR}{\Phi_0}$. This means that in place of varying $B$ and $R$ separately, all parameter dependence can be encapsulated by varying $B R$. $R$ is therefore fixed to $1$, and all variation of $B R$ will be considered as variation of $B$, not $R$. 
+
+$B$ takes values from $0.03\,B_{max}$ to $1.0\,B_{max}$. The lower bound is less than the minimum value of $BR$ which is expected ($\frac{B_{min}}{B_{max}}\frac{R_{min}}{R_{max}}$). This ensures that the full range of both $B$ and $R$ values are encompassed within the range. The grid uses $8$ such points, linearly spaced from the minimum to the maximum values of the given range.
+
+$\mu$ takes values from $1\times10^{-8}$ to $1\times10^{-5}$. There are $8$ such points, logarithmically spaced. The greatest of these values are outside of our expected range of $\mu$, while the smallest of the values most likely doesn't cover all of the range of values of interest. However, cases for $\mu = 0$ are also analyzed, so the model is certainly valid for smaller values of $\mu$. The larger values of $\mu$ allow for greater visibility of the effects of nonlinearity, even as they are unlikely to be relevant.
+ 
+$k0$ variations are put aside as a future task, as has already been explained. It is fixed to $k_{Fermi, Au}$. $dk$ variations go from $0.1$ to $0.9$, with $8$ such points, linearly spaced within the domain of interest. 
+
+In this work, we maintain the following convention for $k$ 
+\begin{itemize}
+\item $k0$ is the value of the electron wave number as recorded in a table for Fermi wave numbers. Here, $k0 = k_{Fermi, Au}$.
+\item $dk$ is the small change made to this wave number made to prevent the value of $\sin\left(kR\right)$ from going to zero. It is within the uncertainty of the value of $k0$ and on the scale of $R^{-1}$. 
+\item $k_0 = k0 + \frac{dk}{2 R_{max}}$ is the full value of the electron wave number inputted into the Schodinger equation, and received as the wave number of the fast oscillations for the case of the linear Schrodinger equation. 
+\item $k$ is the wave number of the fast oscillations of the solution to the nonlinear Schrodinger equation. 
+\item $dkn$ is the difference $k - k_0$. 
+\end{itemize}
+
+$\psi\left(0\right)$ was held constant at $1$. As previously discussed, variation of $\psi\left(0\right)$ is equivalent to variation of $\frac{1}{\sqrt{\mu}}$. Thus, as was the case of $R$, this analysis is redundant.
+
+$\psi^\prime\left(0\right)$ is constructed as a grid, with $15$ different values for its real component, and the same $15$ different values for its imaginary component. The grid spacing is determined based on a sine function. They are closer together for larger values, and further apart for smaller values. The maximum value is determined by the maximum amplitude of the solution to the boundary value problem for the linear Schrodinger equation. There is a small displacement added to values close to $0$, in order to prevent either component of the derivative from becoming $0$, as these values have been found to be problematic.
+
+The total number of sets of parameters for this grid is $115200$. It can take up to half a day to run on a computer which is not very powerful. As a result, the code is set up to count run time and to pickle the grid object, so that it can be reloaded at a later time.
+
+Once the numerical values for the half-period is found for all $115200$ points on the grid, the data is transferred out of the grid objects for easier reference. In this process, two changes are made. For the linear case, the half-period is known to be $T_0 = \frac{\pi}{k_0}$, where $k_0$ is given by Equation \refph . As such, we can change our variable of interest from $T$ to $\Delta T = T - T_0$, where $T$ is our observed half-period. It was also found to be useful to rescale the $\psi^\prime\left(0\right)$ values to $\frac{\psi^\prime\left(0\right)}{k_0}$, a term which appears in Equation \refph . This second change was found to remove almost all of the remaining dependence on $dk$ from the dataset.
+
+The points themselves, with the two aforementioned changes, can be visualized on a triangle plot, as seen in Figure \ref{fig:trikivp1}.
+
+\begin{center}
+\begin{figure}
+\includegraphics[width=0.8\paperwidth]{figs/fastT_ivp_en/output_24_1}
+\caption{\label{fig:trikivp1}
+A triangle plot, showing the $115200$ point grid for values of the half period of the fast oscillations. 
+}
+\end{figure}
+\end{center}
+
+
+The expected pattern has appeared very clearly. $\Delta T$ has a clear linear dependence on $\mu$, while dependency of $\Delta T$ on each of the two $\frac{\psi^\prime\left(0\right)}{k_0}$ parameters is clearly quadratic in both cases, and accounting for perhaps a third of the $\Delta T$ value in each case.
+
+\subsubsection{Tolerance For Error}
+Due to the large number of oscillations, we need to be extremely precise with our model for $k$. Our desired precision must be divided by the number of oscillations to get the allowed error, as each oscillation adds up. The number of oscillations $N$ is $N = \frac{R}{T}$. We will define the level of precision as $P = 0.01$. So, using $T \approx \frac{\pi}{k0}$
+\begin{equation}
+tol = \frac{P T}{N} = \frac{P T^2}{R} = 6.85 \times 10^{-16}
+\end{equation}
+
+We ideally want the error or imprecision of our model below $7 \times 10^{-16}$, which is required to prevent the error from adding up over the cycles.
+
+\subsubsection{mu regression}
+Linear regression will proceed as follows. I will fit $\mu^2$, $\mu$, and the intercept terms. $\mu$ should be primary, while $\mu^2$ and the intercept are the corrections. Corrections are important due to rapid oscillation.
+
+I believe that the intercept term is due to a constant underestimating of the period, which exists even within the case without electron-electron interaction. This error is small, but adds up over oscillations, and therefore needs to be properly modeled in order to match the two sides. Fortunately, we have the exact solution without electron-electron interaction to aid in modeling. I also know that drop in amplitude for the electron-electron interaction case is identical to that without, so the issue should be solvable, and this error term can just be dropped when calculating the BVP matching.
+
+And now regression. The following dependencies are fit: $\mu^0$, $\mu$, and $\mu^2$. The $\mu$-intercept term is expected to be the error term from numerical analysis, which can be removed when solving the boundary value problem, while the other two terms likely have small enough error that they can be retained as found. We are fitting these $\mu$ dependencies separately for all of our other parameters on our grid, as we will perform linear regression on the slope and intercept terms to determine dependence on other parameters. This technique is the reason for working on a grid of values, rather that attempting a Monte Carlo analysis.
+
+The worst value for the $R^2$ statistic is $0.9999999811500869$. The results of regression are given on table \refph . 
+
+\begin{table}
+\begin{center}
+\begin{tabular}{ c c c c c }
+ term      & minimum      & maximum      & scaled minimum & scaled maximum \\ 
+ $\mu$     &  3.67415e-8  &  1.76955e-7  &  3.67415e-14   &  1.76955e-13\\  
+ $\mu^2$   &  7.36222e-6  &  3.37450e-4  &  7.36222e-18   &  3.37450e-16\\  
+ intercept & -7.91099e-16 & -4.33820e-16 & -7.91099e-16   & -4.33820e-16
+\end{tabular}
+\end{center}
+\caption{
+Table of the values for 
+The scaled terms give the value assuming $\mu = 1e-6$
+}
+\end{table}
+
+
+Plots of the dependence of mu on the input data and plots of the results of this analysis for a few parameter choices can be seen in appendix ... Plots for different parameters can be found by running the notebook. dk dependence is absent in the plots. B dependence is small. linear $psi0prime ^2$ terms appear for linear mu, with both linear and quadratic terms for quadratic mu, as is a split between real and imaginary psi terms, 
+there is also a linear im psi0prime term for the linear mu case
+
+\subsubsection{ psi0prime regression}
+We will start by regressing our most prominent term of our $\mu$ regression. The following results are from regression for the following terms: $\mu \, \mathrm{Im} (\psi^\prime_0)$, $\mu \, |\mathrm{Im} (\psi^\prime_0)|^2$, $\mu \,|\mathrm{Re} (\psi^\prime_0)|^2$, and $\mu$ (the intercept term).
+
+worst statistic
+0.9999999705357292
+
+results 
+
+
+The higher order terms may be relevant, but the main terms here are for ${\left|\psi_0\right|}^2$ and ${\left|\psi^\prime_0\right|}^2$ as expected, and they are all very close to each other. We expect here roughly equal coefficients for psi0, and both psi0prime terms, which we have. The intercept term is actually the $psi0 + m^2$ term, which means it is already expected to be slightly greater than the psi0prime term, and with larger divergence
+The final term is for im psi0prime, which also appears in equation ... 
+
+Lets look at the correction terms for other orders of $\mu$ now, and get back to this later.
+The following results are from regression for the following terms: 
+ - $\mu^2 \, |\mathrm{Im} (\psi^\prime_0)|^2$, 
+ - $\mu^2 \, |\mathrm{Re} (\psi^\prime_0)|^2$, 
+ - $\mu^2 \,|\mathrm{Re} (\psi^\prime_0)|^4$,
+ - $\mu^2 \, |\mathrm{Im} (\psi^\prime_0)|^4$,
+ - $\mu^2 \,|\mathrm{Re} (\psi^\prime_0)|^2|\mathrm{Im} (\psi^\prime_0)|^2$, and
+ - $\mu^2$ (the intercept term).
+ 
+The worst statistic
+0.9999579781625512
+
+The results 
+
+These terms are not needed for all but the largest of the mu values, and they are all roughly equally required
+Relevant for greater $\mu$. The term linear in $\mathrm{Im}(\psi^\prime_0)$ has been previously removed, as the statistics showed it to be irrelevant. 
+
+Intercept terms
+The following results are from regression for the following terms: 
+ - , 
+ - ,
+ - ,
+ - and a term independent of all parameters so far (the intercept term).
+0.8889668609438391
+
+R here is low, but the error is expected to be chaotic, so this is normal.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{ c c c c c }
+ term      & minimum      & maximum      & scaled minimum & scaled maximum \\ 
+ $\mu$     &  -6.01477e-17  &  -1.62130e-18  &  -6.01477e-17   &  -1.62130e-18\\  
+ $\mu$   &  3.67399e-14  &  3.67442e-14  &  3.67399e-14   &  3.67442e-14\\  
+ $\mu$ & 3.67414e-14 & 3.67461e-14 & 3.67414e-14   & 3.67461e-14\\
+ $\mu$     &  3.67520e-14  &  3.67576e-14  &  3.67520e-14   &  3.67576e-14\\
+ \hline  
+ $\mu^2$   & 2.02231e-5 &2.09350e-5&2.02231e-17 &2.09350e-17\\
+ $\mu^2$   &2.89690e-5 &2.97603e-5&2.89690e-17 &2.97603e-17\\
+ $\mu^2$   &1.58018e-5 &1.61472e-5&1.58018e-17 &1.61472e-17\\
+ $\mu^2$   &1.57533e-5 &1.60830e-5&1.57533e-17 &1.60830e-17\\
+ $\mu^2$   &3.16803e-5 &3.19129e-5&3.16803e-17 &3.19129e-17\\
+ $\mu^2$   &8.30459e-6 &8.76278e-6&8.30459e-18 &8.76278e-18\\
+ \hline 
+ $|\mathrm{Im} (\psi^\prime_0)|^2$ & -2.79000e-16 & -2.73140e-16 & -2.79000e-16  & -2.73140e-16\\
+ $|\mathrm{Re} (\psi^\prime_0)|^2$  &  8.03742e-17  &   8.15925e-17  &  8.03742e-17 &   8.15925e-17\\  
+ $|\mathrm{Im} (\psi^\prime_0)|^4$   &  9.03894e-17  & 9.36097e-17  &  9.03894e-17 &  9.36097e-17\\  
+ intercept & -5.70985e-16 & -5.68367e-16 & -5.70985e-16   & -5.68367e-16
+\end{tabular}
+\end{center}
+\caption{
+Table of the values for 
+The scaled terms give the value assuming $\mu = 1e-6$
+}
+\end{table}
+
+
+\subsubsection{k and M dependence}
+k dependencies have already been accounted for by psi0prime rescaling. I performed such regressions, but nothing interesting emerged. One b dependence was found -- for the m impsi0prime term, and the fit doesn't have an intercept term. This means that any b dependence for the mu2 terms or for the linear mu intercept term are too small to be observed
+
+\subsubsection{final model}
+The equation is ...
+where ...
+
+The difference between the predicted and modeled solutions for the nonlinear and liear shrodinger equation are shown in figure 
+
+The largest difference is  < 1.43e-16, which is within our tolerance, this result holds for the linear case, so we know we account for all error within tolerance. the linear case shows a separate structure for derivative dependence -- there is 
+
+\subsubsection{Testing the model for K}
+
+This comes from notebook ... The figure is figure ..
+it is a massive mc test, which shows only one point outside of our expected error of about 1.5e-16. 
+
+\subsection{modeling changes to $M$}
+This uses two separate grid objects, with B values which go from 0.4 to 1.0. 
+
+\subsection{Testing the model for $M$}
+
+
+
+
+\end{document}

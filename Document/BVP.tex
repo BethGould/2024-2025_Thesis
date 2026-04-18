@@ -1,0 +1,185 @@
+% This is added to allow editing only this part of the document
+\documentclass[A4,12pt,oneside]{article}
+%A4,12pt,titlepage,oneside,final
+
+% list of packages
+\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry} % document size
+
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc} %russian language encoding
+
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{dcolumn}   % needed for some tables
+\usepackage{bm}        
+\usepackage{amssymb} 
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{array}
+\usepackage{multicol}
+\usepackage{setspace}
+
+%russian language support
+\usepackage[english,russian]{babel}
+%starts at the last language on the list
+%select language switches the language
+
+
+\makeatletter
+
+
+%\graphicspath{{figs/error_en}} % Directory in which figures are stored
+
+
+%
+% list of custom commands
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bea}{\begin{eqnarray}}
+\newcommand{\eea}{\end{eqnarray}}
+\renewcommand{\(}{\left(}
+\renewcommand{\)}{\right)}
+
+\newcommand{\rut}{\selectlanguage{russian}}
+\newcommand{\ent}{\selectlanguage{english}}
+
+
+%\newcommand{\be}{\begin{equation}}
+%\rnc{\d}{\mathrm{d}}
+%\nc{\D}{\partial}
+%\nc{\nn}{\nonumber}
+%\rnc{\inf}{\infty}
+%\nc{\vphi}{\varphi}
+%\nc{\half}{\frac{1}{2}}
+
+
+% color commands are used to highlight text temporarily, for editing
+\newcommand{\nadd}[1]{\textcolor{magenta}{#1}}
+\newcommand{\ncomm}[1]{\textcolor{magenta}{\bf{[#1]}}}
+\renewcommand{\Re}{\mathrm{Re}}
+\renewcommand{\Im}{\mathrm{Im}}
+
+
+
+
+\makeatother
+
+\begin{document}
+
+
+\section{Solving the Initial Value Problem}
+
+Since we have a nonlinear equation, we are required to solve this problem with numerical analysis. There are techniques for finding an approximate solution analytically, but they have proven ineffective. The solution for the ODE shows a similar structure, but with a frequency shift dependent on the nonlinearity coefficient and the initial derivative of our wave function.
+
+\subsection{Numerical Analysis}
+
+We know that our nonlinear time-independent Schrödinger equation is
+\begin{equation}
+H \psi = k^2 \psi = \left( i \frac{d}{dx} + \frac{\pi BR}{\Phi_0} \right)^2 \psi + \mu \frac{m_e}{\left|e\right|\hbar} \left|\psi\right|^2 \psi.
+\end{equation}
+We wish to solve this given the boundary condition $\psi\left(0\right) = \psi\left(2 \pi R\right)$. The choice of $\psi\left(0\right)$ is irrelevant, since if we redefine $\mu_{eff} = \mu_{true}\left|\psi\left(0\right)\right|^2$, changes to $\psi\left(0\right)$ leave our Schrödinger equation unchanged, provided we remember to properly rescale $\mu$. Our boundary condition is completely unchanged by this transformation. So we will define $\psi\left(0\right) = 1$ and work with $\mu_{eff}$. We also note that with this definition, $\mu_{eff}$ is the same for all rings if $\mu_{true}$ as defined her is the same for all rings, since we also know that $\psi\left(0\right)$ is the same for all rings.
+
+Numerical analysis works with an initial value problem. One needs to solve our Schrodinger equation starting from a time (position in our case) $t=0$, and evolve forward in time with a system of first order differential equations. This means that we are required to perform two transformations of our Schrodinger equation. The easier of the two is a simple transformation of variables. We define the independent variable $t = x$ a new dependent variable $y = \frac{d\psi}{dt}$. Our system of ordinary differential equations in standard form thus looks like:
+\begin{align}
+\frac{d\psi}{dt} & = y\\
+\frac{dy}{dt} & = i \frac{\pi BR}{\Phi_0} y + \frac{\pi^2 B^2R^2}{\Phi^2_0}  \psi + \mu \frac{m_e}{\left|e\right|\hbar} \left|\psi\right|^2 \psi -k^2 \psi
+\end{align} 
+where, for the linear case, $\mu = 0$. This standard form of the ODE is now usable within standard numerical analysis algorithms, but only as an initial value problem. To solve the boundary value problem, we need to find the values of $\frac{d\psi}{dx}\left(0\right)$ which provide a solution to this equation satisfying the boundary condition. 
+
+Algorithms for solving ordinary differential equations are numerous. They are typically more intelligent than just taking even time steps $dt$ and using the derivative of the previous step to estimate the values of the dependent variables in the next step by means of $dx = \frac{dx}{dt}dt$, where $x\left(t + dt\right) = dx\left(t\right) * x\left(t\right)$, and $\frac{dx}{dt} = \frac{dx}{dt} \left(t\right)$. 
+The standard algorithms come from a family called Runge-Kutta (RK), after their discoverers. Various Runge-Kutta algorithms vary in how they take and weight intermediary points, selected based on consistency and minimization of computational steps and error, and whether or not to use a second, more precise algorithm to estimate ideal step size for a given tolerance, estimating the error based on the difference between the two RK algorithms. The exact form of these two algorithms are chosen to reuse calculations, thus preventing a doubling of the required calculations when performing the integration twice. The simple algorithm described here is also considered an RK algorithm, by the name of the Euler method. [] 
+
+There are several standard techniques for solving boundary value problems, but they all start with solving the initial value problem. The two most common techniques are shooting and finite difference methods. Shooting involves straightforward logic -- we guess our solution until we find one which works. This works similarly to most iterative algorithms -- we start with one or two intelligent guesses and work our way towards the solution. Finite difference methods work by putting the system on a lattice, and solving in both directions. [] In this analysis neither variant will be used, as our model for solutions to the initial value problem is good enough to match both sides within tolerance, while error in the numerical algorithm means that solutions provided by it will not be useful without subtracting the error. 
+
+In order to determine how to best approach the boundary value problem, this analysis starts with solving the initial value problem for given values of $\frac{d\psi}{dx}$. Under the assumption that the solution should be close to the linear case, we will start by choosing $\frac{d\psi}{dx}$ to conform to the solution of the boundary value problem for the linear case (with $\mu = 0$). We will choose $k = k_{Fermi, Au}$, $R = $, $B = $, and $\mu = $. 
+
+We immediately encounter a problem. Our $k_{Fermi, Au} = 1.20 \times 10^{10} \, \mathrm{m}^{-1}$ [ref] which we are using is not precise enough for finding non-zero values of $\sin\left(2\pi k R\right)$, with $kR = 1.20 \times 10^{10}\, *\, 0.9 \times 10^{-6} = 1.20 * 0.9 \times 10^{4}$. In order to solve this problem, (since I had trouble finding $k_{Fermi, Au}$), we will just add in a $dk$ within the limits of our uncertainty, so $k = k_{Fermi, Au} + dk$. Since I need $k$ to not fall on a boundary, the equation for $k$ in the code is
+\begin{equation}
+k = k_0 + \frac{dk}{2 R_{max}}.
+\end{equation}
+Here, $k_0 = k_{Fermi, Au}$, and $dk$ is chosen to have values $(0, 1)$. This setup avoids ambiguity in the solution for the linear Schrodinger equation. We can now proceed to plot these solutions. For values of $k_0 = 1.20 \times 10^{10}$,  $dk = 0.5$, $R = 0.8 R_{max} = 8 \times 10^{-7} \, \mathrm{m}$,  $B = 0.5 B_max = 65 \, \mathrm{T}$, $\mu = 10^{-6}$ and $\frac{d\psi}{dx}\left(0\right)$ is that which solves the boundary value problem for the linear case,  the solutions look like those shown in figure [].
+
+figure 
+
+Here the curves in the figures designate the greatest extent of the oscillations for both the $\Re\left(\psi\right)$ and $\left|\psi\right|$ values. The curve is based on a trigger set up in the ODE solving algorithm, which finds the points on the solution for which the given derivative $\frac{d\left|\psi\right|}{dx}$ or $\frac{d\Re\left(\psi\right)}{dx}$ reaches zero. Without this, the whole space between the two depicted lines would be full of points, shading the entire region, making the curves difficult to see, and significantly slowing down loading the graphics. Apparently, our solutions oscillate extremely quickly, with around $10^4$ fast oscillations in the entire range. Figure [] shows an example of $\Re\left(\psi\right)$ and $\left|\psi\right|$ for the first several such oscillations.
+
+figure
+
+Figure [] reveals another issue with the solutions. The known exact solution and the numerical exact solution do not agree. 
+
+
+\subsection{Error}
+From the beginning we had an issue, the small numerical error adds up to something significant over the numerous oscillations of the fast oscillations
+
+For gold, the Fermi wave number I found is $k = 1.20 \times 10^{10}$. This corresponds to a speed of 
+\begin{equation}
+v = \frac{\hbar k}{m} = \approx 0.005 c
+\end{equation}
+Our electrons in their ground state are traveling quite fast within the metal. This is actually part of the requirement for ballistic motion -- the highest energy electron in the ground state of the metal is traveling at significant speed relative to the small radius. An approximation without interaction is good. 
+
+One of the consequences of this speed is that we have numerous fast oscillations ($10^4$) when compared to our slow oscillations caused by the magnetic field. From a mathematical standpoint, this is convenient. We can model the two types of oscillations separately, with the fast oscillations having negligible variation in amplitude over a short time-frame relevant to them, while the slow oscillations can easily be seen by sampling at differences which are multiples of the period of fast oscillations. From a numerical standpoint, this is a problem. It means that if we have a constant error term from each oscillation, this error must be multiplied by $10^4$. Seemingly insignificant error now hides all of our signal. The result is obvious in our case, as the amplitude rapidly decreases, as was seen in Figure []. 
+ 
+Figure [] shows another view of this error. Seen here are the curves produced by plotting points when the fast oscillations should reach their maxima, according to our estimates for period. For the exact case, the period of oscillations is given by $\frac{2 \pi}{k}$. Since the produced curve oscillates between a minimum and maximum, this period is incorrect. We can instead estimate the period of oscillations by averaging the half-period of the first several oscillations. (This is the half period, since it is the period of $\left|\psi\right|^2$, which oscillates twice as fast as $\psi$ for a sinusoidal function.) The results are seen in the next two graph of figure [].
+
+figure
+
+For the linear case, the estimated period is correct. The resulting curve follows the envelope of oscillations. For the nonlinear case, the period is incorrect, and appears to change with time. This change with time is actually an amplitude dependence, as our effective $\mu$ value is actually $\mu\left|\psi\left(0\right)\right|^2$, as rescaling of $\psi\left(0\right)$ in our nonlinear equation requires a rescaling of $\mu$ to keep the Schrodinger equation unchanged. 
+
+The graphs of $\Re\left(\psi\right)$ sampled at its local maxima and minima (figure []) show no error in the frequency of slow, $B$ dependent, oscillations for the linear case, but the drop in amplitude is visible. For the nonlinear case, there is a visible frequency shift over time. This, again, is most likely due to a $\mu$ dependence of this frequency.
+
+figure
+
+This error is rather sensitive to some unknown parameter, and for certain values of $dk$, the decrease is quite rapid, while for other cases, the solution is recoverable. The scaling of $dk$ chosen in this analysis [eqn] was chosen to prevent such issues.
+
+I found that changing the algorithm didn't work. I have more recently learned of another algorithm, not included in the library, but have not had time to test it and see if it helped. Therefore, I have retained the default 'RK45' algorithm of the SciPy library, as their other algorithms failed to give better results.
+
+Other suggestions I found [here] included dampening the oscillations, or sampling only at whole period numbers for the fast oscillations. However, these also proved inoperable, as they require that the problematic frequency is added to the signal, not multiplied by it. If we have a signal of a known or calculated frequency, we can calculate for our signal that 
+\begin{equation}
+dF = df + dg
+\end{equation}
+however, for the case of a multiplied signal, 
+\begin{equation}
+f = 
+\end{equation}
+and the derivative term is not removable, .... 
+
+While envelope following techniques helped at fixing the graphics, they failed to construct a useful integration. The solution rapidly increases or decreases every time I tried integrating with fixed steps.
+
+However, such analyses showed an alternative workaround. From figure [], we can see that the amplitude of the linear and non-linear solution falls together. This is seen in all other graphics -- they don't deviate. This implies that all of the error is coming from the linear term, and we can just fix the amplitude. It appears that all the changes in amplitude of the fast oscillations for the nonlinear case are sufficiently small as to not be visible. In figure [] we can see what happens when we just fix our amplitude as a constant every few cycles. 
+
+Calculations of our fast oscillation period show a constant decrease in $t$, independent of $\mu$. The same pattern appears in both linear and nonlinear calculations -- we are persistently underestimating the period. There is also a chaotic term here independent of $\mu$, while none of the $\mu$ dependent terms show this chaotic behavior, but rather nicely and cleanly expand into a Taylor series. So it seems that our error is removable by adjusting our results to compensate for the error of the linear solution. 
+
+Combining this, we see another result. All variations of our periods over distance disappear when we return our amplitude. It seems that the period is sensitive to our amplitude, or rather $\mu$, which rescales based on $\left|A\right|^2$. 
+
+\subsection{Functional Form}
+
+The results of our analysis of the initial value problem with this nonlinear Schrodinger equation is a solution of the form
+\begin{equation}
+\psi = e^{i M_j x_j} \left( a_j e^{i k_j x_j} + b_j e^{- i k_j x_j} \right)
+\end{equation}
+which looks like the original 
+\begin{equation}
+\psi = e^{i M_0 x} \left( a e^{i k_0 x} + b e^{- i k_0 x} \right),
+\end{equation}
+but our wave numbers $k_{\mu}$ and $M_{\mu}$ have shifted from the linear case with $M_{0}$ = $\frac{\pi BR}{\Phi_0}$, and $k_{0}$ = $k0 + \frac{dk}{2  R_{max} }$. Figure [] shows a sample of one such solution, with the parameters ... . These solutions do not fit our Schrodinger equation, but we can fix that by assuming deviation from sinusoidality. 
+
+figure
+
+\subsection{Analytic Analysis}
+Since we have a nonlinear equation, we are required to solve this problem with numerical analysis. There are techniques for finding an approximate solution analytically, but they have proven ineffective. The solution for the ODE which was found shows a similar structure, but with a frequency shift. This is a possible result from a Fourier expansion, but the solution of this is not obvious, as our equations prove unsolvable after the first step .. The issue is that we wish to examine a solution without a driving force, where the transient solution is important. 
+
+solve by putting solution into equation, see second solution, and stop
+....
+
+solve for forier series given an input
+
+
+
+
+\end{document}

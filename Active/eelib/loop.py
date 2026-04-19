@@ -650,56 +650,62 @@ class loop:
         y0h0, yp0h0 = self.amp, self.psi0_deriv_0 #self.calc_yval_old(n, t0h0)
         #y0l0, yp0l0 = self.amp, self.psi0_deriv_0 #self.calc_yvals_old(n, t0l0)
 
+        if abs(solve)%11 == 0:
+            last_point = True
+        else:
+            last_point = False
+
+
         # call the solver multiple times  
         # with e-e-interaction -- divided into steps (+), original(2), 
         # with predicted k_fast (7)
         # without e-e-interaction -- original(3), divided into steps(5)
-        if solve > 0:      
+        if solve > 0:    
             self.solu = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                              method = method, rtol = rtol, atol = atol)
+                                              method = method, rtol = rtol, atol = atol, last_point=last_point)
             #self.soll = self.ivp_solver_steps(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
             #                                   method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["er"] = percent_range
             self.ivp["er"] = self.solu
         if abs(solve)%2 == 0:
             self.solu_d = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                               method = method, rtol = rtol, atol = atol)
+                                               method = method, rtol = rtol, atol = atol, last_point=last_point)
             #self.soll_d = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
             #                                    method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["ed"] = percent_range
             self.ivp["ed"] = self.solu_d
         if abs(solve)%3 == 0:
             self.solu0 = self.call_ivp_solver(t0h0, tfh0, y0h0, yp0h0, n, fullSol = False, ee_int = False, 
-                                              method = method, rtol = rtol, atol = atol)
+                                              method = method, rtol = rtol, atol = atol, last_point=last_point)
             #self.soll0 = self.call_ivp_solver(t0l0, tfl0, y0l0, yp0l0, n, fullSol = False, ee_int = False, 
             #                                   method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["0d"] = percent_range
             self.ivp["0d"] = self.solu0
         if abs(solve)%5 == 0:
             self.solu0_r = self.ivp_solver_steps(t0h0, tfh0, y0h0, yp0h0, n, fullSol = False, ee_int = False, 
-                                                 method = method, rtol = rtol, atol = atol)
+                                                 method = method, rtol = rtol, atol = atol, last_point=last_point)
             #self.soll0_r = self.ivp_solver_steps(t0l0, tfl0, y0l0, yp0l0, n, fullSol = False, ee_int = False, 
             #                                      method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["0r"] = percent_range
             self.ivp["0r"] = self.solu0_r
         if abs(solve)%7 == 0: 
             self.solu_m = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                              method = method, rtol = rtol, atol = atol, estimate_k = True)
+                                              method = method, rtol = rtol, atol = atol, estimate_k = True, last_point=last_point)
             #self.soll_f = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
             #                                   method = method, rtol = rtol, atol = atol)  
             self.percent_R_solved["em"] = percent_range
             self.ivp["em"] = self.solu_m      
-        if abs(solve)%11 == 0: 
-            t0h2 = t0h + self.T_fast_mod/pi/2.0 * np.arccos(1.0/self.A_max**2)
-            self.solu_new = self.ivp_solver_steps(t0h2, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                              method = method, rtol = rtol, atol = atol)
+        #if abs(solve)%11 == 0: 
+        #    t0h2 = t0h + self.T_fast_mod/pi/2.0 * np.arccos(1.0/self.A_max**2)
+        #    self.solu_new = self.ivp_solver_steps(t0h2, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
+         #                                     method = method, rtol = rtol, atol = atol)
             #self.soll = self.ivp_solver_steps(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
             #                                   method = method, rtol = rtol, atol = atol)
-            self.percent_R_solved["enew"] = percent_range
-            self.ivp["enew"] = self.solu_new
+        #    self.percent_R_solved["enew"] = percent_range
+         #   self.ivp["enew"] = self.solu_new
     # This is designed to correct for the drop in power over continuous cycles by just adding it back in.
     # Calls the solver multiple times for shorter intervals.
-    def ivp_solver_steps(self, t0, tf, y0, yp0, n=None, ee_int=True, m = None, method = None, rtol = rtol, atol = atol, fullSol = False, estimate_k = False):
+    def ivp_solver_steps(self, t0, tf, y0, yp0, n=None, ee_int=True, m = None, method = None, rtol = rtol, atol = atol, fullSol = False, estimate_k = False, last_point = False):
 
         if method is None:
             method = self.default_integration_method
@@ -717,8 +723,9 @@ class loop:
         else:
             t_eval_full = self.find_t_points(n,t_max = tf, t_start = t0, T = self.T_fast0)
 
-        t_eval_full_2 = np.append(t_eval_full, tf)
-        t_eval_full = t_eval_full_2
+        if last_point:
+            t_eval_full_2 = np.append(t_eval_full, tf)
+            t_eval_full = t_eval_full_2
 
         # desired step size for our solver
         first_step = max_step = t_eval_full[1]-t_eval_full[0]

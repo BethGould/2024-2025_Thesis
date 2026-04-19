@@ -379,7 +379,7 @@ class grid_slow_osc(grid_fast_osc):
 
         # Integration parameters.
         pr = self.R_max # can be changed if more cycles needed
-        plot_code = 1   # only plot er, saving time
+        plot_code = 11  # only plot er, saving time
 
         # Timing
         start_time = time.time()

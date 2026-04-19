@@ -1,3 +1,3 @@
-*.pkl
-eelib/__pycache__/
-eelib/__pycache__/**
+Active/grid*
+**/__pycache__/
+**/__pycache__/**

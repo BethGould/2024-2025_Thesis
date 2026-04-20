@@ -89,6 +89,7 @@ class grid_BVP:
         self.k = k
         self.mu = mu
         self.a = amp
+        self.amp = amp
 
         self.is_grid = False
         self.is_mc = False
@@ -339,7 +340,7 @@ class grid_BVP:
     # Monte Carlo points take ranges of parameters like the grid, but since they are random,
     # it will output an array of random points, rather than building a grid. num is the full 
     # number of points, not for each parameter like is the case for the grid.
-    def makeMCPoints(self, mu = (1.0, 1.0), dk = (-1.0, -1.0), B = (-1.0, -1.0), R = (-1.0, -1.0), 
+    def makeMCPoints(self, mu = (-1.0, -1.0), dk = (-1.0, -1.0), B = (-1.0, -1.0), R = (-1.0, -1.0), 
                        A = (-1.0, -1.0), k0 = (-1.0, -1.0), num = 1000):
         
         # Determines with which parameters to build the grid.

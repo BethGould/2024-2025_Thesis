@@ -44,7 +44,7 @@ def clean_table(tbl):
                         pass # Add nothing and continue to the next parameter set if there are no values with the given parameters.
 
     # A list of the names of my columns to use when creating a DataFrame.
-    col_names = ["R", "B", "dk", "mu", 'dpsi0', 'a0', 'b0', 'A max 0', 'I0', 'dpsi', 'a', 'b', 'A max new', 'I v2', 'effective mu']
+    col_names = ["R", "B", "dk", "mu", 'dpsi0', 'a0', 'b0', 'A max 0', 'I0', 'dpsi', 'a', 'b', 'A max new', 'I v3', 'effective mu']
 
     # Now create a new DataFrame with my desired rows and the given column names.
     # A list of equal sized lists is another valid data format for creating a DataFrame.
@@ -62,7 +62,7 @@ def clean_table(tbl):
         new_tbl['A max 0'] = new_tbl['A max 0'].astype(float)
         new_tbl['I0'] = new_tbl['I0'].astype(float)
         new_tbl['A max new'] = new_tbl['A max new'].astype(float)
-        new_tbl['I v2'] = new_tbl['I v2'].astype(float)
+        new_tbl['I v3'] = new_tbl['I v3'].astype(float)
         new_tbl['effective mu'] = new_tbl['effective mu'].astype(float)
 
     # Return the resulting DataFrame. Our result is a new DataFrame, not a splice (which will be an important fact later).
@@ -83,7 +83,7 @@ def clean_table_MC(tbl):
         val_list.append(tbl_row[0]) # And add it to my list of saved rows.
 
     # A list of the names of my columns to use when creating a DataFrame.
-    col_names = ["R", "B", "dk", "mu", 'dpsi0', 'a0', 'b0', 'A max 0', 'I0', 'dpsi', 'a', 'b', 'A max new', 'I v2', 'effective mu']#, columns = col_names
+    col_names = ["R", "B", "dk", "mu", 'dpsi0', 'a0', 'b0', 'A max 0', 'I0', 'dpsi', 'a', 'b', 'A max new', 'I v3', 'effective mu']#, columns = col_names
     
     # Now create a new DataFrame with my desired rows and the given column names.
     # A list of equal sized lists is another valid data format for creating a DataFrame.
@@ -101,7 +101,7 @@ def clean_table_MC(tbl):
         new_tbl['A max 0'] = new_tbl['A max 0'].astype(float)
         new_tbl['I0'] = new_tbl['I0'].astype(float)
         new_tbl['A max new'] = new_tbl['A max new'].astype(float)
-        new_tbl['I v2'] = new_tbl['I v2'].astype(float)
+        new_tbl['I v3'] = new_tbl['I v3'].astype(float)
         new_tbl['effective mu'] = new_tbl['effective mu'].astype(float)
     
     # Return the resulting DataFrame. Our result is a new DataFrame, not a splice (which will be an important fact later).

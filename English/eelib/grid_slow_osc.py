@@ -1,7 +1,7 @@
 # class grid_slow_osc 
 #
 # Author: Elizabeth Gould
-# Date Last Edit: 09.03.2026
+# Date Last Edit: 28.04.2026
 #
 # This code builds a grid of solutions to the IVP, in order to calculate t_slow (= 2*pi / M), 
 # the period of the slow oscillations. Here we can vary R, B, k, dk, mu, A, and psi'(0) and 
@@ -99,7 +99,7 @@
 # starting_derivative_imag = self.di
 
 import numpy as np
-from eelib.consts import kFAu, rtol, atol
+from eelib.consts import kFAu, rtol, atol, pi
 from eelib.loop import loop
 from eelib.grid_fast_osc import grid_fast_osc
 from eelib.fitted_functions import fit_sin
@@ -379,7 +379,7 @@ class grid_slow_osc(grid_fast_osc):
 
         # Integration parameters.
         pr = self.R_max # can be changed if more cycles needed
-        plot_code = 1   # only plot er, saving time
+        plot_code = 11   # only plot er, saving time
 
         # Timing
         start_time = time.time()
@@ -403,6 +403,7 @@ class grid_slow_osc(grid_fast_osc):
         # Saves solution for analysis.
         sol_er_u = None
         sol_er_u_save = []
+        sol_er_u_save_1 = []
 
         slow_oscillation_wavenumber = np.zeros((num))
         slow_oscillation_theta = np.zeros((num))
@@ -424,7 +425,7 @@ class grid_slow_osc(grid_fast_osc):
             sol_er_u = self.l_calc.solu
 
             # Fit to a sinusoidal function.
-            fit = fit_sin(sol_er_u)
+            fit = fit_sin(sol_er_u, last_point = False)
             if fit is not None:
                 slow_oscillation_wavenumber[ii] = fit[1]
                 slow_oscillation_amplitude[ii] = fit[0]
@@ -432,12 +433,14 @@ class grid_slow_osc(grid_fast_osc):
 
             # And also save our full solution.
             if self.save_solution: sol_er_u_save.append(sol_er_u.copy())
+            if self.save_solution: sol_er_u_save_1.append(self.l_calc.psij_pred(2*pi*self.val_table[ii,3]*10**(-6)))
 
         # Transfer our local variables to object variables, saving our data.
         self.slow_osc_k  = slow_oscillation_wavenumber  # Estimate for our wave number for the slow oscillations (found from fitting a sin).
         self.slow_osc_a  = slow_oscillation_amplitude   # Maximum absolute value.
         self.slow_osc_th = slow_oscillation_theta
         if self.save_solution: self.slow_osc_sol  = sol_er_u_save  # Save full solution.
+        if self.save_solution: self.slow_osc_sol_1  = sol_er_u_save_1  # Save predicted last point.
 
         # Indicate that this method has been run.
         self.calculated = True

@@ -1,7 +1,7 @@
 # fitted_functions.py
 
 # Author: Elizabeth Gould
-# Date Last Edit: 15.03.2026
+# Date Last Edit: 28.04.2026
 
 # This contains functions used by reference for non-linear function regression (scipy.optimize.curve_fit). 
 # They are included outside the class structure and in a unified form so that they can be easily switched 
@@ -229,14 +229,18 @@ def skew_csc_sq(x, period, amp, tilt, x0):
 
 # Now to fit the sine function. All of our parameters must be set close to the expected value 
 # for this to work well, which is why we estimate our parameters first.
-def fit_sin(sol):
+def fit_sin(sol, last_point = True):
     # Estimate our parameters amp, M, theta,
     # because we need to start close to the expected value to get a correct fit.
     amp, TT, rt_st = find_fit_params(sol)
 
     # Extract our x and psi values from our solution.
-    xdata = sol['t']
-    ydata = np.real(sol['y'][0])
+    if last_point:
+        xdata = sol['t']
+        ydata = np.real(sol['y'][0])
+    else:
+        xdata = sol['t'][:-1]
+        ydata = np.real(sol['y'][0][:-1])
 
     # Error case here. So that I just mark the case as unsolvable if there is not enough data
     # for my simple algorithm. For the slow t grid, this data is not required, since we have other

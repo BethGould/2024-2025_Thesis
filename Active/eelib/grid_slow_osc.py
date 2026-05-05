@@ -425,7 +425,7 @@ class grid_slow_osc(grid_fast_osc):
             sol_er_u = self.l_calc.solu
 
             # Fit to a sinusoidal function.
-            fit = fit_sin(sol_er_u)
+            fit = fit_sin(sol_er_u, last_point = True)
             if fit is not None:
                 slow_oscillation_wavenumber[ii] = fit[1]
                 slow_oscillation_amplitude[ii] = fit[0]

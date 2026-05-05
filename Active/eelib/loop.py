@@ -1,7 +1,7 @@
 # class loop 
 # 
 # Author: Elizabeth Gould
-# Date Last Modified: 17.03.2026
+# Date Last Modified: 28.04.2026
 #
 # This class is the core of the IVP and BVP solver for the nonlinear Schrödinger equation for this 
 # model. The class can solve either the IVP or the BVP on a single ring for a given set of parameters. 
@@ -386,6 +386,10 @@ class loop:
                     "0r": None,   # without e-e interaction, recovered solution
                     "0d": None}   # without e-e interaction, decreasing solution
 
+        self.last_point = {"er": None,   
+                    "em": None,
+                    "0r": None}
+
         self.bvp_solved = False
 
         self.solu    = None
@@ -612,6 +616,7 @@ class loop:
         if "0r" in solve_arr: code = code * 5
         if "0d" in solve_arr: code = code * 3
         if "em" in solve_arr: code = code * 7
+        if "ef" in solve_arr: code = code * 11
         return code
 
     # Solves the indicated IVPs using the indicated numerical ODE solver.
@@ -667,16 +672,20 @@ class loop:
             #                                   method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["er"] = percent_range
             self.ivp["er"] = self.solu
+            if abs(solve)%11 == 0:
+                self.last_point["er"] = True
+            else:
+                self.last_point["er"] = False
         if abs(solve)%2 == 0:
             self.solu_d = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                               method = method, rtol = rtol, atol = atol, last_point=last_point)
+                                               method = method, rtol = rtol, atol = atol)
             #self.soll_d = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
             #                                    method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["ed"] = percent_range
             self.ivp["ed"] = self.solu_d
         if abs(solve)%3 == 0:
             self.solu0 = self.call_ivp_solver(t0h0, tfh0, y0h0, yp0h0, n, fullSol = False, ee_int = False, 
-                                              method = method, rtol = rtol, atol = atol, last_point=last_point)
+                                              method = method, rtol = rtol, atol = atol)
             #self.soll0 = self.call_ivp_solver(t0l0, tfl0, y0l0, yp0l0, n, fullSol = False, ee_int = False, 
             #                                   method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["0d"] = percent_range
@@ -688,13 +697,21 @@ class loop:
             #                                      method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["0r"] = percent_range
             self.ivp["0r"] = self.solu0_r
+            if abs(solve)%11 == 0:
+                self.last_point["0r"] = True
+            else:
+                self.last_point["0r"] = False
         if abs(solve)%7 == 0: 
             self.solu_m = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
                                               method = method, rtol = rtol, atol = atol, estimate_k = True, last_point=last_point)
             #self.soll_f = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
             #                                   method = method, rtol = rtol, atol = atol)  
             self.percent_R_solved["em"] = percent_range
-            self.ivp["em"] = self.solu_m      
+            self.ivp["em"] = self.solu_m  
+            if abs(solve)%11 == 0:
+                self.last_point["em"] = True
+            else:
+                self.last_point["em"] = False    
         #if abs(solve)%11 == 0: 
         #    t0h2 = t0h + self.T_fast_mod/pi/2.0 * np.arccos(1.0/self.A_max**2)
         #    self.solu_new = self.ivp_solver_steps(t0h2, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
@@ -1218,21 +1235,19 @@ class loop:
                 self.find_root_min()
             else:
                 self.setDeriv(self.bvp_deriv)
-        ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
-        bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))
-        return ajsq - bjsq
+        return np.real(self.current_calc())
     
 
     # These methods below are not set up to check if the solution given solves the bvp, so be careful
 
     def current_new(self):
-        kn = pi / self.T_fast_mod
+        kn = pi / self.T_fast_mod_true
         mn = 2* pi /self.T_slow_mod
         ko = self.k
         mo = self.M
 
-        ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
-        bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))
+        ajsq = np.square(np.real(self.ajj)) + np.square(np.imag(self.ajj))
+        bjsq = np.square(np.real(self.bjj)) + np.square(np.imag(self.bjj))
 
         # This is the term independent of position from the solution for current
         # given modeled nonlinear solution with the fast oscillations assumed

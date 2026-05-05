@@ -1,7 +1,7 @@
 # class loop 
 # 
 # Author: Elizabeth Gould
-# Date Last Modified: 17.03.2026
+# Date Last Modified: 28.04.2026
 #
 # This class is the core of the IVP and BVP solver for the nonlinear Schrödinger equation for this 
 # model. The class can solve either the IVP or the BVP on a single ring for a given set of parameters. 
@@ -35,6 +35,10 @@
 # to a change in mu. (mu_eff = mu * |A|^2 with mu and A being the inputs, and mu_eff being what our 
 # solutions correspond to.) dk values of 0 will cause problems for the BVP solution for the linear 
 # case, but are assumed to not be physical, but rather just a relic of our imprecision.
+
+# 28/04/2026 -- Fixed issue with modeled solutions and added final point to solution.
+#               Final point not used by default, and not documented.
+#               Plot code 'fin' or multiplied by 11 adds the final point to the ivp solution.
 
 '''
 The code and documentation of this file are split into the following sections:
@@ -386,6 +390,10 @@ class loop:
                     "0r": None,   # without e-e interaction, recovered solution
                     "0d": None}   # without e-e interaction, decreasing solution
 
+        self.last_point = {"er": None,   
+                    "em": None,
+                    "0r": None}
+
         self.bvp_solved = False
 
         self.solu    = None
@@ -459,6 +467,11 @@ class loop:
         self.T_fast_mod_true = pi / self.k_model_bvp(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_slow_mod      = 2 * pi / self.M_model(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
                 
+        self.ajj = self.ajN_calc_j()
+        self.bjj = self.bjN_calc_j()
+        self.aje = self.ajN_calc_je()
+        self.bje = self.bjN_calc_je()
+
 
     # 2 ----- Analytic calculations 
     # of the case without e-e interaction
@@ -509,6 +522,53 @@ class loop:
 
         return ret
     
+    # Used for modeled solutions.
+    def ajN_calc_j(self):
+        k_new = pi / self.T_fast_mod_true
+        M_new = 2 * pi / self.T_slow_mod
+        den = 1.0 / 2.0 / k_new
+        reA = den * (np.imag(self.psi0_deriv_0) - M_new + k_new)
+        imA = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*((self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new)+self.amp)
+
+        return ret
+    
+    def bjN_calc_j(self):
+        k_new = pi / self.T_fast_mod_true
+        M_new = 2 * pi / self.T_slow_mod
+
+        den = 1.0 / 2.0 / k_new
+        reB = den * (-np.imag(self.psi0_deriv_0) + M_new + k_new)
+        imB = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*(self.amp - (self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new))
+
+        return ret    
+
+    def ajN_calc_je(self):
+        k_new = pi / self.T_fast_mod
+        M_new = 2 * pi / self.T_slow_mod
+        den = 1.0 / 2.0 / k_new
+        reA = den * (np.imag(self.psi0_deriv_0) - M_new + k_new)
+        imA = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*((self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new)+self.amp)
+
+        return ret
+    
+    def bjN_calc_je(self):
+        k_new = pi / self.T_fast_mod
+        M_new = 2 * pi / self.T_slow_mod
+
+        den = 1.0 / 2.0 / k_new
+        reB = den * (-np.imag(self.psi0_deriv_0) + M_new + k_new)
+        imB = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*(self.amp - (self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new))
+
+        return ret  
+
     # Exact solution with the current derivative
     def psij(self, x):
         return self.aj*np.exp(1j*x*(self.k+self.M)) + self.bj*np.exp(1j*x*(-self.k+self.M))
@@ -517,13 +577,13 @@ class loop:
     def psij_pred(self, x):
         kn = pi / self.T_fast_mod
         Mn = 2 * pi / self.T_slow_mod
-        return self.aj*np.exp(1j*x*(kn+Mn)) + self.bj*np.exp(1j*x*(-kn+Mn))
+        return self.aje*np.exp(1j*x*(kn+Mn)) + self.bje*np.exp(1j*x*(-kn+Mn))
 
     # Modelled solution with the current derivative, without error
     def psij_pred_true(self, x):
         kn = pi / self.T_fast_mod_true
         Mn = 2 * pi / self.T_slow_mod
-        return self.aj*np.exp(1j*x*(kn+Mn)) + self.bj*np.exp(1j*x*(-kn+Mn))
+        return self.ajj*np.exp(1j*x*(kn+Mn)) + self.bjj*np.exp(1j*x*(-kn+Mn))
     
     # Exact solution of the BVP
     def psij0(self, x):
@@ -560,6 +620,7 @@ class loop:
         if "0r" in solve_arr: code = code * 5
         if "0d" in solve_arr: code = code * 3
         if "em" in solve_arr: code = code * 7
+        if "ef" in solve_arr: code = code * 11
         return code
 
     # Solves the indicated IVPs using the indicated numerical ODE solver.
@@ -598,17 +659,26 @@ class loop:
         y0h0, yp0h0 = self.amp, self.psi0_deriv_0 #self.calc_yval_old(n, t0h0)
         #y0l0, yp0l0 = self.amp, self.psi0_deriv_0 #self.calc_yvals_old(n, t0l0)
 
+        if abs(solve)%11 == 0:
+            last_point = True
+        else:
+            last_point = False
+
         # call the solver multiple times  
         # with e-e-interaction -- divided into steps (+), original(2), 
         # with predicted k_fast (7)
         # without e-e-interaction -- original(3), divided into steps(5)
         if solve > 0:      
             self.solu = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                              method = method, rtol = rtol, atol = atol)
+                                              method = method, rtol = rtol, atol = atol, last_point=last_point)
             #self.soll = self.ivp_solver_steps(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
             #                                   method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["er"] = percent_range
             self.ivp["er"] = self.solu
+            if abs(solve)%11 == 0:
+                self.last_point = True
+            else:
+                self.last_point = False
         if abs(solve)%2 == 0:
             self.solu_d = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
                                                method = method, rtol = rtol, atol = atol)
@@ -625,22 +695,30 @@ class loop:
             self.ivp["0d"] = self.solu0
         if abs(solve)%5 == 0:
             self.solu0_r = self.ivp_solver_steps(t0h0, tfh0, y0h0, yp0h0, n, fullSol = False, ee_int = False, 
-                                                 method = method, rtol = rtol, atol = atol)
+                                                 method = method, rtol = rtol, atol = atol, last_point=last_point)
             #self.soll0_r = self.ivp_solver_steps(t0l0, tfl0, y0l0, yp0l0, n, fullSol = False, ee_int = False, 
             #                                      method = method, rtol = rtol, atol = atol)
             self.percent_R_solved["0r"] = percent_range
             self.ivp["0r"] = self.solu0_r
+            if abs(solve)%11 == 0:
+                self.last_point["0r"] = True
+            else:
+                self.last_point["0r"] = False
         if abs(solve)%7 == 0: 
             self.solu_m = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, fullSol = False, ee_int = True, 
-                                              method = method, rtol = rtol, atol = atol, estimate_k = True)
+                                              method = method, rtol = rtol, atol = atol, estimate_k = True, last_point=last_point)
             #self.soll_f = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n, fullSol = False, ee_int = True, 
             #                                   method = method, rtol = rtol, atol = atol)  
             self.percent_R_solved["em"] = percent_range
-            self.ivp["em"] = self.solu_m      
+            self.ivp["em"] = self.solu_m 
+            if abs(solve)%11 == 0:
+                self.last_point["em"] = True
+            else:
+                self.last_point["em"] = False     
 
     # This is designed to correct for the drop in power over continuous cycles by just adding it back in.
     # Calls the solver multiple times for shorter intervals.
-    def ivp_solver_steps(self, t0, tf, y0, yp0, n=None, ee_int=True, m = None, method = None, rtol = rtol, atol = atol, fullSol = False, estimate_k = False):
+    def ivp_solver_steps(self, t0, tf, y0, yp0, n=None, ee_int=True, m = None, method = None, rtol = rtol, atol = atol, fullSol = False, estimate_k = False, last_point = False):
 
         if method is None:
             method = self.default_integration_method
@@ -657,6 +735,10 @@ class loop:
                 t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = 2*self.T_fast)
         else:
             t_eval_full = self.find_t_points(n,t_max = tf, t_start = t0, T = self.T_fast0)
+
+        if last_point:
+            t_eval_full_2 = np.append(t_eval_full, tf)
+            t_eval_full = t_eval_full_2
 
         # desired step size for our solver
         first_step = max_step = t_eval_full[1]-t_eval_full[0]
@@ -1149,21 +1231,18 @@ class loop:
                 self.find_root_min()
             else:
                 self.setDeriv(self.bvp_deriv)
-        ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
-        bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))
-        return ajsq - bjsq
-    
+        return np.real(self.current_calc())
 
     # These methods below are not set up to check if the solution given solves the bvp, so be careful
 
     def current_new(self):
-        kn = pi / self.T_fast_mod
+        kn = pi / self.T_fast_mod_true
         mn = 2* pi /self.T_slow_mod
         ko = self.k
         mo = self.M
 
-        ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
-        bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))
+        ajsq = np.square(np.real(self.ajj)) + np.square(np.imag(self.ajj))
+        bjsq = np.square(np.real(self.bjj)) + np.square(np.imag(self.bjj))
 
         # This is the term independent of position from the solution for current
         # given modeled nonlinear solution with the fast oscillations assumed

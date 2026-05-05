@@ -2,7 +2,7 @@
 #
 # класс grid_slow_osc 
 # Автор: Элизабет Гоулд
-# Дата последнего изменения: 23.03.2026
+# Дата последнего изменения: 28.04.2026
 
 """
 Этот код создает сетку решений начальной задачи, чтобы вычислить 
@@ -86,13 +86,17 @@ grid_slow_osc построен на основе grid_fast_osc, наследуя
 # runCalc(self) выполняет вычисление в любом случае.
 
 # Результаты сохраняются в следующих переменных:
-# self.slow_osc_k   -- Оценка волнового числа для медленных колебаний. 
-#                      (Найдено путем подгонки к синусоидальной функции.)
-# self.slow_osc_a   -- Оценка амплитуды медленных колебаний.
-# self.slow_osc_th  -- Оценка смещения угла медленного колебания по 
-#                      синусоидальной функции.
-# self.slow_osc_sol -- Сохраняет полное решение. Оно сохраняется в виде списка,
-#                      а не массива, как другие решения.
+# self.slow_osc_k     -- Оценка волнового числа для медленных колебаний. 
+#                        (Найдено путем подгонки к синусоидальной функции.)
+# self.slow_osc_a     -- Оценка амплитуды медленных колебаний.
+# self.slow_osc_th    -- Оценка смещения угла медленного колебания по 
+#                        синусоидальной функции.
+# self.slow_osc_sol   -- Сохраняет полное решение. Оно сохраняется в виде 
+#                        списка, а не массива, как другие решения.
+# self.slow_osc_sol_1 -- Только для Монте-Карло запусков. Сохраняет 
+#                        прогнозируемую последнюю точку. Вычисленную последнюю 
+#                        точку в slow_osc_sol. Переменная сохраняется в виде 
+#                        списка, а не массива, как другие решения.
 # self.slow_osc_i   -- i-й элемент этого списка соответствует полному решению
 #         для индексов массива других оценок, как указано в содержащемся списке.
 #         Для i[j] = [n_mu, n_dk, n_b, n_r, n_a, n_k0, n_d, n_d] (где j и все n
@@ -117,7 +121,7 @@ grid_slow_osc построен на основе grid_fast_osc, наследуя
 # мнимой часть начальной производной волновой функции         = self.di
 
 import numpy as np
-from eelib.consts import kFAu, rtol, atol
+from eelib.consts import kFAu, rtol, atol, pi
 from eelib.loop import loop
 from eelib.grid_fast_osc import grid_fast_osc
 from eelib.fitted_functions import fit_sin
@@ -408,7 +412,7 @@ class grid_slow_osc(grid_fast_osc):
 
         # Параметры интеграции.
         pr = self.R_max # может быть изменен, если потребуется больше циклов
-        plot_code = 1   # только построить er, экономить времени
+        plot_code = 11  # только построить er, экономить времени, но с последней точкой
 
         # Синхронизация
         start_time = time.time()
@@ -432,6 +436,7 @@ class grid_slow_osc(grid_fast_osc):
         # Сохранить решение для анализа.
         sol_er_u = None
         sol_er_u_save = []
+        sol_er_u_save_1 = []
 
         slow_oscillation_wavenumber = np.zeros((num))
         slow_oscillation_theta = np.zeros((num))
@@ -452,8 +457,8 @@ class grid_slow_osc(grid_fast_osc):
             # Найти решение.
             sol_er_u = self.l_calc.solu
 
-            # подогнать синусоиду к данным.
-            fit = fit_sin(sol_er_u)
+            # Подогнать синусоиду к данным.
+            fit = fit_sin(sol_er_u, last_point = False)
             if fit is not None:
                 slow_oscillation_wavenumber[ii] = fit[1]
                 slow_oscillation_amplitude[ii] = fit[0]
@@ -461,6 +466,7 @@ class grid_slow_osc(grid_fast_osc):
 
             # А также сохранить полное решение.
             if self.save_solution: sol_er_u_save.append(sol_er_u.copy())
+            if self.save_solution: sol_er_u_save_1.append(self.l_calc.psij_pred(2*pi*self.val_table[ii,3]*10**(-6)))
 
         # Преобразовать локальные переменные в объектные, сохраняя данные.
         self.slow_osc_k  = slow_oscillation_wavenumber
@@ -470,6 +476,8 @@ class grid_slow_osc(grid_fast_osc):
         self.slow_osc_th = slow_oscillation_theta
         if self.save_solution: self.slow_osc_sol  = sol_er_u_save
                 # Сохранить полное решение.
+        if self.save_solution: self.slow_osc_sol_1  = sol_er_u_save_1
+                # Сохранить последнюю точку.
 
 
         # Указывать, что этот метод был запущен.

@@ -1,7 +1,7 @@
 # eelib/table_scripts.py
 #
 # Автор: Элизабет Гоулд
-# Дата последнего изменения: 23.03.2026
+# Дата последнего изменения: 28.04.2026
 
 """
 Этот файл содержит набор функций, используемых для сокращения наборов данных
@@ -59,7 +59,7 @@ def clean_table(tbl):
     # Список имен столбцов, которые будут использоваться при создании
     # DataFrame.
     col_names = ["R", "B", "dk", "mu", 'dpsi0', 'a0', 'b0', 'A max 0', 'I0',
-                'dpsi', 'a', 'b', 'A max new', 'I v2', 'effective mu']
+                'dpsi', 'a', 'b', 'A max new', 'I v3', 'effective mu']
 
     # Создать новый DataFrame с нужными строками и заданными именами столбцов.
     # Список списков одинакового размера - это еще один допустимый формат
@@ -82,7 +82,7 @@ def clean_table(tbl):
         new_tbl['A max 0'] = new_tbl['A max 0'].astype(float)
         new_tbl['I0'] = new_tbl['I0'].astype(float)
         new_tbl['A max new'] = new_tbl['A max new'].astype(float)
-        new_tbl['I v2'] = new_tbl['I v2'].astype(float)
+        new_tbl['I v3'] = new_tbl['I v3'].astype(float)
         new_tbl['effective mu'] = new_tbl['effective mu'].astype(float)
 
     # Вернуть окончательный DataFrame. Этот объект - это новый
@@ -113,7 +113,7 @@ def clean_table_MC(tbl):
     # Список имен столбцов, которые будут использоваться при создании
     # DataFrame.
     col_names = ["R", "B", "dk", "mu", 'dpsi0', 'a0', 'b0', 'A max 0', 'I0', 
-                 'dpsi', 'a', 'b', 'A max new', 'I v2', 'effective mu']
+                 'dpsi', 'a', 'b', 'A max new', 'I v3', 'effective mu']
     
     # Создать новый DataFrame с нужными строками и заданными именами столбцов.
     # Список списков одинакового размера - это еще один допустимый формат
@@ -136,7 +136,7 @@ def clean_table_MC(tbl):
         new_tbl['A max 0'] = new_tbl['A max 0'].astype(float)
         new_tbl['I0'] = new_tbl['I0'].astype(float)
         new_tbl['A max new'] = new_tbl['A max new'].astype(float)
-        new_tbl['I v2'] = new_tbl['I v2'].astype(float)
+        new_tbl['I v3'] = new_tbl['I v3'].astype(float)
         new_tbl['effective mu'] = new_tbl['effective mu'].astype(float)
     
     # Вернуть окончательный DataFrame. Этот объект - это новый

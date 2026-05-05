@@ -2,7 +2,7 @@
 #
 # класс loop
 # Автор: Элизабет Гоулд
-# Дата последнего изменения: 23.03.2026
+# Дата последнего изменения: 28.04.2026
 #
 # Этот класс является основной частью этой библиотеки для решения начальных и
 # граничных задач для нелинейного уравнения Шредингера данной модели. Класс
@@ -142,7 +142,7 @@ default_number_fast_oscillations_between_recoveries = 4
 #    solve_ivp(n=None, percent_range = 1.0, method = None, rtol = rtol,
 #          atol = atol, solve = 1)
 #    ivp_solver_steps(t0, tf, y0, yp0, n=None, ee_int=True, m=None, method = None,
-#          rtol = rtol, atol = atol, fullSol = False)
+#          rtol = rtol, atol = atol, fullSol = False, last_point = False)
 #    call_ivp_solver(t0, tf, y0, yp0, n=0, fullSol = True, t0_start = False,
 #          ee_int= True, method = None, rtol = rtol, atol=atol, first_step = None,
 #          max_step = np.inf, t_eval = None)
@@ -252,6 +252,8 @@ default_number_fast_oscillations_between_recoveries = 4
 #              '0d' = убывающее линейное решение
 #   percent_R_solved -- словарь процентов от радиуса R, который был получен для 
 #                       данного решения
+#   last_point -- словарь логических значений, которые обозначают, включена ли
+#                 последняя точка решения в решение ivp
 
 # -- Решение краевой задачи
 # bvp_deriv  -- Производная, для которой параметры кольца решает краевую задачу.
@@ -313,8 +315,8 @@ default_number_fast_oscillations_between_recoveries = 4
 
 # 3 ----- Дескрипторы алгоритмов решения ОДУ
 #    get_solve_code(solve_arr)  
-#       -- Преобразует список кодов ('er', 'ed', '0r', '0d', 'em') в целое число
-#          для параметра solve метода solve_ivp. 
+#       -- Преобразует список кодов ('er', 'ed', '0r', '0d', 'em', 'fin') в целое 
+#           число для параметра solve метода solve_ivp. 
 #    solve_ivp(n=None, percent_range = 1.0, method = None, rtol = rtol,
 #              atol = atol, solve = 30)
 #           -- Используется для решения начальной задачи для заданных колец. 
@@ -363,11 +365,9 @@ default_number_fast_oscillations_between_recoveries = 4
 #    current_bvp() -- Вычисляет краевую задачу и возвращает ток этого
 #         нелинейного решения, используя модель для тока current_alt.
 #    current_new() -- Возвращает ток нелинейного решения сохраненного кольца,
-#         основанное на постоянном члене точного решения. Эта оценка для тока,
-#         скорее всего, неверна.
+#         основанное на постоянном члене точного решения.
 #    current_alt() -- Возвращает ток нелинейного решения сохраненного кольца,
-#         основываясь на предположительной форме этого тока. Скорее всего, это
-#         верно.
+#         основываясь на старой предположительной форме этого тока. 
 #    current_calc(psi=None, psi_pr=None)   -- Возвращает ток нелинейного
 #         решения кольца с сохраненными или указанными значениями psi и
 #         производной psi на основе уравнения для расчета тока.
@@ -451,6 +451,12 @@ class loop:
                     "0r": None,   # без e-e взаимодействия, восстановленное решение
                     "0d": None}   # без e-e взаимодействия, убывающее решение
 
+        self.last_point = {"er": None,   
+                                  # с e-e взаимодействием, восстановленное решение
+                    "em": None,   # с e-e взаимодействием, восстановленное решение,
+                                  #    с интервалом, основанным на прогнозируемом k
+                    "0r": None}   # без e-e взаимодействия, восстановленное решение
+
         self.bvp_solved = False
 
         self.solu    = None
@@ -524,6 +530,11 @@ class loop:
         self.T_fast_mod      = pi / self.k_model_ivp(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_fast_mod_true = pi / self.k_model_bvp(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
         self.T_slow_mod      = 2 * pi / self.M_model(self.psi0_deriv_0, self.mu, 0., self.B, self.R, self.amp, self.k)
+
+        self.ajj = self.ajN_calc_j()
+        self.bjj = self.bjN_calc_j()
+        self.aje = self.ajN_calc_je()
+        self.bje = self.bjN_calc_je()
                 
 
     # 2 ----- Аналитические вычисления 
@@ -573,6 +584,53 @@ class loop:
         ret = 0.5*(self.amp - (self.psi0_deriv_0 - 1j * self.M * self.amp)/(1j*self.k))
 
         return ret
+
+    # Используются для смоделированных решений
+    def ajN_calc_j(self):
+        k_new = pi / self.T_fast_mod_true
+        M_new = 2 * pi / self.T_slow_mod
+        den = 1.0 / 2.0 / k_new
+        reA = den * (np.imag(self.psi0_deriv_0) - M_new + k_new)
+        imA = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*((self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new)+self.amp)
+
+        return ret
+    
+    def bjN_calc_j(self):
+        k_new = pi / self.T_fast_mod_true
+        M_new = 2 * pi / self.T_slow_mod
+
+        den = 1.0 / 2.0 / k_new
+        reB = den * (-np.imag(self.psi0_deriv_0) + M_new + k_new)
+        imB = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*(self.amp - (self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new))
+
+        return ret    
+
+    def ajN_calc_je(self):
+        k_new = pi / self.T_fast_mod
+        M_new = 2 * pi / self.T_slow_mod
+        den = 1.0 / 2.0 / k_new
+        reA = den * (np.imag(self.psi0_deriv_0) - M_new + k_new)
+        imA = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*((self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new)+self.amp)
+
+        return ret
+    
+    def bjN_calc_je(self):
+        k_new = pi / self.T_fast_mod
+        M_new = 2 * pi / self.T_slow_mod
+
+        den = 1.0 / 2.0 / k_new
+        reB = den * (-np.imag(self.psi0_deriv_0) + M_new + k_new)
+        imB = - den * np.real(self.psi0_deriv_0)
+
+        ret = 0.5*(self.amp - (self.psi0_deriv_0 - 1j * M_new * self.amp)/(1j*k_new))
+
+        return ret  
     
     # Точное решение с текущей производной
     def psij(self, x):
@@ -582,13 +640,13 @@ class loop:
     def psij_pred(self, x):
         kn = pi / self.T_fast_mod
         Mn = 2 * pi / self.T_slow_mod
-        return self.aj*np.exp(1j*x*(kn+Mn)) + self.bj*np.exp(1j*x*(-kn+Mn))
+        return self.aje*np.exp(1j*x*(kn+Mn)) + self.bje*np.exp(1j*x*(-kn+Mn))
 
     # Смоделированное решение с текущей производной, без ошибки
     def psij_pred_true(self, x):
         kn = pi / self.T_fast_mod_true
         Mn = 2 * pi / self.T_slow_mod
-        return self.aj*np.exp(1j*x*(kn+Mn)) + self.bj*np.exp(1j*x*(-kn+Mn))
+        return self.ajj*np.exp(1j*x*(kn+Mn)) + self.bjj*np.exp(1j*x*(-kn+Mn))
     
     # Точное решение краевой задачи
     def psij0(self, x):
@@ -628,6 +686,7 @@ class loop:
         if "0r" in solve_arr: code = code * 5
         if "0d" in solve_arr: code = code * 3
         if "em" in solve_arr: code = code * 7
+        if "lp" in solve_arr: code = code * 11
         return code
 
     # Решает указанные начальную задачу с использованием указанного числового
@@ -667,6 +726,12 @@ class loop:
         y0h0, yp0h0 = self.amp, self.psi0_deriv_0 #self.calc_yval_old(n, t0h0)
         #y0l0, yp0l0 = self.amp, self.psi0_deriv_0 #self.calc_yvals_old(n, t0l0)
 
+        # Добавить последнюю точку к списку, чтобы сравнивать её с моделью.
+        if abs(solve)%11 == 0:
+            last_point = True
+        else:
+            last_point = False
+
         # вызывать метод для решения ОДУ несколько раз  
         # с e-e взаимодействием -- разделено на кусочки (+), без разделения(2), 
         # с предсказанным k_fast (7)
@@ -674,12 +739,16 @@ class loop:
         if solve > 0:      
             self.solu = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n, 
                             fullSol = False, ee_int = True, method = method,
-                            rtol = rtol, atol = atol)
+                            rtol = rtol, atol = atol, last_point=last_point)
             #self.soll = self.ivp_solver_steps(t0l, tfl, y0l, yp0l, n,
             #               fullSol = False, ee_int = True, method = method, 
             #               rtol = rtol, atol = atol)
             self.percent_R_solved["er"] = percent_range
             self.ivp["er"] = self.solu
+            if abs(solve)%11 == 0:
+                self.last_point["er"] = True
+            else:
+                self.last_point["er"] = False
         if abs(solve)%2 == 0:
             self.solu_d = self.call_ivp_solver(t0h, tfh, y0h, yp0h, n,
                             fullSol = False, ee_int = True, method = method,
@@ -701,26 +770,35 @@ class loop:
         if abs(solve)%5 == 0:
             self.solu0_r = self.ivp_solver_steps(t0h0, tfh0, y0h0, yp0h0, n,
                             fullSol = False, ee_int = False, method = method,
-                            rtol = rtol, atol = atol)
+                            rtol = rtol, atol = atol, last_point=last_point)
             #self.soll0_r = self.ivp_solver_steps(t0l0, tfl0, y0l0, yp0l0, n,
             #               fullSol = False, ee_int = False, method = method,
             #               rtol = rtol, atol = atol)
             self.percent_R_solved["0r"] = percent_range
             self.ivp["0r"] = self.solu0_r
+            if abs(solve)%11 == 0:
+                self.last_point["0r"] = True
+            else:
+                self.last_point["0r"] = False
         if abs(solve)%7 == 0: 
             self.solu_m = self.ivp_solver_steps(t0h, tfh, y0h, yp0h, n,
                             fullSol = False, ee_int = True, method = method,
-                            rtol = rtol, atol = atol, estimate_k = True)
+                            rtol = rtol, atol = atol, estimate_k = True, 
+                            last_point=last_point)
             #self.soll_f = self.call_ivp_solver(t0l, tfl, y0l, yp0l, n,
             #               fullSol = False, ee_int = True, method = method,
             #               rtol = rtol, atol = atol)  
             self.percent_R_solved["em"] = percent_range
-            self.ivp["em"] = self.solu_m      
+            self.ivp["em"] = self.solu_m  
+            if abs(solve)%11 == 0:
+                self.last_point["em"] = True
+            else:
+                self.last_point["em"] = False 
 
     # Это сделано для того, чтобы компенсировать падение мощности в течение
     # непрерывных циклов, просто добавляя ее обратно. Вызывает алгоритм для
     # решения ОДУ несколько раз для более коротких интервалов.
-    def ivp_solver_steps(self, t0, tf, y0, yp0, n=None, ee_int=True, m = None, method = None, rtol = rtol, atol = atol, fullSol = False, estimate_k = False):
+    def ivp_solver_steps(self, t0, tf, y0, yp0, n=None, ee_int=True, m = None, method = None, rtol = rtol, atol = atol, fullSol = False, estimate_k = False, last_point = False):
 
         if method is None:
             method = self.default_integration_method
@@ -737,6 +815,11 @@ class loop:
                 t_eval_full = self.find_t_points(n, t_max = tf, t_start = t0, T = 2*self.T_fast)
         else:
             t_eval_full = self.find_t_points(n,t_max = tf, t_start = t0, T = self.T_fast0)
+
+        # Добавить последнюю точку к списку, чтобы сравнивать её с моделью.
+        if last_point:
+            t_eval_full_2 = np.append(t_eval_full, tf)
+            t_eval_full = t_eval_full_2
 
         # желаемый размер шага для алгоритма
         first_step = max_step = t_eval_full[1]-t_eval_full[0]
@@ -887,7 +970,7 @@ class loop:
             'y_events': sol_out_yev
         }
 
-    # дескриптор функции библиотеки scipy для решения ОДУ
+    # оболочка функции библиотеки scipy для решения ОДУ
     def call_ivp_solver(self, t0, tf, y0, yp0, n = 0, fullSol = True, 
                         t0_start=False, ee_int = True, method = None, 
                         rtol = rtol, atol = atol, first_step=None, 
@@ -1241,22 +1324,20 @@ class loop:
                 self.find_root_min()
             else:
                 self.setDeriv(self.bvp_deriv)
-        ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
-        bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))
-        return ajsq - bjsq
+        return np.real(self.current_calc())
     
     # Эти методы, приведенные ниже, не предназначены для проверки того,
     # соответствует ли данное решение условиям на границе, поэтому будьте
     # осторожны.
 
     def current_new(self):
-        kn = pi / self.T_fast_mod
+        kn = pi / self.T_fast_mod_true
         mn = 2* pi /self.T_slow_mod
         ko = self.k
         mo = self.M
 
-        ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
-        bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))
+        ajsq = np.square(np.real(self.ajj)) + np.square(np.imag(self.ajj))
+        bjsq = np.square(np.real(self.bjj)) + np.square(np.imag(self.bjj))
 
         # Это слагаемое не зависимое от положения решения для тока данного
         # смоделированного нелинейного решения с предположением, что
@@ -1265,8 +1346,7 @@ class loop:
 
         return cur_new
     
-    # Я подозреваю, что это фактический ток из-за того, как, по-видимому,
-    # встроена сходимость.
+    # Старая, неправильная функция для тока, которая задала правильный ответ.
     def current_alt(self):
         ajsq = np.square(np.real(self.aj)) + np.square(np.imag(self.aj))
         bjsq = np.square(np.real(self.bj)) + np.square(np.imag(self.bj))

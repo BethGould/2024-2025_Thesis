@@ -9,9 +9,9 @@ The code is in the following folders
 The Russian version is a translation of the English version. As such, the comments have been edited more extensively, and the code is unlikely to contain any changes made after the time of translation. 
 
 Код находится в следующих папках
- - English - для английской версии библиотеки и блокноты Jupyter
- - Russian - для перевода библиотеки на русский язык. Блокноты Jupyter пока не переведены
- - Active - для самой последней версии библиотеки и блокноты
+ - English - для английской версии библиотеки и блокноты Jupyter.
+ - Russian - для перевода библиотеки на русский язык. Блокноты Jupyter пока не переведены.
+ - Active - для самой последней версии библиотеки и блокноты.
  - Objects - Содержит объекты сетки, используемые в коде. 
 
 Русская версия является переводом английской версии. Таким образом, комментарии были отредактированы более тщательно, и маловероятно, что код будет содержать какие-либо изменения, внесенные после перевода.

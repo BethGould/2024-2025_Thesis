@@ -1,7 +1,5 @@
 # Readme
 
-Этот код 
-
 The code is in the following folders
  - English -- for the English version of the finalized library and Jupyter notebooks
  - Russian -- for the Russian translation of the finalized library. Jupyter notebooks are not yet translated
